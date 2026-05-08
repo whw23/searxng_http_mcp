@@ -35,9 +35,10 @@ class ReverseProxyApp:
         }
 
         client_host = request.client.host if request.client else "127.0.0.1"
+        original_host = request.headers.get("host", "localhost:8888")
         headers_to_forward.setdefault("x-forwarded-for", client_host)
         headers_to_forward.setdefault("x-real-ip", client_host)
-        headers_to_forward["host"] = "127.0.0.1:8080"
+        headers_to_forward["host"] = original_host
         headers_to_forward["accept-encoding"] = "identity"
 
         async with httpx.AsyncClient() as client:
