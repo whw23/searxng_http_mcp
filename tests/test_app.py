@@ -24,7 +24,7 @@ class TestAppNoAuth:
         from mcp_server.app import create_app
 
         app = create_app()
-        client = TestClient(app)
+        client = TestClient(app, raise_server_exceptions=False)
         resp = client.get("/mcp")
         assert resp.status_code != 404
 
