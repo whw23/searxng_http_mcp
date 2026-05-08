@@ -4,7 +4,8 @@ ENV PATH="/usr/local/searxng/.venv/bin:${PATH}"
 
 # Install pip via ensurepip, then install MCP Server dependencies
 RUN python -m ensurepip --upgrade && \
-    python -m pip install --no-cache-dir "mcp[cli]"
+    python -m pip install --no-cache-dir --no-compile "mcp[cli]" && \
+    find /usr/local/searxng/.venv -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null; true
 
 # Copy MCP Server code
 COPY mcp_server/ /usr/local/searxng/mcp_server/
