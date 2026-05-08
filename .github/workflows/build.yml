@@ -112,3 +112,16 @@ jobs:
             ${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Install mcp-publisher
+        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+
+      - name: Authenticate to MCP Registry
+        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish to MCP Registry
+        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        run: ./mcp-publisher publish
