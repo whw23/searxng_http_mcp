@@ -136,6 +136,9 @@ RUN pip install mcp[cli]
 # Copy MCP Server code
 COPY mcp_server/ /usr/local/searxng/mcp_server/
 
+# Copy SearXNG config (enable JSON format)
+COPY config/settings.yml /etc/searxng/settings.yml
+
 # Copy custom entrypoint
 COPY entrypoint.sh /usr/local/searxng/custom-entrypoint.sh
 
@@ -231,7 +234,10 @@ All triggers build only from the `main` branch.
    - `ghcr.io/whw23/searxng-http-mcp:latest`
 4. Push to GHCR
 5. Publish to MCP Registry via GitHub OIDC (namespace: `io.github.whw23/searxng-http-mcp`)
-6. Publish to Docker MCP Catalog (submit PR to `docker/mcp-registry`)
+
+### Docker MCP Catalog
+
+One-time manual submission: submit PR to `docker/mcp-registry` with `server.yaml` and `tools.json`. Not part of automated CI.
 
 ### Daily Schedule Logic
 
@@ -239,21 +245,41 @@ All triggers build only from the `main` branch.
 - If unchanged, skip build
 - If changed, trigger full build + push + publish
 
+## README Structure
+
+The README serves as the primary documentation and project showcase. Structure:
+
+1. **Header** — project name, badges (license, Docker pulls, MCP Registry), one-line description
+2. **Features** — bullet list of key capabilities and competitive advantages
+3. **Quick Start** — minimal steps to get running (docker run one-liner)
+4. **Architecture** — architecture diagram (same as this spec)
+5. **Usage**
+   - HTTP mode (with/without auth)
+   - stdio mode
+   - Environment variables reference table
+6. **MCP Tools Reference** — `search` and `autocomplete` parameter tables with examples
+7. **Client Configuration** — Server mode and Local mode examples for each supported client (see table below)
+8. **Claude Code Plugin** — installation via marketplace
+9. **SearXNG Configuration** — how to customize SearXNG via Web UI or settings.yml volume mount
+10. **Build from Source** — clone, docker build, run
+11. **Contributing** — dev branch workflow, how to submit PRs
+12. **License** — MIT
+
 ## MCP Client Configuration Examples
 
-README will include configuration examples for both **Server mode** (remote HTTP) and **Local mode** (Docker stdio) for the following clients:
+README includes configuration examples for both **Server mode** (remote HTTP) and **Local mode** (Docker stdio) for the following clients:
 
-| Client         | Server Mode    | Local Mode    |
-| -------------- | -------------- | ------------- |
-| Claude Code    | Plugin         | Plugin        |
-| Claude Desktop | HTTP URL       | Docker stdio  |
-| Cursor         | HTTP URL       | Docker stdio  |
-| VS Code Copilot| HTTP URL       | Docker stdio  |
-| Windsurf       | HTTP URL       | Docker stdio  |
-| Cline          | HTTP URL       | Docker stdio  |
-| OpenCode       | HTTP URL       | Docker stdio  |
-| Continue.dev   | HTTP URL       | Docker stdio  |
-| Hermes Agent   | HTTP URL       | Docker stdio  |
+| Client          | Server Mode | Local Mode   |
+| --------------- | ----------- | ------------ |
+| Claude Code     | HTTP URL    | Docker stdio |
+| Claude Desktop  | HTTP URL    | Docker stdio |
+| Cursor          | HTTP URL    | Docker stdio |
+| VS Code Copilot | HTTP URL    | Docker stdio |
+| Windsurf        | HTTP URL    | Docker stdio |
+| Cline           | HTTP URL    | Docker stdio |
+| OpenCode        | HTTP URL    | Docker stdio |
+| Continue.dev    | HTTP URL    | Docker stdio |
+| Hermes Agent    | HTTP URL    | Docker stdio |
 
 ### Server Mode Example (Claude Desktop)
 
