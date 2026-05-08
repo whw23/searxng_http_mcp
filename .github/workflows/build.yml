@@ -160,12 +160,3 @@ jobs:
       - name: Publish to MCP Registry
         if: steps.decide.outputs.should_build == 'true'
         run: ./mcp-publisher publish
-
-      - name: Clean up old images
-        if: steps.decide.outputs.should_build == 'true'
-        uses: actions/delete-package-versions@v5
-        with:
-          package-name: searxng-http-mcp
-          package-type: container
-          min-versions-to-keep: 3
-          delete-only-untagged-versions: true
