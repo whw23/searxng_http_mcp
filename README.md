@@ -506,11 +506,16 @@ Add the marketplace, then install the plugin that fits your setup:
 Both plugins include the 🔍 `/web-search-via-searxng` skill for web search.
 
 > [!TIP]
-> **Remote mode setup:** Set the environment variables before launching Claude Code:
-> ```bash
-> export SEARXNG_MCP_URL="http://your-server:8888/mcp/"
-> export SEARXNG_API_KEY="your-api-key"
+> **Remote mode setup:** Add to `~/.claude/settings.json` under the `env` field:
+> ```json
+> {
+>   "env": {
+>     "SEARXNG_MCP_URL": "http://your-server:8888/mcp/",
+>     "SEARXNG_API_KEY": "your-api-key"
+>   }
+> }
 > ```
+> Then restart Claude Code.
 
 ---
 
