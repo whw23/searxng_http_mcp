@@ -1,0 +1,17 @@
+{
+  "name": "searxng-http-mcp",
+  "owner": {
+    "name": "whw23"
+  },
+  "description": "SearXNG metasearch engine MCP server",
+  "plugins": [
+    {
+      "name": "searxng-http-mcp",
+      "source": "./",
+      "description": "SearXNG metasearch engine MCP server — search the web with privacy",
+      "version": "1.0.0",
+      "license": "MIT",
+      "keywords": ["search", "searxng", "web-search", "mcp"]
+    }
+  ]
+}

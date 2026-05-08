@@ -1,0 +1,12 @@
+{
+  "name": "searxng-http-mcp",
+  "version": "1.0.0",
+  "description": "SearXNG metasearch engine MCP server — search the web with privacy",
+  "author": {
+    "name": "whw23"
+  },
+  "repository": "https://github.com/whw23/searxng-http-mcp",
+  "license": "MIT",
+  "keywords": ["search", "searxng", "web-search", "mcp"],
+  "skills": "./skills/"
+}
