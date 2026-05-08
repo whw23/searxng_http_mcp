@@ -19,7 +19,7 @@ A self-contained MCP server wrapping [SearXNG](https://github.com/searxng/searxn
 ## Quick Start
 
 ```bash
-docker run -p 8888:8888 ghcr.io/whw23/searxng-http-mcp:latest
+docker run -d --name searxng-mcp -p 8888:8888 ghcr.io/whw23/searxng-http-mcp:latest
 ```
 
 That's it. SearXNG + MCP server running on port 8888.
@@ -53,10 +53,10 @@ That's it. SearXNG + MCP server running on port 8888.
 
 ```bash
 # Without authentication
-docker run -p 8888:8888 ghcr.io/whw23/searxng-http-mcp:latest
+docker run -d --name searxng-mcp -p 8888:8888 ghcr.io/whw23/searxng-http-mcp:latest
 
 # With authentication
-docker run -p 8888:8888 -e API_KEY=your-secret-key ghcr.io/whw23/searxng-http-mcp:latest
+docker run -d --name searxng-mcp -p 8888:8888 -e API_KEY=your-secret-key ghcr.io/whw23/searxng-http-mcp:latest
 ```
 
 - MCP endpoint: `http://localhost:8888/mcp/`
@@ -293,7 +293,7 @@ The settings file must include `formats: [json]` under `search:` for MCP tools t
 git clone https://github.com/whw23/searxng-http-mcp.git
 cd searxng-http-mcp
 docker build -t searxng-http-mcp:local .
-docker run -p 8888:8888 searxng-http-mcp:local
+docker run -d --name searxng-mcp -p 8888:8888 searxng-http-mcp:local
 ```
 
 ## Contributing
