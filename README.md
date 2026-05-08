@@ -117,7 +117,8 @@ Get search query suggestions.
 
 ## Client Configuration
 
-### Claude Desktop
+<details>
+<summary><strong>Claude Desktop</strong></summary>
 
 **Server mode** — edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
@@ -147,7 +148,10 @@ Get search query suggestions.
 }
 ```
 
-### Claude Code
+</details>
+
+<details>
+<summary><strong>Claude Code</strong></summary>
 
 **Server mode**:
 
@@ -161,9 +165,12 @@ claude mcp add searxng --transport http http://your-server:8888/mcp/ -- --header
 claude mcp add searxng -- docker run --rm -i ghcr.io/whw23/searxng-http-mcp:latest --stdio
 ```
 
-### Cursor
+</details>
 
-**Server mode** — add to MCP settings:
+<details>
+<summary><strong>Cursor</strong></summary>
+
+**Server mode** — add to Cursor MCP settings:
 
 ```json
 {
@@ -191,23 +198,135 @@ claude mcp add searxng -- docker run --rm -i ghcr.io/whw23/searxng-http-mcp:late
 }
 ```
 
-### VS Code Copilot
+</details>
 
-Same format as Cursor. Add to your MCP configuration.
+<details>
+<summary><strong>VS Code Copilot</strong></summary>
 
-### Windsurf
+**Server mode** — add to `.vscode/mcp.json`:
 
-Same format as Cursor. Add to your MCP configuration.
+```json
+{
+  "servers": {
+    "searxng": {
+      "url": "http://your-server:8888/mcp/",
+      "headers": {
+        "x-api-key": "your-secret-key"
+      }
+    }
+  }
+}
+```
 
-### Cline
+**Local mode**:
 
-Same format as Cursor. Configure via Cline's MCP settings panel.
+```json
+{
+  "servers": {
+    "searxng": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+    }
+  }
+}
+```
 
-### Continue.dev
+</details>
 
-Same format as Cursor. Add to Continue's MCP configuration.
+<details>
+<summary><strong>Windsurf</strong></summary>
 
-### OpenCode
+**Server mode** — add to `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "url": "http://your-server:8888/mcp/",
+      "headers": {
+        "x-api-key": "your-secret-key"
+      }
+    }
+  }
+}
+```
+
+**Local mode**:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><strong>Cline</strong></summary>
+
+Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`).
+
+**Server mode**:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "url": "http://your-server:8888/mcp/",
+      "headers": {
+        "x-api-key": "your-secret-key"
+      }
+    }
+  }
+}
+```
+
+**Local mode**:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><strong>Continue.dev</strong></summary>
+
+**Server mode** — add to `~/.continue/config.yaml`:
+
+```yaml
+mcpServers:
+  - name: searxng
+    url: "http://your-server:8888/mcp/"
+    headers:
+      x-api-key: "your-secret-key"
+```
+
+**Local mode**:
+
+```yaml
+mcpServers:
+  - name: searxng
+    command: docker
+    args: ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+```
+
+</details>
+
+<details>
+<summary><strong>OpenCode</strong></summary>
 
 **Server mode** — edit `.opencode.json`:
 
@@ -239,7 +358,10 @@ Same format as Cursor. Add to Continue's MCP configuration.
 }
 ```
 
-### Hermes Agent
+</details>
+
+<details>
+<summary><strong>Hermes Agent</strong></summary>
 
 **Server mode** — edit `~/.hermes/config.yaml`:
 
@@ -259,6 +381,8 @@ mcp_servers:
     command: "docker"
     args: ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
 ```
+
+</details>
 
 ## Claude Code Plugin
 
