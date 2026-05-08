@@ -118,6 +118,12 @@ jobs:
         run: |
           curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
 
+      - name: Update server.json version
+        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        run: |
+          VERSION="${{ steps.tags.outputs.full_tag }}"
+          jq --arg v "$VERSION" '.version = $v' server.json > server.tmp && mv server.tmp server.json
+
       - name: Authenticate to MCP Registry
         if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
         run: ./mcp-publisher login github-oidc
