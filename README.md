@@ -393,7 +393,17 @@ Install via self-hosted marketplace:
 /plugin install searxng-http-mcp@searxng-http-mcp
 ```
 
-The plugin includes a `/search` skill for web search.
+The plugin includes:
+
+- **MCP server config** — pre-configured for local Docker stdio mode (works out of the box)
+- **`/search` skill** — web search skill for Claude Code
+
+By default the plugin uses **local mode** (Docker stdio). To switch to **server mode**, override the MCP config:
+
+```bash
+claude mcp remove searxng
+claude mcp add searxng --transport http http://your-server:8888/mcp/ -- --header "x-api-key: your-secret-key"
+```
 
 ## SearXNG Configuration
 
