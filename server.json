@@ -1,0 +1,32 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.whw23/searxng-http-mcp",
+  "title": "SearXNG HTTP MCP",
+  "description": "Self-contained SearXNG metasearch MCP server. One Docker image, 200+ engines, privacy-first.",
+  "repository": {
+    "url": "https://github.com/whw23/searxng_http_mcp",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "packages": [
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/whw23/searxng-http-mcp",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtimeHint": "docker",
+      "runtimeArguments": [
+        { "type": "positional", "value": "run" },
+        { "type": "named", "name": "--rm" },
+        { "type": "named", "name": "-i" },
+        { "type": "named", "name": "--memory", "value": "512m" },
+        { "type": "named", "name": "--cpus", "value": "1" }
+      ],
+      "packageArguments": [
+        { "type": "positional", "value": "--stdio" }
+      ],
+      "environmentVariables": []
+    }
+  ]
+}
