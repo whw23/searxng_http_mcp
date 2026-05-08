@@ -19,7 +19,7 @@ A self-contained MCP server wrapping [SearXNG](https://github.com/searxng/searxn
 ## Quick Start
 
 ```bash
-docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 ghcr.io/whw23/searxng-http-mcp:latest
+docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 --memory=512m --cpus=1 ghcr.io/whw23/searxng-http-mcp:latest
 ```
 
 That's it. SearXNG + MCP server running on port 8888.
@@ -53,10 +53,10 @@ That's it. SearXNG + MCP server running on port 8888.
 
 ```bash
 # Without authentication
-docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 ghcr.io/whw23/searxng-http-mcp:latest
+docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 --memory=512m --cpus=1 ghcr.io/whw23/searxng-http-mcp:latest
 
 # With authentication
-docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 -e API_KEY=your-secret-key ghcr.io/whw23/searxng-http-mcp:latest
+docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 --memory=512m --cpus=1 -e API_KEY=your-secret-key ghcr.io/whw23/searxng-http-mcp:latest
 ```
 
 - MCP endpoint: `http://localhost:8888/mcp/`
@@ -65,7 +65,7 @@ docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 -e API_KE
 ### stdio Mode
 
 ```bash
-docker run --rm -i ghcr.io/whw23/searxng-http-mcp:latest --stdio
+docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw23/searxng-http-mcp:latest --stdio
 ```
 
 No ports exposed. Communication via stdin/stdout. SearXNG runs internally for the MCP tools.
@@ -142,7 +142,7 @@ Get search query suggestions.
   "mcpServers": {
     "searxng": {
       "command": "docker",
-      "args": ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+      "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
     }
   }
 }
@@ -162,7 +162,7 @@ claude mcp add searxng --transport http http://your-server:8888/mcp/ -- --header
 **Local mode**:
 
 ```bash
-claude mcp add searxng -- docker run --rm -i ghcr.io/whw23/searxng-http-mcp:latest --stdio
+claude mcp add searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw23/searxng-http-mcp:latest --stdio
 ```
 
 </details>
@@ -192,7 +192,7 @@ claude mcp add searxng -- docker run --rm -i ghcr.io/whw23/searxng-http-mcp:late
   "mcpServers": {
     "searxng": {
       "command": "docker",
-      "args": ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+      "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
     }
   }
 }
@@ -225,7 +225,7 @@ claude mcp add searxng -- docker run --rm -i ghcr.io/whw23/searxng-http-mcp:late
   "servers": {
     "searxng": {
       "command": "docker",
-      "args": ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+      "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
     }
   }
 }
@@ -258,7 +258,7 @@ claude mcp add searxng -- docker run --rm -i ghcr.io/whw23/searxng-http-mcp:late
   "mcpServers": {
     "searxng": {
       "command": "docker",
-      "args": ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+      "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
     }
   }
 }
@@ -293,7 +293,7 @@ Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`
   "mcpServers": {
     "searxng": {
       "command": "docker",
-      "args": ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+      "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
     }
   }
 }
@@ -320,7 +320,7 @@ mcpServers:
 mcpServers:
   - name: searxng
     command: docker
-    args: ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+    args: ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
 ```
 
 </details>
@@ -352,7 +352,7 @@ mcpServers:
     "searxng": {
       "type": "stdio",
       "command": "docker",
-      "args": ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+      "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
     }
   }
 }
@@ -379,7 +379,7 @@ mcp_servers:
 mcp_servers:
   searxng:
     command: "docker"
-    args: ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+    args: ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
 ```
 
 </details>
@@ -429,7 +429,7 @@ The settings file must include `formats: [json]` under `search:` for MCP tools t
 git clone https://github.com/whw23/searxng-http-mcp.git
 cd searxng-http-mcp
 docker build -t searxng-http-mcp:local .
-docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 searxng-http-mcp:local
+docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 --memory=512m --cpus=1 searxng-http-mcp:local
 ```
 
 ## Contributing

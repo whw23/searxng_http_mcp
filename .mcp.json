@@ -2,7 +2,7 @@
   "mcpServers": {
     "searxng": {
       "command": "docker",
-      "args": ["run", "--rm", "-i", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+      "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
     }
   }
 }
