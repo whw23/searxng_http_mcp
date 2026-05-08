@@ -16,7 +16,6 @@ on:
 permissions:
   contents: read
   packages: write
-  id-token: write
 
 env:
   IMAGE_NAME: ghcr.io/whw23/searxng-http-mcp
@@ -33,6 +32,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.14"
+          cache: pip
 
       - name: Install dependencies
         run: pip install "mcp[cli]" pytest pytest-anyio httpx
@@ -43,6 +43,10 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
 
     steps:
       - name: Checkout
@@ -80,20 +84,32 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Decide whether to build
+        id: decide
+        run: |
+          if [ "$EVENT" != "schedule" ] || [ "$SKIP" != "true" ]; then
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_build=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          EVENT: ${{ github.event_name }}
+          SKIP: ${{ steps.changed.outputs.skip }}
+
       - name: Save upstream digest
-        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        if: steps.decide.outputs.should_build == 'true'
         run: echo "${{ steps.upstream.outputs.digest }}" > /tmp/upstream-digest
 
       - name: Set up QEMU
-        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        if: steps.decide.outputs.should_build == 'true'
         uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
-        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        if: steps.decide.outputs.should_build == 'true'
         uses: docker/setup-buildx-action@v4
 
       - name: Login to GHCR
-        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        if: steps.decide.outputs.should_build == 'true'
         uses: docker/login-action@v4
         with:
           registry: ghcr.io
@@ -101,7 +117,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate tags
-        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        if: steps.decide.outputs.should_build == 'true'
         id: tags
         run: |
           SHORT_SHA=$(echo "$GITHUB_SHA" | cut -c1-7)
@@ -112,7 +128,7 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
 
       - name: Build and push
-        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        if: steps.decide.outputs.should_build == 'true'
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -125,26 +141,26 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Install mcp-publisher
-        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        if: steps.decide.outputs.should_build == 'true'
         run: |
           curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
 
       - name: Update server.json version
-        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        if: steps.decide.outputs.should_build == 'true'
         run: |
           VERSION="${{ steps.tags.outputs.full_tag }}"
           jq --arg v "$VERSION" '.version = $v' server.json > server.tmp && mv server.tmp server.json
 
       - name: Authenticate to MCP Registry
-        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        if: steps.decide.outputs.should_build == 'true'
         run: ./mcp-publisher login github-oidc
 
       - name: Publish to MCP Registry
-        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        if: steps.decide.outputs.should_build == 'true'
         run: ./mcp-publisher publish
 
       - name: Clean up old images
-        if: github.event_name != 'schedule' || steps.changed.outputs.skip != 'true'
+        if: steps.decide.outputs.should_build == 'true'
         uses: actions/delete-package-versions@v5
         with:
           package-name: searxng-http-mcp

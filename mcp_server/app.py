@@ -6,7 +6,7 @@ from starlette.routing import Mount
 
 from mcp_server.auth import AuthMiddleware
 from mcp_server.proxy import ReverseProxyApp
-from mcp_server.tools import mcp, fetch_engine_info
+from mcp_server.tools import mcp, fetch_engine_info, cleanup as tools_cleanup
 
 
 def create_app() -> Starlette:
@@ -34,7 +34,11 @@ def create_app() -> Starlette:
                         search_tool.description += (
                             f"Available engines (top 50): {engines_str}"
                         )
-            yield
+            try:
+                yield
+            finally:
+                await tools_cleanup()
+                await proxy.aclose()
 
     starlette_app = Starlette(
         routes=[

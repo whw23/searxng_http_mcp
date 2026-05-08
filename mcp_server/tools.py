@@ -8,6 +8,7 @@ from mcp.server.fastmcp import FastMCP
 
 SEARXNG_BASE_URL = os.environ.get("SEARXNG_URL", "http://127.0.0.1:8080")
 CACHE_TTL = int(os.environ.get("CACHE_TTL", "60"))
+MAX_CACHE_SIZE = 256
 
 mcp = FastMCP(
     "SearXNG",
@@ -17,7 +18,7 @@ mcp = FastMCP(
 )
 
 _http_client: httpx.AsyncClient | None = None
-_cache: dict[str, tuple[float, str]] = {}
+_cache: dict[str, tuple[float, dict]] = {}
 
 
 async def _get_client() -> httpx.AsyncClient:
@@ -26,18 +27,18 @@ async def _get_client() -> httpx.AsyncClient:
         _http_client = httpx.AsyncClient()
     return _http_client
 
-COMPACT_FIELDS = ["title", "url", "content"]
-FULL_FIELDS = [
+COMPACT_FIELDS = frozenset({"title", "url", "content"})
+FULL_FIELDS = frozenset({
     "title", "url", "content", "engines", "score",
     "category", "publishedDate", "thumbnail", "img_src",
-]
+})
 
 
 def _cache_key(params: dict) -> str:
     return json.dumps(params, sort_keys=True)
 
 
-def _get_cached(key: str) -> str | None:
+def _get_cached(key: str) -> dict | None:
     if key in _cache:
         ts, data = _cache[key]
         if time.monotonic() - ts < CACHE_TTL:
@@ -46,11 +47,14 @@ def _get_cached(key: str) -> str | None:
     return None
 
 
-def _set_cache(key: str, data: str):
+def _set_cache(key: str, data: dict):
     now = time.monotonic()
     expired = [k for k, (ts, _) in _cache.items() if now - ts >= CACHE_TTL]
     for k in expired:
         del _cache[k]
+    if len(_cache) >= MAX_CACHE_SIZE:
+        oldest = min(_cache, key=lambda k: _cache[k][0])
+        del _cache[oldest]
     _cache[key] = (now, data)
 
 
@@ -158,12 +162,10 @@ async def search(
     cache_params = {**params, "pageno": pageno, "pages": pages}
     cache_k = _cache_key(cache_params)
     cached = _get_cached(cache_k)
-    if cached:
-        cached_data = json.loads(cached)
-        cached_data["results"] = cached_data["results"][:max_results]
-        cached_data["number_of_results"] = len(cached_data["results"])
-        cached_data["cached"] = True
-        return json.dumps(cached_data, ensure_ascii=False)
+    if cached is not None:
+        results = cached["results"][:max_results]
+        output = {**cached, "results": results, "number_of_results": len(results), "cached": True}
+        return json.dumps(output, ensure_ascii=False)
 
     all_results = []
     all_answers: set[str] = set()
@@ -217,12 +219,11 @@ async def search(
     if all_infoboxes:
         output["infoboxes"] = all_infoboxes
 
-    _set_cache(cache_k, json.dumps(output, ensure_ascii=False))
+    _set_cache(cache_k, output)
 
-    output["results"] = output["results"][:max_results]
-    output["number_of_results"] = len(output["results"])
-
-    return json.dumps(output, ensure_ascii=False)
+    results = output["results"][:max_results]
+    return_data = {**output, "results": results, "number_of_results": len(results)}
+    return json.dumps(return_data, ensure_ascii=False)
 
 
 @mcp.tool()
@@ -241,3 +242,10 @@ async def autocomplete(query: str) -> str:
     if resp.status_code != 200:
         return json.dumps({"error": f"Autocomplete failed with status {resp.status_code}"})
     return json.dumps(resp.json(), ensure_ascii=False)
+
+
+async def cleanup():
+    global _http_client
+    if _http_client and not _http_client.is_closed:
+        await _http_client.aclose()
+        _http_client = None

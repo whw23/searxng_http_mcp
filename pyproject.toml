@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "SearXNG metasearch engine MCP server"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.10"
+requires-python = ">=3.14"
 dependencies = [
     "mcp[cli]>=1.0.0",
 ]
