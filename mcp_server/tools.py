@@ -15,6 +15,7 @@ mcp = FastMCP(
     stateless_http=True,
     json_response=True,
     streamable_http_path="/",
+    host="0.0.0.0",
 )
 
 _http_client: httpx.AsyncClient | None = None
