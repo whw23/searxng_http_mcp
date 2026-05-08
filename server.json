@@ -27,6 +27,33 @@
         { "type": "positional", "value": "--stdio" }
       ],
       "environmentVariables": []
+    },
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/whw23/searxng-http-mcp",
+      "transport": {
+        "type": "streamable-http",
+        "url": "http://127.0.0.1:8888/mcp/"
+      },
+      "runtimeHint": "docker",
+      "runtimeArguments": [
+        { "type": "positional", "value": "run" },
+        { "type": "named", "name": "-d" },
+        { "type": "named", "name": "--name", "value": "searxng-mcp" },
+        { "type": "named", "name": "--restart", "value": "unless-stopped" },
+        { "type": "named", "name": "-p", "value": "8888:8888" },
+        { "type": "named", "name": "--memory", "value": "512m" },
+        { "type": "named", "name": "--cpus", "value": "1" }
+      ],
+      "environmentVariables": [
+        {
+          "name": "API_KEY",
+          "description": "API key for authentication. Leave empty for no auth.",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
     }
   ]
 }
