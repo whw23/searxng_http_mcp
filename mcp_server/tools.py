@@ -55,7 +55,13 @@ async def fetch_engine_info() -> dict:
             )
             if resp.status_code == 200:
                 data = resp.json()
-                categories = list(data.get("categories", {}).keys())
+                raw_categories = data.get("categories", [])
+                if isinstance(raw_categories, list):
+                    categories = raw_categories
+                elif isinstance(raw_categories, dict):
+                    categories = list(raw_categories.keys())
+                else:
+                    categories = []
                 engines = [
                     e["name"]
                     for e in data.get("engines", [])
@@ -67,7 +73,11 @@ async def fetch_engine_info() -> dict:
     return {
         "categories": [
             "general", "images", "videos", "news", "map",
-            "music", "it", "science", "files", "social_media",
+            "music", "it", "science", "files", "social media",
+            "web", "apps", "books", "packages", "repos",
+            "software wikis", "scientific publications", "q&a",
+            "shopping", "movies", "translate", "radio", "lyrics",
+            "currency", "weather", "other",
         ],
         "engines": [],
     }
