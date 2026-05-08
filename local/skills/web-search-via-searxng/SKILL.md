@@ -1,5 +1,5 @@
 ---
-name: search
+name: web-search-via-searxng
 description: Search the web using SearXNG metasearch engine. Use when you need to find information online, look up documentation, research topics, or answer questions requiring current knowledge. Also provides autocomplete suggestions.
 ---
 

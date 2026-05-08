@@ -1,7 +1,7 @@
 {
   "name": "searxng-http-mcp",
   "version": "1.0.0",
-  "description": "SearXNG metasearch engine MCP server — search the web with privacy",
+  "description": "SearXNG MCP server (local Docker stdio) — zero-config, self-contained",
   "author": {
     "name": "whw23"
   },

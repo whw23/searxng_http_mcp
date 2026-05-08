@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "searxng": {
+      "type": "http",
+      "url": "${SEARXNG_MCP_URL}",
+      "headers": {
+        "x-api-key": "${SEARXNG_API_KEY}"
+      }
+    }
+  }
+}

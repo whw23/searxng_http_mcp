@@ -486,22 +486,31 @@ mcp_servers:
 
 ## 🧩 Claude Code Plugin
 
-Install via self-hosted marketplace:
+Add the marketplace, then install the plugin that fits your setup:
 
 ```bash
 /plugin marketplace add whw23/searxng_http_mcp
-/plugin install searxng-http-mcp@searxng-http-mcp
 ```
 
 <table>
-<tr>
-  <td width="33%">🔧 <strong>MCP server config</strong><br>Pre-configured for local Docker stdio mode</td>
-  <td width="33%">🔍 <strong><code>/search</code> skill</strong><br>Web search skill for Claude Code</td>
-  <td width="33%">⚙️ <strong><code>/setup</code> skill</strong><br>Switch between local and server mode</td>
-</tr>
+<thead>
+  <tr><th></th><th>Local (Docker stdio)</th><th>Remote (HTTP)</th></tr>
+</thead>
+<tbody>
+  <tr><td><strong>Install</strong></td><td><code>/plugin install searxng-http-mcp@searxng-http-mcp</code></td><td><code>/plugin install searxng-http-mcp@searxng-http-mcp-remote</code></td></tr>
+  <tr><td><strong>How it works</strong></td><td>Runs SearXNG in a local Docker container via stdio. Zero config.</td><td>Connects to a deployed SearXNG MCP server via HTTP.</td></tr>
+  <tr><td><strong>Requires</strong></td><td>Docker installed</td><td>Env vars: <code>SEARXNG_MCP_URL</code>, <code>SEARXNG_API_KEY</code></td></tr>
+</tbody>
 </table>
 
-By default the plugin uses **local mode** (Docker stdio). To switch modes, run `/setup`.
+Both plugins include the 🔍 `/web-search-via-searxng` skill for web search.
+
+> [!TIP]
+> **Remote mode setup:** Set the environment variables before launching Claude Code:
+> ```bash
+> export SEARXNG_MCP_URL="http://your-server:8888/mcp/"
+> export SEARXNG_API_KEY="your-api-key"
+> ```
 
 ---
 

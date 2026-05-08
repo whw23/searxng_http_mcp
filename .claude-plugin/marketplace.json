@@ -7,11 +7,19 @@
   "plugins": [
     {
       "name": "searxng-http-mcp",
-      "source": "./",
-      "description": "SearXNG metasearch engine MCP server — search the web with privacy",
+      "source": "./local",
+      "description": "SearXNG MCP server (local Docker stdio) — zero-config, self-contained",
       "version": "1.0.0",
       "license": "MIT",
-      "keywords": ["search", "searxng", "web-search", "mcp"]
+      "keywords": ["search", "searxng", "web-search", "mcp", "local", "docker"]
+    },
+    {
+      "name": "searxng-http-mcp-remote",
+      "source": "./remote",
+      "description": "SearXNG MCP server (remote HTTP) — connect to a deployed instance",
+      "version": "1.0.0",
+      "license": "MIT",
+      "keywords": ["search", "searxng", "web-search", "mcp", "remote", "http"]
     }
   ]
 }
