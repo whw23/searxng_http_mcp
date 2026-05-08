@@ -31,7 +31,7 @@
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
 ```bash
 docker run -d --name searxng-mcp --restart unless-stopped \
@@ -41,7 +41,7 @@ docker run -d --name searxng-mcp --restart unless-stopped \
 
 That's it. SearXNG + MCP server running on port 8888.
 
-## Features
+## ✨ Features
 
 <table>
 <tr>
@@ -64,7 +64,7 @@ That's it. SearXNG + MCP server running on port 8888.
 </tr>
 </table>
 
-## Architecture
+## 🏛 Architecture
 
 ```mermaid
 graph LR
@@ -81,7 +81,7 @@ graph LR
   style SearXNG fill:#e74c3c,color:#fff,stroke:#c0392b
 ```
 
-## Comparison with Alternatives
+## 📊 Comparison with Alternatives
 
 <table>
 <thead>
@@ -109,7 +109,7 @@ graph LR
 </tbody>
 </table>
 
-## Usage
+## 📖 Usage
 
 ### 🌐 HTTP Mode (default)
 
@@ -166,7 +166,7 @@ When `API_KEY` is not set, all requests are open.
 
 ---
 
-## MCP Tools Reference
+## 🔧 MCP Tools Reference
 
 <details>
 <summary>🔍 <code>search</code> — Search the web using SearXNG</summary>
@@ -213,7 +213,7 @@ Aggregates results from multiple search engines.
 
 ---
 
-## Client Configuration
+## 🔌 Client Configuration
 
 <details>
 <summary><img src="https://cdn.simpleicons.org/claude/D97757" width="16" height="16" alt="Claude"> <b>Claude Desktop</b></summary>
