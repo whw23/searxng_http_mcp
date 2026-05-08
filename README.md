@@ -29,7 +29,6 @@ A self-contained MCP server wrapping [SearXNG](https://github.com/searxng/searxn
 | Multi-page fanout | :white_check_mark: | :x: | :x: | :white_check_mark: | :x: |
 | Dynamic tool descriptions | :white_check_mark: | :x: | :x: | :white_check_mark: | :x: |
 | Claude Code Plugin | :white_check_mark: | :x: | :x: | :x: | :x: |
-| MCP Registry / Docker MCP Catalog | :soon: | :x: | :x: | :x: | :x: |
 | Web UI reverse proxy | :white_check_mark: | :x: | :x: | :x: | :x: |
 | Language | Python | Node.js | Python | Node.js | TypeScript |
 
