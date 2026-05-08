@@ -412,12 +412,12 @@ The plugin includes:
 
 - **MCP server config** — pre-configured for local Docker stdio mode (works out of the box)
 - **`/search` skill** — web search skill for Claude Code
+- **`/setup` skill** — interactive setup to switch between local and server mode
 
-By default the plugin uses **local mode** (Docker stdio). To switch to **server mode**, override the MCP config:
+By default the plugin uses **local mode** (Docker stdio). To switch modes, run:
 
 ```bash
-claude mcp remove searxng
-claude mcp add searxng --transport http http://your-server:8888/mcp/ -- --header "x-api-key: your-secret-key"
+/setup
 ```
 
 ## SearXNG Configuration
