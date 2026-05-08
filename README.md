@@ -59,7 +59,7 @@ docker run -p 8888:8888 ghcr.io/whw23/searxng-http-mcp:latest
 docker run -p 8888:8888 -e API_KEY=your-secret-key ghcr.io/whw23/searxng-http-mcp:latest
 ```
 
-- MCP endpoint: `http://localhost:8888/mcp`
+- MCP endpoint: `http://localhost:8888/mcp/`
 - SearXNG Web UI: `http://localhost:8888/`
 
 ### stdio Mode
@@ -123,7 +123,7 @@ Get search query suggestions.
 {
   "mcpServers": {
     "searxng": {
-      "url": "http://your-server:8888/mcp",
+      "url": "http://your-server:8888/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -150,7 +150,7 @@ Get search query suggestions.
 **Server mode**:
 
 ```bash
-claude mcp add searxng --transport http http://your-server:8888/mcp -- --header "x-api-key: your-secret-key"
+claude mcp add searxng --transport http http://your-server:8888/mcp/ -- --header "x-api-key: your-secret-key"
 ```
 
 **Local mode**:
@@ -167,7 +167,7 @@ claude mcp add searxng -- docker run --rm -i ghcr.io/whw23/searxng-http-mcp:late
 {
   "mcpServers": {
     "searxng": {
-      "url": "http://your-server:8888/mcp",
+      "url": "http://your-server:8888/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -214,7 +214,7 @@ Same format as Cursor. Add to Continue's MCP configuration.
   "mcpServers": {
     "searxng": {
       "type": "sse",
-      "url": "http://your-server:8888/mcp",
+      "url": "http://your-server:8888/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -244,7 +244,7 @@ Same format as Cursor. Add to Continue's MCP configuration.
 ```yaml
 mcp_servers:
   searxng:
-    url: "http://your-server:8888/mcp"
+    url: "http://your-server:8888/mcp/"
     headers:
       x-api-key: "your-secret-key"
 ```
