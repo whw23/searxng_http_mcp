@@ -1,0 +1,89 @@
+name: Build and Publish
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 3 * * *"
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+env:
+  IMAGE_NAME: ghcr.io/whw23/searxng-http-mcp
+  UPSTREAM_IMAGE: ghcr.io/searxng/searxng:latest
+
+jobs:
+  check-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check upstream image digest
+        id: upstream
+        run: |
+          docker pull ${{ env.UPSTREAM_IMAGE }}
+          DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.UPSTREAM_IMAGE }})
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+
+          UPSTREAM_VERSION=$(docker inspect --format='{{range .Config.Env}}{{println .}}{{end}}' ${{ env.UPSTREAM_IMAGE }} | grep -oP '__SEARXNG_VERSION=\K.*' || echo "unknown")
+          echo "version=$UPSTREAM_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Restore cached upstream digest
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/upstream-digest
+          key: upstream-digest-${{ steps.upstream.outputs.digest }}
+          restore-keys: upstream-digest-
+
+      - name: Check if upstream changed
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] && [ -f /tmp/upstream-digest ] && [ "$(cat /tmp/upstream-digest)" = "${{ steps.upstream.outputs.digest }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Upstream unchanged, skipping build."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Save upstream digest
+        if: steps.changed.outputs.skip != 'true'
+        run: echo "${{ steps.upstream.outputs.digest }}" > /tmp/upstream-digest
+
+      - name: Set up Docker Buildx
+        if: steps.changed.outputs.skip != 'true'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        if: steps.changed.outputs.skip != 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate tags
+        if: steps.changed.outputs.skip != 'true'
+        id: tags
+        run: |
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          UPSTREAM_VERSION="${{ steps.upstream.outputs.version }}"
+          FULL_TAG="${UPSTREAM_VERSION}-${SHORT_SHA}"
+          echo "full_tag=$FULL_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        if: steps.changed.outputs.skip != 'true'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ steps.tags.outputs.full_tag }}
+            ${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
