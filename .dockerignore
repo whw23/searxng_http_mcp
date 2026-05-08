@@ -1,0 +1,16 @@
+.git
+.github
+.venv
+.pytest_cache
+.playwright-mcp
+.claude-plugin
+__pycache__
+tests
+skills
+docs
+*.md
+!README.md
+LICENSE
+.gitignore
+.dockerignore
+.mcp.json

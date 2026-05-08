@@ -15,4 +15,7 @@ RUN chmod +x /usr/local/searxng/custom-entrypoint.sh
 
 EXPOSE 8888
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+    CMD wget -qO /dev/null http://127.0.0.1:8080/healthz || exit 1
+
 ENTRYPOINT ["/usr/local/searxng/custom-entrypoint.sh"]

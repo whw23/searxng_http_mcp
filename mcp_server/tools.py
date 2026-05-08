@@ -16,7 +16,15 @@ mcp = FastMCP(
     streamable_http_path="/",
 )
 
+_http_client: httpx.AsyncClient | None = None
 _cache: dict[str, tuple[float, str]] = {}
+
+
+async def _get_client() -> httpx.AsyncClient:
+    global _http_client
+    if _http_client is None or _http_client.is_closed:
+        _http_client = httpx.AsyncClient()
+    return _http_client
 
 COMPACT_FIELDS = ["title", "url", "content"]
 FULL_FIELDS = [
@@ -49,25 +57,25 @@ def _set_cache(key: str, data: str):
 async def fetch_engine_info() -> dict:
     """Fetch available engines and categories from SearXNG config API."""
     try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(
-                f"{SEARXNG_BASE_URL}/config", timeout=10.0
-            )
-            if resp.status_code == 200:
-                data = resp.json()
-                raw_categories = data.get("categories", [])
-                if isinstance(raw_categories, list):
-                    categories = raw_categories
-                elif isinstance(raw_categories, dict):
-                    categories = list(raw_categories.keys())
-                else:
-                    categories = []
-                engines = [
-                    e["name"]
-                    for e in data.get("engines", [])
-                    if e.get("enabled", True)
-                ]
-                return {"categories": categories, "engines": engines}
+        client = await _get_client()
+        resp = await client.get(
+            f"{SEARXNG_BASE_URL}/config", timeout=10.0
+        )
+        if resp.status_code == 200:
+            data = resp.json()
+            raw_categories = data.get("categories", [])
+            if isinstance(raw_categories, list):
+                categories = raw_categories
+            elif isinstance(raw_categories, dict):
+                categories = list(raw_categories.keys())
+            else:
+                categories = []
+            engines = [
+                e["name"]
+                for e in data.get("engines", [])
+                if e.get("enabled", True)
+            ]
+            return {"categories": categories, "engines": engines}
     except Exception:
         pass
     return {
@@ -164,18 +172,18 @@ async def search(
     all_infoboxes = []
     errors: list[str] = []
 
-    async with httpx.AsyncClient() as client:
-        tasks = []
-        for page in range(pageno, pageno + pages):
-            page_params = {**params, "pageno": str(page)}
-            tasks.append(
-                client.get(
-                    f"{SEARXNG_BASE_URL}/search",
-                    params=page_params,
-                    timeout=30.0,
-                )
+    client = await _get_client()
+    tasks = []
+    for page in range(pageno, pageno + pages):
+        page_params = {**params, "pageno": str(page)}
+        tasks.append(
+            client.get(
+                f"{SEARXNG_BASE_URL}/search",
+                params=page_params,
+                timeout=30.0,
             )
-        responses = await asyncio.gather(*tasks, return_exceptions=True)
+        )
+    responses = await asyncio.gather(*tasks, return_exceptions=True)
 
     for resp in responses:
         if isinstance(resp, Exception):
@@ -224,12 +232,12 @@ async def autocomplete(query: str) -> str:
     Returns a list of autocomplete suggestions for the given partial query.
     Use this to discover relevant search terms before performing a full search.
     """
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(
-            f"{SEARXNG_BASE_URL}/autocomplete",
-            params={"q": query},
-            timeout=10.0,
-        )
+    client = await _get_client()
+    resp = await client.get(
+        f"{SEARXNG_BASE_URL}/autocomplete",
+        params={"q": query},
+        timeout=10.0,
+    )
     if resp.status_code != 200:
         return json.dumps({"error": f"Autocomplete failed with status {resp.status_code}"})
     return json.dumps(resp.json(), ensure_ascii=False)

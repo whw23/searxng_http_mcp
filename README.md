@@ -429,15 +429,15 @@ Access the SearXNG Web UI at `http://localhost:8888/` to configure search engine
 
 ### Via Volume Mount
 
-Mount a custom `settings.yml` for persistent configuration:
+Mount the SearXNG config directory for persistent configuration:
 
 ```bash
-docker run -p 8888:8888 \
-  -v /path/to/your/settings.yml:/etc/searxng/settings.yml \
+docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 --memory=512m --cpus=1 \
+  -v /path/to/searxng-config:/etc/searxng \
   ghcr.io/whw23/searxng-http-mcp:latest
 ```
 
-The settings file must include `formats: [json]` under `search:` for MCP tools to work.
+SearXNG generates `settings.yml` on first startup. The container automatically enables JSON format output required by MCP tools.
 
 ## Build from Source
 

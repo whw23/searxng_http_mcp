@@ -13,6 +13,12 @@ class ReverseProxyApp:
 
     def __init__(self, upstream: str):
         self.upstream = upstream.rstrip("/")
+        self._client: httpx.AsyncClient | None = None
+
+    async def _get_client(self) -> httpx.AsyncClient:
+        if self._client is None or self._client.is_closed:
+            self._client = httpx.AsyncClient()
+        return self._client
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
         if scope["type"] != "http":
@@ -40,15 +46,15 @@ class ReverseProxyApp:
         headers_to_forward["host"] = original_host
         headers_to_forward["accept-encoding"] = "identity"
 
-        async with httpx.AsyncClient() as client:
-            upstream_resp = await client.request(
-                method=request.method,
-                url=url,
-                headers=headers_to_forward,
-                content=body if body else None,
-                timeout=30.0,
-                follow_redirects=False,
-            )
+        client = await self._get_client()
+        upstream_resp = await client.request(
+            method=request.method,
+            url=url,
+            headers=headers_to_forward,
+            content=body if body else None,
+            timeout=30.0,
+            follow_redirects=False,
+        )
 
         resp_headers: list[tuple[bytes, bytes]] = []
         for key, value in upstream_resp.headers.raw:

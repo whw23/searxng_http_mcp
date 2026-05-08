@@ -1,0 +1,20 @@
+[project]
+name = "searxng-http-mcp"
+version = "1.0.0"
+description = "SearXNG metasearch engine MCP server"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0",
+    "pytest-anyio>=0.0",
+    "httpx>=0.28",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
