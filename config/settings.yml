@@ -1,0 +1,10 @@
+use_default_settings: true
+
+search:
+  formats:
+    - json
+
+server:
+  secret_key: "searxng-mcp-default-secret-key"
+  bind_address: "127.0.0.1"
+  port: 8080
