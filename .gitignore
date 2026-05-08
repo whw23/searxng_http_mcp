@@ -37,3 +37,4 @@ docs/
 .pytest_cache/
 .coverage
 htmlcov/
+.superpowers/

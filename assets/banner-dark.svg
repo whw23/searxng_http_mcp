@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="160" viewBox="0 0 800 160">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0c29"/>
+      <stop offset="50%" stop-color="#302b63"/>
+      <stop offset="100%" stop-color="#24243e"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="160" rx="16" fill="url(#bg)"/>
+  <!-- Search icon -->
+  <circle cx="370" cy="52" r="14" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="3"/>
+  <line x1="380" y1="62" x2="390" y2="72" stroke="rgba(255,255,255,0.85)" stroke-width="3" stroke-linecap="round"/>
+  <!-- Title -->
+  <text x="400" y="110" text-anchor="middle" fill="white" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="30" font-weight="800" letter-spacing="-0.5">SearXNG HTTP MCP</text>
+  <!-- Subtitle -->
+  <text x="400" y="140" text-anchor="middle" fill="#b8b8d0" font-family="system-ui,-apple-system,Segoe UI,Helvetica,Arial,sans-serif" font-size="13" letter-spacing="1">Self-contained MCP Search Server · Docker · Privacy-first</text>
+</svg>

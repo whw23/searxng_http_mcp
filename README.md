@@ -1,67 +1,113 @@
-# SearXNG HTTP MCP
+<div align="center">
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Docker Image](https://img.shields.io/badge/ghcr.io-searxng--http--mcp-blue)](https://ghcr.io/whw23/searxng-http-mcp)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="assets/banner-light.svg">
+  <img alt="SearXNG HTTP MCP" src="assets/banner-light.svg" width="600">
+</picture>
 
-A self-contained MCP server wrapping [SearXNG](https://github.com/searxng/searxng) metasearch engine. Ships as a single Docker image with built-in SearXNG — no separate instance needed.
+<p>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://github.com/whw23/searxng_http_mcp/pkgs/container/searxng-http-mcp"><img src="https://img.shields.io/badge/ghcr.io-searxng--http--mcp-blue?logo=docker&logoColor=white" alt="Docker Image"></a>
+  <a href="https://github.com/whw23/searxng_http_mcp/actions/workflows/build.yml"><img src="https://github.com/whw23/searxng_http_mcp/actions/workflows/build.yml/badge.svg" alt="Build Status"></a>
+  <img src="https://img.shields.io/badge/python-3.12+-blue?logo=python&logoColor=white" alt="Python 3.12+">
+  <img src="https://img.shields.io/badge/transport-HTTP%20%7C%20stdio-orange" alt="Transport">
+  <img src="https://img.shields.io/badge/MCP-compatible-brightgreen" alt="MCP Compatible">
+</p>
 
-## Features
+<p>
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="#features">Features</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#comparison-with-alternatives">Comparison</a> ·
+  <a href="#usage">Usage</a> ·
+  <a href="#mcp-tools-reference">MCP Tools</a> ·
+  <a href="#client-configuration">Client Config</a> ·
+  <a href="#claude-code-plugin">Plugin</a> ·
+  <a href="#contributing">Contributing</a>
+</p>
 
-- **Self-contained** — SearXNG built into the Docker image, one container does everything
-- **Dual transport** — HTTP (Streamable HTTP) and stdio mode in one image
-- **Authentication** — `x-api-key` header + HTTP Basic Auth, controlled via `API_KEY` env var
-- **Reverse proxy** — SearXNG Web UI accessible through the same port for configuration
-- **Multi-page fanout** — fetch up to 5 pages of results in a single tool call
-- **Dynamic tool descriptions** — engine and category lists populated from live SearXNG config
-- **Token-efficient** — results trimmed to essential fields
-- **Claude Code Plugin** — installable via self-hosted marketplace
+</div>
 
-## Comparison with Alternatives
-
-| Feature | searxng-http-mcp (this) | [mcp-searxng](https://github.com/ihor-sokoliuk/mcp-searxng) | [searxng-mcp](https://github.com/aicrafted/searxng-mcp) | [searxng-deepdive](https://github.com/burakaydinofficial/searxng-deepdive) | [exa-mcp-server](https://github.com/exa-labs/exa-mcp-server) |
-| --- | :---: | :---: | :---: | :---: | :---: |
-| Free & open source | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x: (paid API) |
-| Zero-install Docker deploy | :white_check_mark: | :x: (needs Node.js) | :x: (needs Python) | :x: (needs Node.js) | :x: (needs Node.js) |
-| Self-contained (built-in SearXNG) | :white_check_mark: | :x: | :x: | :x: | N/A |
-| Privacy (self-hosted, no tracking) | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x: |
-| Authentication | :white_check_mark: | :x: | :x: | :x: | :white_check_mark: |
-| HTTP + stdio transport | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x: | :x: (stdio only) |
-| Multi-page fanout | :white_check_mark: | :x: | :x: | :white_check_mark: | :x: |
-| Dynamic tool descriptions | :white_check_mark: | :x: | :x: | :white_check_mark: | :x: |
-| Claude Code Plugin | :white_check_mark: | :x: | :x: | :x: | :x: |
-| Web UI reverse proxy | :white_check_mark: | :x: | :x: | :x: | :x: |
-| Language | Python | Node.js | Python | Node.js | TypeScript |
+---
 
 ## Quick Start
 
 ```bash
-docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 --memory=512m --cpus=1 ghcr.io/whw23/searxng-http-mcp:latest
+docker run -d --name searxng-mcp --restart unless-stopped \
+  -p 8888:8888 --memory=512m --cpus=1 \
+  ghcr.io/whw23/searxng-http-mcp:latest
 ```
 
 That's it. SearXNG + MCP server running on port 8888.
 
+## Features
+
+<table>
+<tr>
+  <td width="50%">
+
+  - 📦 **Self-contained** — SearXNG built into the Docker image
+  - 🔄 **Dual transport** — HTTP (Streamable HTTP) and stdio
+  - 🔐 **Authentication** — `x-api-key` + HTTP Basic Auth
+  - 🌐 **Reverse proxy** — SearXNG Web UI on the same port
+
+  </td>
+  <td width="50%">
+
+  - 📄 **Multi-page fanout** — up to 5 pages per call
+  - ⚡ **Dynamic tool descriptions** — live engine/category lists
+  - 🎯 **Token-efficient** — results trimmed to essentials
+  - 🧩 **Claude Code Plugin** — self-hosted marketplace
+
+  </td>
+</tr>
+</table>
+
 ## Architecture
 
-```text
-┌──────────────────────────────────────────────┐
-│              Docker Container                │
-│                                              │
-│  ┌────────────────────────────────────────┐  │
-│  │   Starlette App  :8888 (exposed)       │  │
-│  │                                        │  │
-│  │   Auth Middleware (API_KEY env var)     │  │
-│  │   ├─ /mcp  → FastMCP Server            │  │
-│  │   └─ /*    → Reverse Proxy (httpx) ──┐ │  │
-│  └────────────────────────────────────────┘  │
-│                                          │   │
-│  ┌───────────────────────────────────┐   │   │
-│  │  SearXNG  127.0.0.1:8080         │◄──┘   │
-│  │  (internal, not exposed)          │       │
-│  └───────────────────────────────────┘       │
-│                                              │
-│  Exposed port: 8888                          │
-└──────────────────────────────────────────────┘
+```mermaid
+graph LR
+  Client([Client]) -->|:8888| Auth{Auth Middleware}
+  Auth -->|/mcp| MCP[FastMCP Server]
+  Auth -->|/*| Proxy[Reverse Proxy]
+  MCP --> SearXNG[SearXNG :8080]
+  Proxy --> SearXNG
+
+  style Client fill:#4a90d9,color:#fff,stroke:#3a7bc8
+  style Auth fill:#f5a623,color:#fff,stroke:#d4900e
+  style MCP fill:#50c878,color:#fff,stroke:#3da85e
+  style Proxy fill:#9b59b6,color:#fff,stroke:#8344a5
+  style SearXNG fill:#e74c3c,color:#fff,stroke:#c0392b
 ```
+
+## Comparison with Alternatives
+
+<table>
+<thead>
+  <tr>
+    <th>Feature</th>
+    <th style="background:#e8f5e9">✨ This project</th>
+    <th><a href="https://github.com/ihor-sokoliuk/mcp-searxng">mcp-searxng</a></th>
+    <th><a href="https://github.com/aicrafted/searxng-mcp">searxng-mcp</a></th>
+    <th><a href="https://github.com/burakaydinofficial/searxng-deepdive">searxng-deepdive</a></th>
+    <th><a href="https://github.com/exa-labs/exa-mcp-server">exa-mcp-server</a></th>
+  </tr>
+</thead>
+<tbody>
+  <tr><td>Free &amp; open source</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060; (paid API)</td></tr>
+  <tr><td>Zero-install Docker deploy</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Self-contained (built-in SearXNG)</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">N/A</td></tr>
+  <tr><td>Privacy (self-hosted)</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Authentication</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td></tr>
+  <tr><td>HTTP + stdio transport</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Multi-page fanout</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Dynamic tool descriptions</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Claude Code Plugin</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Web UI reverse proxy</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Language</td><td align="center" style="background:#f1f8e9">Python</td><td align="center">Node.js</td><td align="center">Python</td><td align="center">Node.js</td><td align="center">TypeScript</td></tr>
+</tbody>
+</table>
 
 ## Usage
 
@@ -69,29 +115,37 @@ That's it. SearXNG + MCP server running on port 8888.
 
 ```bash
 # Without authentication
-docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 --memory=512m --cpus=1 ghcr.io/whw23/searxng-http-mcp:latest
+docker run -d --name searxng-mcp --restart unless-stopped \
+  -p 8888:8888 --memory=512m --cpus=1 \
+  ghcr.io/whw23/searxng-http-mcp:latest
 
 # With authentication
-docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 --memory=512m --cpus=1 -e API_KEY=your-secret-key ghcr.io/whw23/searxng-http-mcp:latest
+docker run -d --name searxng-mcp --restart unless-stopped \
+  -p 8888:8888 --memory=512m --cpus=1 \
+  -e API_KEY=your-secret-key \
+  ghcr.io/whw23/searxng-http-mcp:latest
 ```
 
-- MCP endpoint: `http://localhost:8888/mcp/`
-- SearXNG Web UI: `http://localhost:8888/`
+| Endpoint | URL |
+| --- | --- |
+| MCP | `http://localhost:8888/mcp/` |
+| SearXNG Web UI | `http://localhost:8888/` |
 
 ### stdio Mode
 
 ```bash
-docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw23/searxng-http-mcp:latest --stdio
+docker run --rm -i --memory=512m --cpus=1 \
+  ghcr.io/whw23/searxng-http-mcp:latest --stdio
 ```
 
 No ports exposed. Communication via stdin/stdout. SearXNG runs internally for the MCP tools.
 
 ### Environment Variables
 
-| Variable      | Default                    | Description                                |
-| ------------- | -------------------------- | ------------------------------------------ |
-| `API_KEY`     | *(empty, no auth)*         | API key for authentication                 |
-| `SEARXNG_URL` | `http://127.0.0.1:8080`    | Internal SearXNG URL (rarely needs change) |
+| Variable | Default | Description |
+| --- | --- | --- |
+| `API_KEY` | *(empty, no auth)* | API key for authentication |
+| `SEARXNG_URL` | `http://127.0.0.1:8080` | Internal SearXNG URL (rarely needs change) |
 
 ### Authentication
 
@@ -106,35 +160,43 @@ When `API_KEY` is not set, all requests are open.
 
 ## MCP Tools Reference
 
-### `search`
+<details>
+<summary><code>search</code> — Search the web using SearXNG</summary>
 
-Search the web using SearXNG. Aggregates results from multiple search engines.
+<br>
 
-| Parameter    | Type | Required | Default | Description                                              |
-| ------------ | ---- | -------- | ------- | -------------------------------------------------------- |
-| `query`      | str  | yes      | —       | Search query string                                      |
-| `categories` | str  | no       | ""      | Comma-separated: general, images, videos, news, it, etc. |
-| `language`   | str  | no       | ""      | Language code (e.g., zh, en, ja)                         |
-| `time_range` | str  | no       | ""      | day, month, year                                         |
-| `safesearch` | int  | no       | 0       | 0=off, 1=moderate, 2=strict                              |
-| `pageno`     | int  | no       | 1       | Starting page number                                     |
-| `pages`      | int  | no       | 1       | Number of pages to fetch (1-5)                           |
-| `engines`    | str  | no       | ""      | Comma-separated engine names (e.g., google,bing)         |
+Aggregates results from multiple search engines.
+
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `query` | str | yes | — | Search query string |
+| `categories` | str | no | "" | Comma-separated: general, images, videos, news, it, etc. |
+| `language` | str | no | "" | Language code (e.g., zh, en, ja) |
+| `time_range` | str | no | "" | day, month, year |
+| `safesearch` | int | no | 0 | 0=off, 1=moderate, 2=strict |
+| `pageno` | int | no | 1 | Starting page number |
+| `pages` | int | no | 1 | Number of pages to fetch (1-5) |
+| `engines` | str | no | "" | Comma-separated engine names (e.g., google,bing) |
 
 Returns: results, answers, suggestions, corrections, infoboxes.
 
-### `autocomplete`
+</details>
 
-Get search query suggestions.
+<details>
+<summary><code>autocomplete</code> — Get search query suggestions</summary>
 
-| Parameter | Type | Required | Description                    |
-| --------- | ---- | -------- | ------------------------------ |
-| `query`   | str  | yes      | Query string to autocomplete   |
+<br>
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `query` | str | yes | Query string to autocomplete |
+
+</details>
 
 ## Client Configuration
 
 <details>
-<summary><strong>Claude Desktop</strong></summary>
+<summary><b>Claude Desktop</b></summary>
 
 **Server mode** — edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
@@ -167,7 +229,7 @@ Get search query suggestions.
 </details>
 
 <details>
-<summary><strong>Claude Code</strong></summary>
+<summary><b>Claude Code</b></summary>
 
 **Server mode**:
 
@@ -184,7 +246,7 @@ claude mcp add searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw2
 </details>
 
 <details>
-<summary><strong>Cursor</strong></summary>
+<summary><b>Cursor</b></summary>
 
 **Server mode** — add to Cursor MCP settings:
 
@@ -217,7 +279,7 @@ claude mcp add searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw2
 </details>
 
 <details>
-<summary><strong>VS Code Copilot</strong></summary>
+<summary><b>VS Code Copilot</b></summary>
 
 **Server mode** — add to `.vscode/mcp.json`:
 
@@ -250,7 +312,7 @@ claude mcp add searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw2
 </details>
 
 <details>
-<summary><strong>Windsurf</strong></summary>
+<summary><b>Windsurf</b></summary>
 
 **Server mode** — add to `~/.codeium/windsurf/mcp_config.json`:
 
@@ -283,7 +345,7 @@ claude mcp add searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw2
 </details>
 
 <details>
-<summary><strong>Cline</strong></summary>
+<summary><b>Cline</b></summary>
 
 Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`).
 
@@ -318,7 +380,7 @@ Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`
 </details>
 
 <details>
-<summary><strong>Continue.dev</strong></summary>
+<summary><b>Continue.dev</b></summary>
 
 **Server mode** — add to `~/.continue/config.yaml`:
 
@@ -342,7 +404,7 @@ mcpServers:
 </details>
 
 <details>
-<summary><strong>OpenCode</strong></summary>
+<summary><b>OpenCode</b></summary>
 
 **Server mode** — edit `.opencode.json`:
 
@@ -377,7 +439,7 @@ mcpServers:
 </details>
 
 <details>
-<summary><strong>Hermes Agent</strong></summary>
+<summary><b>Hermes Agent</b></summary>
 
 **Server mode** — edit `~/.hermes/config.yaml`:
 
@@ -405,7 +467,7 @@ mcp_servers:
 Install via self-hosted marketplace:
 
 ```bash
-/plugin marketplace add whw23/searxng-http-mcp
+/plugin marketplace add whw23/searxng_http_mcp
 /plugin install searxng-http-mcp@searxng-http-mcp
 ```
 
@@ -432,7 +494,8 @@ Access the SearXNG Web UI at `http://localhost:8888/` to configure search engine
 Mount the SearXNG config directory for persistent configuration:
 
 ```bash
-docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 --memory=512m --cpus=1 \
+docker run -d --name searxng-mcp --restart unless-stopped \
+  -p 8888:8888 --memory=512m --cpus=1 \
   -v /path/to/searxng-config:/etc/searxng \
   ghcr.io/whw23/searxng-http-mcp:latest
 ```
@@ -442,10 +505,12 @@ SearXNG generates `settings.yml` on first startup. The container automatically e
 ## Build from Source
 
 ```bash
-git clone https://github.com/whw23/searxng-http-mcp.git
+git clone https://github.com/whw23/searxng_http_mcp.git
 cd searxng-http-mcp
 docker build -t searxng-http-mcp:local .
-docker run -d --name searxng-mcp --restart unless-stopped -p 8888:8888 --memory=512m --cpus=1 searxng-http-mcp:local
+docker run -d --name searxng-mcp --restart unless-stopped \
+  -p 8888:8888 --memory=512m --cpus=1 \
+  searxng-http-mcp:local
 ```
 
 ## Contributing
