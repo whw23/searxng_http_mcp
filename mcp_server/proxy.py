@@ -1,6 +1,5 @@
 import httpx
 from starlette.requests import Request
-from starlette.responses import Response
 from starlette.types import Receive, Scope, Send
 
 EXCLUDED_REQUEST_HEADERS = {
@@ -48,17 +47,23 @@ class ReverseProxyApp:
                 headers=headers_to_forward,
                 content=body if body else None,
                 timeout=30.0,
+                follow_redirects=False,
             )
 
-        resp_headers = {
-            k: v
-            for k, v in upstream_resp.headers.items()
-            if k.lower() not in EXCLUDED_RESPONSE_HEADERS
-        }
+        resp_headers: list[tuple[bytes, bytes]] = []
+        for key, value in upstream_resp.headers.raw:
+            if key.decode().lower() not in EXCLUDED_RESPONSE_HEADERS:
+                resp_headers.append((key, value))
 
-        response = Response(
-            content=upstream_resp.content,
-            status_code=upstream_resp.status_code,
-            headers=resp_headers,
-        )
-        await response(scope, receive, send)
+        content = upstream_resp.content
+        resp_headers.append((b"content-length", str(len(content)).encode()))
+
+        await send({
+            "type": "http.response.start",
+            "status": upstream_resp.status_code,
+            "headers": resp_headers,
+        })
+        await send({
+            "type": "http.response.body",
+            "body": content,
+        })
