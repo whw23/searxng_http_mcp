@@ -16,6 +16,19 @@ A self-contained MCP server wrapping [SearXNG](https://github.com/searxng/searxn
 - **Token-efficient** — results trimmed to essential fields
 - **Claude Code Plugin** — installable via self-hosted marketplace
 
+## Comparison with Alternatives
+
+| Feature | searxng-http-mcp (this) | [mcp-searxng](https://github.com/ihor-sokoliuk/mcp-searxng) | [searxng-mcp](https://github.com/aicrafted/searxng-mcp) | [searxng-deepdive](https://github.com/burakaydinofficial/searxng-deepdive) |
+| --- | :---: | :---: | :---: | :---: |
+| Self-contained (built-in SearXNG) | :white_check_mark: | :x: | :x: | :x: |
+| Authentication | :white_check_mark: | :x: | :x: | :x: |
+| HTTP + stdio transport | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x: |
+| Multi-page fanout | :white_check_mark: | :x: | :x: | :white_check_mark: |
+| Dynamic tool descriptions | :white_check_mark: | :x: | :x: | :white_check_mark: |
+| Claude Code Plugin | :white_check_mark: | :x: | :x: | :x: |
+| Web UI reverse proxy | :white_check_mark: | :x: | :x: | :x: |
+| Language | Python | Node.js | Python | Node.js |
+
 ## Quick Start
 
 ```bash
