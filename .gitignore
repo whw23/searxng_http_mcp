@@ -27,6 +27,9 @@ env/
 .DS_Store
 Thumbs.db
 
+# Playwright MCP
+.playwright-mcp/
+
 # Test / Coverage
 .pytest_cache/
 .coverage

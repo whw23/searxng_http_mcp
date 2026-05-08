@@ -3,6 +3,11 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import Receive, Scope, Send
 
+EXCLUDED_REQUEST_HEADERS = {
+    "host", "x-api-key", "authorization", "accept-encoding",
+}
+EXCLUDED_RESPONSE_HEADERS = {"transfer-encoding", "content-encoding", "content-length"}
+
 
 class ReverseProxyApp:
     """ASGI app that proxies all requests to an upstream HTTP server."""
@@ -26,7 +31,7 @@ class ReverseProxyApp:
         headers_to_forward = {
             k: v
             for k, v in request.headers.items()
-            if k.lower() not in ("host", "x-api-key", "authorization")
+            if k.lower() not in EXCLUDED_REQUEST_HEADERS
         }
 
         client_host = request.client.host if request.client else "127.0.0.1"
@@ -43,11 +48,10 @@ class ReverseProxyApp:
                 timeout=30.0,
             )
 
-        excluded_headers = {"transfer-encoding", "content-encoding", "content-length"}
         resp_headers = {
             k: v
             for k, v in upstream_resp.headers.items()
-            if k.lower() not in excluded_headers
+            if k.lower() not in EXCLUDED_RESPONSE_HEADERS
         }
 
         response = Response(

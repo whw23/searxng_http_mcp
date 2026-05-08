@@ -6,9 +6,6 @@ ENV PATH="/usr/local/searxng/.venv/bin:${PATH}"
 RUN python -m ensurepip --upgrade && \
     python -m pip install --no-cache-dir "mcp[cli]"
 
-# Copy SearXNG config
-COPY config/settings.yml /etc/searxng/settings.yml
-
 # Copy MCP Server code
 COPY mcp_server/ /usr/local/searxng/mcp_server/
 

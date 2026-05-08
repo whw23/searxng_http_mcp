@@ -3,14 +3,43 @@ set -e
 
 export PATH="/usr/local/searxng/.venv/bin:${PATH}"
 
+# Ensure JSON format is enabled in SearXNG settings.
+# If settings.yml doesn't exist yet, the SearXNG entrypoint will create it.
+# We patch it after creation.
+ensure_json_format() {
+    settings="/etc/searxng/settings.yml"
+    # Wait for settings file to exist (created by SearXNG entrypoint)
+    i=0
+    while [ ! -f "$settings" ] && [ "$i" -lt 10 ]; do
+        sleep 1
+        i=$((i + 1))
+    done
+
+    if [ -f "$settings" ]; then
+        # Check if formats section already exists
+        if grep -q "formats:" "$settings"; then
+            # Ensure json is in the formats list
+            if ! grep -q "json" "$settings"; then
+                sed -i '/formats:/a\    - json' "$settings"
+            fi
+        else
+            # Append search.formats config
+            printf '\nsearch:\n  formats:\n    - json\n' >> "$settings"
+        fi
+    fi
+}
+
 # Start SearXNG in the background, redirect all output to stderr
 /usr/local/searxng/entrypoint.sh >&2 2>&1 &
+
+# Patch settings to enable JSON format
+ensure_json_format >&2
 
 # Wait for SearXNG to be ready (all logs to stderr)
 echo "Waiting for SearXNG to start..." >&2
 i=0
 while [ "$i" -lt 30 ]; do
-    if curl -sf http://127.0.0.1:8080/healthz > /dev/null 2>&1; then
+    if wget -qO /dev/null http://127.0.0.1:8080/healthz 2>/dev/null; then
         echo "SearXNG is ready." >&2
         break
     fi
