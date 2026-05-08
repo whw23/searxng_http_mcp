@@ -3,7 +3,14 @@ from unittest.mock import AsyncMock, patch, MagicMock
 
 import pytest
 
-from mcp_server.tools import search, autocomplete, fetch_engine_info
+from mcp_server.tools import search, autocomplete, fetch_engine_info, _cache
+
+
+@pytest.fixture(autouse=True)
+def clear_cache():
+    _cache.clear()
+    yield
+    _cache.clear()
 
 
 @pytest.fixture
@@ -17,12 +24,16 @@ def mock_search_response():
                 "engines": ["google", "bing"],
                 "score": 5.0,
                 "category": "general",
+                "parsed_url": ["https", "example.com"],
+                "positions": [1],
+                "template": "default.html",
             }
         ],
         "answers": ["42"],
         "corrections": [],
         "suggestions": ["example query"],
         "infoboxes": [],
+        "unresponsive_engines": [],
         "number_of_results": 1,
     }
 
@@ -60,7 +71,84 @@ class TestSearchTool:
         assert data["number_of_results"] == 1
         assert data["results"][0]["title"] == "Example Result"
         assert data["answers"] == ["42"]
-        assert data["suggestions"] == ["example query"]
+
+    @pytest.mark.anyio
+    @patch("mcp_server.tools.httpx.AsyncClient")
+    async def test_search_compact_format(self, mock_client_cls, mock_search_response):
+        response = _make_httpx_response(mock_search_response)
+        mock_client_cls.return_value = _make_mock_client(response)
+
+        result = await search(query="test", format="compact")
+        data = json.loads(result)
+
+        r = data["results"][0]
+        assert "title" in r
+        assert "url" in r
+        assert "content" in r
+        assert "engines" not in r
+        assert "score" not in r
+        assert "parsed_url" not in r
+
+    @pytest.mark.anyio
+    @patch("mcp_server.tools.httpx.AsyncClient")
+    async def test_search_full_format(self, mock_client_cls, mock_search_response):
+        response = _make_httpx_response(mock_search_response)
+        mock_client_cls.return_value = _make_mock_client(response)
+
+        result = await search(query="test", format="full")
+        data = json.loads(result)
+
+        r = data["results"][0]
+        assert "title" in r
+        assert "engines" in r
+        assert "score" in r
+        assert "parsed_url" not in r
+        assert "template" not in r
+
+    @pytest.mark.anyio
+    @patch("mcp_server.tools.httpx.AsyncClient")
+    async def test_search_max_results(self, mock_client_cls):
+        many_results = {
+            "results": [
+                {"title": f"Result {i}", "url": f"https://example.com/{i}", "content": f"Content {i}"}
+                for i in range(20)
+            ],
+            "answers": [],
+            "corrections": [],
+            "suggestions": [],
+            "infoboxes": [],
+            "unresponsive_engines": [],
+        }
+        response = _make_httpx_response(many_results)
+        mock_client_cls.return_value = _make_mock_client(response)
+
+        result = await search(query="test", max_results=5)
+        data = json.loads(result)
+
+        assert data["number_of_results"] == 5
+        assert len(data["results"]) == 5
+
+    @pytest.mark.anyio
+    @patch("mcp_server.tools.httpx.AsyncClient")
+    async def test_search_default_max_results(self, mock_client_cls):
+        many_results = {
+            "results": [
+                {"title": f"Result {i}", "url": f"https://example.com/{i}", "content": f"Content {i}"}
+                for i in range(20)
+            ],
+            "answers": [],
+            "corrections": [],
+            "suggestions": [],
+            "infoboxes": [],
+            "unresponsive_engines": [],
+        }
+        response = _make_httpx_response(many_results)
+        mock_client_cls.return_value = _make_mock_client(response)
+
+        result = await search(query="test")
+        data = json.loads(result)
+
+        assert data["number_of_results"] == 10
 
     @pytest.mark.anyio
     @patch("mcp_server.tools.httpx.AsyncClient")
@@ -69,7 +157,7 @@ class TestSearchTool:
         mock_client = _make_mock_client(response)
         mock_client_cls.return_value = mock_client
 
-        result = await search(query="test", pages=3)
+        result = await search(query="test", pages=3, max_results=100)
         data = json.loads(result)
 
         assert mock_client.get.call_count == 3
@@ -82,42 +170,57 @@ class TestSearchTool:
         mock_client = _make_mock_client(response)
         mock_client_cls.return_value = mock_client
 
-        await search(query="test", pages=10)
+        await search(query="test", pages=10, max_results=100)
 
         assert mock_client.get.call_count == 5
 
     @pytest.mark.anyio
     @patch("mcp_server.tools.httpx.AsyncClient")
-    async def test_search_trims_results(self, mock_client_cls):
-        response = _make_httpx_response({
-            "results": [
-                {
-                    "title": "Test",
-                    "url": "https://example.com",
-                    "content": "Content",
-                    "engines": ["google"],
-                    "score": 1.0,
-                    "category": "general",
-                    "parsed_url": ["https", "example.com", "/", "", "", ""],
-                    "positions": [1],
-                    "template": "default.html",
-                }
-            ],
+    async def test_search_cache(self, mock_client_cls, mock_search_response):
+        response = _make_httpx_response(mock_search_response)
+        mock_client = _make_mock_client(response)
+        mock_client_cls.return_value = mock_client
+
+        result1 = await search(query="test")
+        result2 = await search(query="test")
+
+        assert mock_client.get.call_count == 1
+        data2 = json.loads(result2)
+        assert data2.get("cached") is True
+
+    @pytest.mark.anyio
+    @patch("mcp_server.tools.httpx.AsyncClient")
+    async def test_search_zero_results_diagnostics(self, mock_client_cls):
+        empty_response = {
+            "results": [],
             "answers": [],
             "corrections": [],
             "suggestions": [],
             "infoboxes": [],
-        })
+            "unresponsive_engines": [["google", "timeout"]],
+        }
+        response = _make_httpx_response(empty_response)
+        mock_client_cls.return_value = _make_mock_client(response)
+
+        result = await search(query="xyznonexistent123", language="zh")
+        data = json.loads(result)
+
+        assert data["message"] == "No results found"
+        assert data["query"] == "xyznonexistent123"
+        assert len(data["suggestions"]) > 0
+        assert any("language" in s for s in data["suggestions"])
+        assert "google: timeout" in data["errors"]
+
+    @pytest.mark.anyio
+    @patch("mcp_server.tools.httpx.AsyncClient")
+    async def test_search_error_handling(self, mock_client_cls):
+        response = _make_httpx_response({}, status_code=500)
         mock_client_cls.return_value = _make_mock_client(response)
 
         result = await search(query="test")
         data = json.loads(result)
 
-        r = data["results"][0]
-        assert "parsed_url" not in r
-        assert "positions" not in r
-        assert "template" not in r
-        assert r["title"] == "Test"
+        assert data["message"] == "No results found"
 
 
 class TestAutocompleteTool:

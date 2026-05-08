@@ -1,11 +1,13 @@
 import asyncio
 import json
 import os
+import time
 
 import httpx
 from mcp.server.fastmcp import FastMCP
 
 SEARXNG_BASE_URL = os.environ.get("SEARXNG_URL", "http://127.0.0.1:8080")
+CACHE_TTL = int(os.environ.get("CACHE_TTL", "60"))
 
 mcp = FastMCP(
     "SearXNG",
@@ -13,6 +15,35 @@ mcp = FastMCP(
     json_response=True,
     streamable_http_path="/",
 )
+
+_cache: dict[str, tuple[float, str]] = {}
+
+COMPACT_FIELDS = ["title", "url", "content"]
+FULL_FIELDS = [
+    "title", "url", "content", "engines", "score",
+    "category", "publishedDate", "thumbnail", "img_src",
+]
+
+
+def _cache_key(params: dict) -> str:
+    return json.dumps(params, sort_keys=True)
+
+
+def _get_cached(key: str) -> str | None:
+    if key in _cache:
+        ts, data = _cache[key]
+        if time.monotonic() - ts < CACHE_TTL:
+            return data
+        del _cache[key]
+    return None
+
+
+def _set_cache(key: str, data: str):
+    now = time.monotonic()
+    expired = [k for k, (ts, _) in _cache.items() if now - ts >= CACHE_TTL]
+    for k in expired:
+        del _cache[k]
+    _cache[key] = (now, data)
 
 
 async def fetch_engine_info() -> dict:
@@ -42,13 +73,33 @@ async def fetch_engine_info() -> dict:
     }
 
 
-def _trim_result(result: dict) -> dict:
-    """Keep only essential fields from a search result to reduce token usage."""
-    fields = [
-        "title", "url", "content", "engines", "score",
-        "category", "publishedDate", "thumbnail", "img_src",
-    ]
+def _trim_result(result: dict, fields: list[str]) -> dict:
+    """Keep only specified fields from a search result."""
     return {k: v for k, v in result.items() if k in fields and v}
+
+
+def _build_diagnostics(query: str, params: dict, errors: list[str]) -> dict:
+    """Build diagnostic info when search returns zero results."""
+    tips = [
+        "Try broader or different keywords",
+        "Remove time_range filter if set",
+        "Try different categories or engines",
+    ]
+    if params.get("language"):
+        tips.append(f"Try removing language filter (currently: {params['language']})")
+    if params.get("engines"):
+        tips.append("Some specified engines may be unresponsive — try without engines filter")
+    if params.get("time_range"):
+        tips.append(f"Time range '{params['time_range']}' may be too restrictive")
+
+    diag: dict = {
+        "query": query,
+        "message": "No results found",
+        "suggestions": tips,
+    }
+    if errors:
+        diag["errors"] = errors
+    return diag
 
 
 @mcp.tool()
@@ -60,16 +111,21 @@ async def search(
     safesearch: int = 0,
     pageno: int = 1,
     pages: int = 1,
+    max_results: int = 10,
+    format: str = "compact",
     engines: str = "",
 ) -> str:
     """Search the web using SearXNG metasearch engine.
 
-    Aggregates results from multiple search engines (Google, Bing, DuckDuckGo, etc.).
-    Returns results, answers, suggestions, corrections, and infoboxes.
+    Aggregates results from 200+ search engines (Google, Bing, DuckDuckGo, Brave, etc.)
+    with privacy. Returns results, answers, suggestions, corrections, and infoboxes.
+    Use 'categories' to focus on specific content types. Use 'pages' for more results.
     """
     pages = max(1, min(pages, 5))
+    max_results = max(1, min(max_results, 100))
+    fields = COMPACT_FIELDS if format == "compact" else FULL_FIELDS
 
-    params = {"q": query, "format": "json"}
+    params: dict = {"q": query, "format": "json"}
     if categories:
         params["categories"] = categories
     if language:
@@ -81,11 +137,22 @@ async def search(
     if engines:
         params["engines"] = engines
 
+    cache_params = {**params, "pageno": pageno, "pages": pages}
+    cache_k = _cache_key(cache_params)
+    cached = _get_cached(cache_k)
+    if cached:
+        cached_data = json.loads(cached)
+        cached_data["results"] = cached_data["results"][:max_results]
+        cached_data["number_of_results"] = len(cached_data["results"])
+        cached_data["cached"] = True
+        return json.dumps(cached_data, ensure_ascii=False)
+
     all_results = []
     all_answers: set[str] = set()
     all_suggestions: set[str] = set()
     all_corrections: set[str] = set()
     all_infoboxes = []
+    errors: list[str] = []
 
     async with httpx.AsyncClient() as client:
         tasks = []
@@ -102,15 +169,22 @@ async def search(
 
     for resp in responses:
         if isinstance(resp, Exception):
+            errors.append(str(resp))
             continue
         if resp.status_code != 200:
+            errors.append(f"HTTP {resp.status_code}")
             continue
         data = resp.json()
-        all_results.extend(_trim_result(r) for r in data.get("results", []))
+        all_results.extend(_trim_result(r, fields) for r in data.get("results", []))
         all_answers.update(data.get("answers", []))
         all_suggestions.update(data.get("suggestions", []))
         all_corrections.update(data.get("corrections", []))
         all_infoboxes.extend(data.get("infoboxes", []))
+        for engine_name, error_msg in data.get("unresponsive_engines", []):
+            errors.append(f"{engine_name}: {error_msg}")
+
+    if not all_results and not all_answers:
+        return json.dumps(_build_diagnostics(query, params, errors), ensure_ascii=False)
 
     output: dict = {
         "results": all_results,
@@ -125,6 +199,11 @@ async def search(
     if all_infoboxes:
         output["infoboxes"] = all_infoboxes
 
+    _set_cache(cache_k, json.dumps(output, ensure_ascii=False))
+
+    output["results"] = output["results"][:max_results]
+    output["number_of_results"] = len(output["results"])
+
     return json.dumps(output, ensure_ascii=False)
 
 
@@ -132,7 +211,8 @@ async def search(
 async def autocomplete(query: str) -> str:
     """Get search query suggestions from SearXNG.
 
-    Returns a list of autocomplete suggestions for the given query.
+    Returns a list of autocomplete suggestions for the given partial query.
+    Use this to discover relevant search terms before performing a full search.
     """
     async with httpx.AsyncClient() as client:
         resp = await client.get(
