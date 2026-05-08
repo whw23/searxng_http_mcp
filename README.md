@@ -82,7 +82,9 @@ No ports exposed. Communication via stdin/stdout. SearXNG runs internally for th
 When `API_KEY` is set, all requests require one of:
 
 - **`x-api-key` header** — for MCP clients: `x-api-key: your-key`
-- **HTTP Basic Auth** — for browsers: the browser will show a login dialog, leave username empty and enter the API key as the password
+- **HTTP Basic Auth** — for browsers
+
+> **Browser Login:** When accessing the Web UI with `API_KEY` enabled, the browser will show a login dialog. **Leave the username empty** and enter your API key as the **password**.
 
 When `API_KEY` is not set, all requests are open.
 
