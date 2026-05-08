@@ -4,29 +4,14 @@ set -e
 export PATH="/usr/local/searxng/.venv/bin:${PATH}"
 
 # Ensure JSON format is enabled in SearXNG settings.
-# If settings.yml doesn't exist yet, the SearXNG entrypoint will create it.
-# We patch it after creation.
 ensure_json_format() {
     settings="/etc/searxng/settings.yml"
-    # Wait for settings file to exist (created by SearXNG entrypoint)
     i=0
     while [ ! -f "$settings" ] && [ "$i" -lt 10 ]; do
         sleep 1
         i=$((i + 1))
     done
-
-    if [ -f "$settings" ]; then
-        # Check if formats section already exists
-        if grep -q "formats:" "$settings"; then
-            # Ensure json is in the formats list
-            if ! grep -q "json" "$settings"; then
-                sed -i '/formats:/a\    - json' "$settings"
-            fi
-        else
-            # Append search.formats config
-            printf '\nsearch:\n  formats:\n    - json\n' >> "$settings"
-        fi
-    fi
+    python -m mcp_server.patch_settings "$settings"
 }
 
 # Start SearXNG in the background, redirect all output to stderr
