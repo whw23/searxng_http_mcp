@@ -18,16 +18,18 @@ A self-contained MCP server wrapping [SearXNG](https://github.com/searxng/searxn
 
 ## Comparison with Alternatives
 
-| Feature | searxng-http-mcp (this) | [mcp-searxng](https://github.com/ihor-sokoliuk/mcp-searxng) | [searxng-mcp](https://github.com/aicrafted/searxng-mcp) | [searxng-deepdive](https://github.com/burakaydinofficial/searxng-deepdive) |
-| --- | :---: | :---: | :---: | :---: |
-| Self-contained (built-in SearXNG) | :white_check_mark: | :x: | :x: | :x: |
-| Authentication | :white_check_mark: | :x: | :x: | :x: |
-| HTTP + stdio transport | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x: |
-| Multi-page fanout | :white_check_mark: | :x: | :x: | :white_check_mark: |
-| Dynamic tool descriptions | :white_check_mark: | :x: | :x: | :white_check_mark: |
-| Claude Code Plugin | :white_check_mark: | :x: | :x: | :x: |
-| Web UI reverse proxy | :white_check_mark: | :x: | :x: | :x: |
-| Language | Python | Node.js | Python | Node.js |
+| Feature | searxng-http-mcp (this) | [mcp-searxng](https://github.com/ihor-sokoliuk/mcp-searxng) | [searxng-mcp](https://github.com/aicrafted/searxng-mcp) | [searxng-deepdive](https://github.com/burakaydinofficial/searxng-deepdive) | [exa-mcp-server](https://github.com/exa-labs/exa-mcp-server) |
+| --- | :---: | :---: | :---: | :---: | :---: |
+| Free & open source | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x: (paid API) |
+| Self-contained (built-in SearXNG) | :white_check_mark: | :x: | :x: | :x: | N/A |
+| Privacy (self-hosted, no tracking) | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x: |
+| Authentication | :white_check_mark: | :x: | :x: | :x: | :white_check_mark: |
+| HTTP + stdio transport | :white_check_mark: | :white_check_mark: | :white_check_mark: | :x: | :x: (stdio only) |
+| Multi-page fanout | :white_check_mark: | :x: | :x: | :white_check_mark: | :x: |
+| Dynamic tool descriptions | :white_check_mark: | :x: | :x: | :white_check_mark: | :x: |
+| Claude Code Plugin | :white_check_mark: | :x: | :x: | :x: | :x: |
+| Web UI reverse proxy | :white_check_mark: | :x: | :x: | :x: | :x: |
+| Language | Python | Node.js | Python | Node.js | TypeScript |
 
 ## Quick Start
 
