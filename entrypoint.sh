@@ -1,16 +1,20 @@
-#!/bin/bash
+#!/bin/sh
 set -e
+
+export PATH="/usr/local/searxng/.venv/bin:${PATH}"
 
 # Start SearXNG in the background using the original entrypoint
 /usr/local/searxng/entrypoint.sh &
 
 # Wait for SearXNG to be ready
 echo "Waiting for SearXNG to start..."
-for i in $(seq 1 30); do
+i=0
+while [ "$i" -lt 30 ]; do
     if curl -sf http://127.0.0.1:8080/healthz > /dev/null 2>&1; then
         echo "SearXNG is ready."
         break
     fi
+    i=$((i + 1))
     if [ "$i" -eq 30 ]; then
         echo "Warning: SearXNG health check timed out, starting MCP server anyway."
     fi

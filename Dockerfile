@@ -1,7 +1,10 @@
 FROM ghcr.io/searxng/searxng:latest
 
-# Install MCP Server dependencies
-RUN pip install --no-cache-dir "mcp[cli]"
+ENV PATH="/usr/local/searxng/.venv/bin:${PATH}"
+
+# Install pip via ensurepip, then install MCP Server dependencies
+RUN python -m ensurepip --upgrade && \
+    python -m pip install --no-cache-dir "mcp[cli]"
 
 # Copy SearXNG config
 COPY config/settings.yml /etc/searxng/settings.yml
