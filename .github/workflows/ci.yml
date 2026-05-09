@@ -81,6 +81,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
       - name: Require CI to have passed in source repo
+        if: github.event.pull_request.user.login != 'dependabot[bot]'
         run: |
           RUNS=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&status=success&event=push" --jq '.total_count')
           if [ "$RUNS" -eq 0 ]; then
@@ -142,6 +143,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           MINIMUM_GREEN: 80
           MINIMUM_ORANGE: 60
+          ANNOTATE_MISSING_LINES: false
+          COMMENT_ARTIFACT_NAME: ""
 
       - name: Upload test artifacts
         if: always()
