@@ -84,6 +84,11 @@ jobs:
       - name: Require CI to have passed in source repo
         if: github.event.pull_request.user.login != 'dependabot[bot]'
         run: |
+          TOTAL=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&event=push" --jq '.total_count')
+          if [ "$TOTAL" -eq 0 ]; then
+            echo "No push-triggered CI runs for this commit (likely skipped by paths-ignore). Passing."
+            exit 0
+          fi
           MAX_ATTEMPTS=12
           for i in $(seq 1 $MAX_ATTEMPTS); do
             RUNS=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&status=success&event=push" --jq '.total_count')
