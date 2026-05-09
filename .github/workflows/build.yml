@@ -1,15 +1,10 @@
 name: Build and Publish
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
-    paths:
-      - "Dockerfile"
-      - "entrypoint.sh"
-      - "mcp_server/**"
-      - "pyproject.toml"
-      - "server.json"
-      - ".github/workflows/build.yml"
   schedule:
     - cron: "17 3 * * *"
 
@@ -22,42 +17,11 @@ env:
   UPSTREAM_IMAGE: ghcr.io/searxng/searxng:latest
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.14"
-          cache: pip
-
-      - name: Install dependencies
-        run: pip install "mcp[cli]" pytest pytest-anyio httpx pytest-cov pyyaml
-
-      - name: Run tests
-        run: pytest tests/ -v --tb=short --junitxml=test-results.xml --cov=mcp_server --cov-report=term-missing --cov-report=xml:coverage.xml
-
-      - name: Test report summary
-        if: always()
-        uses: test-summary/action@v3
-        with:
-          paths: test-results.xml
-
-      - name: Upload test artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: |
-            test-results.xml
-            coverage.xml
-
   build:
-    needs: test
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     permissions:
       contents: read
       packages: write
