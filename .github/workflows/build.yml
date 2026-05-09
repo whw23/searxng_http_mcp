@@ -35,10 +35,25 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        run: pip install "mcp[cli]" pytest pytest-anyio httpx
+        run: pip install "mcp[cli]" pytest pytest-anyio httpx pytest-cov pyyaml
 
       - name: Run tests
-        run: pytest tests/ -v
+        run: pytest tests/ -v --tb=short --junitxml=test-results.xml --cov=mcp_server --cov-report=term-missing --cov-report=xml:coverage.xml
+
+      - name: Test report summary
+        if: always()
+        uses: test-summary/action@v3
+        with:
+          paths: test-results.xml
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            test-results.xml
+            coverage.xml
 
   build:
     needs: test
