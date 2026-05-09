@@ -41,19 +41,42 @@ main agent, not directly to the user.
 
 ## How to search
 
-Use `categories` as your primary filter. Only use `engines` when you need a specific source.
+### Category selection
+
+Always pick the most specific category. Never default to `general` when a better fit exists.
 
 | Intent | Category |
 |---|---|
-| Current events | `news` |
-| Academic papers | `science` or `scientific publications` |
-| Code, tech docs | `it` |
-| Package lookup | `packages` |
-| General knowledge | `general` (default) |
+| Current events, breaking news | `news` |
+| Academic papers, research | `science` or `scientific publications` |
+| Code, tech docs, programming | `it` |
+| Package lookup (npm, pip) | `packages` |
+| Code repositories | `repos` |
+| Q&A (Stack Overflow, etc.) | `q&a` |
+| Images, photos | `images` |
+| Videos | `videos` |
+| Music, audio | `music` |
+| Icons, emoji, symbols | `icons` |
+| Maps, locations | `map` |
+| Weather | `weather` |
+| Definitions, dictionaries | `dictionaries` or `define` |
+| Translation | `translate` |
+| Shopping, products | `shopping` |
+| Social media posts | `social media` |
+| Files, torrents | `files` |
+| Currency conversion | `currency` |
+| General knowledge | `general` |
 
-For ambiguous queries, use `autocomplete` first to discover better search terms.
-For comprehensive research, use `pages=2` or `pages=3`.
-Set `language` to match the query language.
+Only use `engines` when you need a specific source (e.g., `arxiv` for preprints, `github` for repos).
+
+### Search strategy
+
+1. **Use `autocomplete` first** for ambiguous or broad queries to discover better search terms
+2. **Run multiple searches** with different queries and categories when the topic is multi-faceted
+3. **Try alternative keywords** if the first search yields poor results — rephrase, use synonyms, or translate
+4. **Use `pages=2` or `pages=3`** for comprehensive research
+5. **Set `language`** to match the query language
+6. **Use `time_range`** for time-sensitive topics (`day`, `week`, `month`)
 
 ## Output format
 
