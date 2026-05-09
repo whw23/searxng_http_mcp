@@ -177,7 +177,7 @@ When `API_KEY` is set, all requests require one of:
 > [!TIP]
 > **Browser Login:** When accessing the Web UI with `API_KEY` enabled, the browser will show a login dialog. **Leave the username empty** and enter your API key as the **password**.
 >
-> <img src="assets/browser_login.jpg" alt="Browser Login Dialog" width="450">
+> <img src="assets/browser_login.svg" alt="Browser Login Dialog" width="420">
 
 When `API_KEY` is not set, all requests are open.
 
