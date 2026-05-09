@@ -51,6 +51,10 @@ Make sure:
 
 Fork PRs **cannot** modify files in the `.github/` directory (workflows, CI configs). If you need changes to CI, open an issue to discuss.
 
+### Copilot code review
+
+All PRs are automatically reviewed by GitHub Copilot. The `copilot-review` CI check waits for Copilot to finish its review before passing. If Copilot requests changes, review its suggestions before merging.
+
 ### Plugin consistency
 
 If your changes touch `plugins/local/` or `plugins/remote/`, the `skills/` and `agents/` directories must stay identical between the two. The `plugin-consistency` check enforces this.
