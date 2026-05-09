@@ -18,9 +18,8 @@ graph LR
     H -->|Changes requested| C
     H -->|Approved| I[Merge to dev]
     I --> J[Maintainer PRs dev → main]
-    J --> K{Copilot review}
-    K -->|Changes requested| C
-    K -->|Passed| L[Merge to main]
+    J --> K[Copilot review non-blocking]
+    K --> L[Merge to main]
     L --> M[Build & Publish]
 ```
 
@@ -32,7 +31,7 @@ graph LR
 6. Open a **Pull Request to the `dev` branch** (not `main`)
 7. **Wait for Copilot code review** — address any feedback if changes are requested
 8. A maintainer will review and merge to `dev`
-9. Maintainer PRs `dev` → `main` — Copilot reviews again, any new feedback is addressed before merge
+9. Maintainer PRs `dev` → `main` — Copilot may post a non-blocking review; maintainer addresses feedback at their discretion
 
 ## Rules
 
