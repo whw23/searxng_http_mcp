@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [dev]
     paths-ignore:
       - "*.md"
       - "docs/**"
@@ -22,6 +21,7 @@ env:
 permissions:
   contents: read
   pull-requests: read
+  actions: read
 
 jobs:
   # === PR policy checks (pull_request only) ===
@@ -106,9 +106,9 @@ jobs:
           diff -r plugins/local/agents plugins/remote/agents || { echo "::error::Agents differ between local and remote plugins"; exit 1; }
           echo "Plugins are consistent."
 
-  # === Tests (push only — never runs external code on PRs) ===
+  # === Tests (push only, exclude main — never runs external code on PRs) ===
   test:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
