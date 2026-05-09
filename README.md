@@ -58,6 +58,8 @@ Add this as a stdio MCP server in your client — see [Client Configuration](#-c
 - 🔍 200+ search engines — Google, Bing, DuckDuckGo, Brave, and more via SearXNG
 - 📂 30+ categories — news, images, videos, science, IT, and more
 - 📄 Multi-page fanout — up to 5 pages per call
+- 💡 Autocomplete suggestions — discover relevant search terms
+- 🗂 Engine discovery — query available engines grouped by category
 - 🎯 Token-efficient — results trimmed to essentials
 
 ### Infrastructure
@@ -66,7 +68,8 @@ Add this as a stdio MCP server in your client — see [Client Configuration](#-c
 - 🔄 Dual transport — HTTP (Streamable HTTP) and stdio
 - 🔐 Authentication — `x-api-key` + HTTP Basic Auth
 - 🌐 Reverse proxy — SearXNG Web UI on the same port
-- ⚡ Dynamic tool descriptions — live engine/category lists
+- ⚡ Dynamic tool descriptions — live category lists injected at startup
+- 📐 Rich JSON Schema — enum constraints, range limits, and descriptions on every parameter
 - 🧩 Claude Code Plugin — self-hosted marketplace
 
 ## 🏛 Architecture
@@ -109,7 +112,7 @@ graph LR
 </thead>
 <tbody>
   <tr><td>200+ search engines</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td>30+ search categories</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>30+ search categories</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
   <tr><td>Free &amp; open source</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060; (paid API)</td></tr>
   <tr><td>Zero-install Docker deploy</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
   <tr><td>Self-contained (built-in SearXNG)</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">N/A</td></tr>
@@ -117,6 +120,9 @@ graph LR
   <tr><td>Authentication</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td></tr>
   <tr><td>HTTP + stdio transport</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
   <tr><td>Multi-page fanout</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Autocomplete suggestions</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Engine discovery tool</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Rich parameter schema</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td></tr>
   <tr><td>Dynamic tool descriptions</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
   <tr><td>Claude Code Plugin</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
   <tr><td>Web UI reverse proxy</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
@@ -190,21 +196,23 @@ When `API_KEY` is not set, all requests are open.
 
 <br>
 
-Aggregates results from multiple search engines.
+Aggregates results from 200+ search engines with privacy.
 
 <table>
 <thead>
   <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-  <tr><td><code>query</code></td><td>str</td><td>yes</td><td>—</td><td>Search query string</td></tr>
-  <tr><td><code>categories</code></td><td>str</td><td>no</td><td>""</td><td>Comma-separated: general, images, videos, news, it, etc.</td></tr>
-  <tr><td><code>language</code></td><td>str</td><td>no</td><td>""</td><td>Language code (e.g., zh, en, ja)</td></tr>
-  <tr><td><code>time_range</code></td><td>str</td><td>no</td><td>""</td><td>day, month, year</td></tr>
-  <tr><td><code>safesearch</code></td><td>int</td><td>no</td><td>0</td><td>0=off, 1=moderate, 2=strict</td></tr>
-  <tr><td><code>pageno</code></td><td>int</td><td>no</td><td>1</td><td>Starting page number</td></tr>
-  <tr><td><code>pages</code></td><td>int</td><td>no</td><td>1</td><td>Number of pages to fetch (1-5)</td></tr>
-  <tr><td><code>engines</code></td><td>str</td><td>no</td><td>""</td><td>Comma-separated engine names (e.g., google,bing)</td></tr>
+  <tr><td><code>query</code></td><td>string</td><td>yes</td><td>—</td><td>The search query to use</td></tr>
+  <tr><td><code>categories</code></td><td>string</td><td>no</td><td>""</td><td>Comma-separated category names (e.g., <code>general,news,science</code>)</td></tr>
+  <tr><td><code>engines</code></td><td>string</td><td>no</td><td>""</td><td>Comma-separated engine names (e.g., <code>google,arxiv,wikipedia</code>)</td></tr>
+  <tr><td><code>language</code></td><td>string</td><td>no</td><td>""</td><td>Search language code (e.g., <code>en</code>, <code>zh</code>, <code>ja</code>)</td></tr>
+  <tr><td><code>time_range</code></td><td>enum</td><td>no</td><td>null</td><td><code>day</code>, <code>week</code>, <code>month</code>, <code>year</code></td></tr>
+  <tr><td><code>safesearch</code></td><td>enum</td><td>no</td><td>0</td><td><code>0</code>=off, <code>1</code>=moderate, <code>2</code>=strict</td></tr>
+  <tr><td><code>pageno</code></td><td>int ≥1</td><td>no</td><td>1</td><td>Starting page number</td></tr>
+  <tr><td><code>pages</code></td><td>int 1–5</td><td>no</td><td>1</td><td>Number of pages to fetch in parallel</td></tr>
+  <tr><td><code>max_results</code></td><td>int 1–100</td><td>no</td><td>10</td><td>Maximum number of results to return</td></tr>
+  <tr><td><code>format</code></td><td>enum</td><td>no</td><td>compact</td><td><code>compact</code> (title/url/content) or <code>full</code> (+ engines/score/category/date)</td></tr>
 </tbody>
 </table>
 
@@ -222,9 +230,34 @@ Aggregates results from multiple search engines.
   <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
 </thead>
 <tbody>
-  <tr><td><code>query</code></td><td>str</td><td>yes</td><td>Query string to autocomplete</td></tr>
+  <tr><td><code>query</code></td><td>string</td><td>yes</td><td>Partial query string to get suggestions for</td></tr>
 </tbody>
 </table>
+
+</details>
+
+<details>
+<summary>🗂 <code>engine_info</code> — Discover available engines and categories</summary>
+
+<br>
+
+No parameters. Returns the list of enabled engines grouped by category.
+
+**Returns:**
+
+```json
+{
+  "categories": ["general", "images", "videos", "news", ...],
+  "engines": ["google", "bing", "duckduckgo", ...],
+  "category_engines": {
+    "general": ["google", "bing", "duckduckgo", "brave", ...],
+    "science": ["arxiv", "google scholar", "pubmed", ...],
+    ...
+  }
+}
+```
+
+Use this to discover what engines are available before calling `search` with specific `engines` or `categories` filters.
 
 </details>
 
