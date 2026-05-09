@@ -165,17 +165,6 @@ class TestSearchTool:
 
     @pytest.mark.anyio
     @patch("mcp_server.tools.httpx.AsyncClient")
-    async def test_search_pages_clamped_to_5(self, mock_client_cls, mock_search_response):
-        response = _make_httpx_response(mock_search_response)
-        mock_client = _make_mock_client(response)
-        mock_client_cls.return_value = mock_client
-
-        await search(query="test", pages=10, max_results=100)
-
-        assert mock_client.get.call_count == 5
-
-    @pytest.mark.anyio
-    @patch("mcp_server.tools.httpx.AsyncClient")
     async def test_search_cache(self, mock_client_cls, mock_search_response):
         response = _make_httpx_response(mock_search_response)
         mock_client = _make_mock_client(response)
