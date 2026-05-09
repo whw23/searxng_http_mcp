@@ -24,6 +24,17 @@ permissions:
   pull-requests: read
 
 jobs:
+  source-branch-check:
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify PR source is dev branch
+        run: |
+          if [ "${{ github.head_ref }}" != "dev" ]; then
+            echo "::error::PRs to main must come from the dev branch, got '${{ github.head_ref }}'"
+            exit 1
+          fi
+
   plugin-consistency:
     runs-on: ubuntu-latest
     steps:
