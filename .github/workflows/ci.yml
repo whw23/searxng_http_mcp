@@ -101,6 +101,12 @@ jobs:
           HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
+
+  # === Copilot code review gate (pull_request only) ===
+  copilot-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
       - name: Wait for Copilot code review
         run: |
           for i in $(seq 1 20); do
