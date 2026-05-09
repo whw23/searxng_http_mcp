@@ -29,6 +29,13 @@ graph LR
 
 ## Rules
 
+### Branch protection
+
+Both `main` and `dev` are protected branches — **direct pushes are not allowed**. All changes must go through pull requests:
+
+- Create a feature branch from `dev`, push it, and open a PR to `dev`
+- `main` is only updated from `dev` by maintainers via PR
+
 ### PR target
 
 - PRs must target the **`dev`** branch
