@@ -218,7 +218,7 @@ Aggregates results from multiple search engines.
 ## 🔌 Client Configuration
 
 <details>
-<summary><b>Claude Desktop</b></summary>
+<summary><sub><img src="https://cdn.simpleicons.org/claude/D97757" width="16" height="16" alt="Claude"></sub> <b>Claude Desktop</b></summary>
 
 **Server mode** — edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
