@@ -78,12 +78,22 @@ async def fetch_engine_info() -> dict:
                 categories = list(raw_categories.keys())
             else:
                 categories = []
-            engines = [
-                e["name"]
-                for e in data.get("engines", [])
-                if e.get("enabled", True)
-            ]
-            return {"categories": categories, "engines": engines}
+
+            engines = []
+            category_engines: dict[str, list[str]] = {}
+            for e in data.get("engines", []):
+                if not e.get("enabled", True):
+                    continue
+                name = e["name"]
+                engines.append(name)
+                for cat in e.get("categories", []):
+                    category_engines.setdefault(cat, []).append(name)
+
+            return {
+                "categories": categories,
+                "engines": engines,
+                "category_engines": category_engines,
+            }
     except Exception:
         pass
     return {
@@ -96,6 +106,7 @@ async def fetch_engine_info() -> dict:
             "currency", "weather", "other",
         ],
         "engines": [],
+        "category_engines": {},
     }
 
 

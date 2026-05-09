@@ -244,9 +244,10 @@ class TestFetchEngineInfo:
         response = _make_httpx_response({
             "categories": {"general": {}, "images": {}, "news": {}},
             "engines": [
-                {"name": "google", "enabled": True},
-                {"name": "bing", "enabled": True},
-                {"name": "disabled_engine", "enabled": False},
+                {"name": "google", "enabled": True, "categories": ["general"]},
+                {"name": "bing", "enabled": True, "categories": ["general", "images"]},
+                {"name": "google images", "enabled": True, "categories": ["images"]},
+                {"name": "disabled_engine", "enabled": False, "categories": ["general"]},
             ],
         })
         mock_client_cls.return_value = _make_mock_client(response)
@@ -256,6 +257,12 @@ class TestFetchEngineInfo:
         assert "general" in info["categories"]
         assert "google" in info["engines"]
         assert "disabled_engine" not in info["engines"]
+        assert "category_engines" in info
+        assert "google" in info["category_engines"]["general"]
+        assert "bing" in info["category_engines"]["general"]
+        assert "bing" in info["category_engines"]["images"]
+        assert "google images" in info["category_engines"]["images"]
+        assert "disabled_engine" not in info["category_engines"]["general"]
 
     @pytest.mark.anyio
     @patch("mcp_server.tools.httpx.AsyncClient")
@@ -268,3 +275,4 @@ class TestFetchEngineInfo:
 
         assert "general" in info["categories"]
         assert info["engines"] == []
+        assert info["category_engines"] == {}
