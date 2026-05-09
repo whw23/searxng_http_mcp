@@ -39,11 +39,11 @@ A self-contained MCP server that wraps [SearXNG](https://github.com/searxng/sear
 
 ```bash
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p <port>:8888 --memory=512m --cpus=1 \
+  -p YOUR_PORT:8888 --memory=512m --cpus=1 \
   ghcr.io/whw23/searxng-http-mcp:latest
 ```
 
-Then [connect your client](#-client-configuration) to `http://{your-server}:{port}/mcp/`. To enable API key auth, see [Authentication](#-authentication).
+Then [connect your client](#-client-configuration) to `http://YOUR_HOST:YOUR_PORT/mcp/`. To enable API key auth, see [Authentication](#-authentication).
 
 **Local mode** — no server needed, run directly in your client:
 
@@ -78,7 +78,7 @@ Add this as a stdio MCP server in your client — see [Client Configuration](#-c
 
 ```mermaid
 graph LR
-  Client(["client:{port}"]) --> Expose(":8888")
+  Client(["client:YOUR_PORT"]) --> Expose(":8888")
 
   subgraph Container["🐳 Docker Container"]
     direction LR
@@ -141,19 +141,19 @@ graph LR
 ```bash
 # Without authentication
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p <port>:8888 --memory=512m --cpus=1 \
+  -p YOUR_PORT:8888 --memory=512m --cpus=1 \
   ghcr.io/whw23/searxng-http-mcp:latest
 
 # With authentication
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p <port>:8888 --memory=512m --cpus=1 \
+  -p YOUR_PORT:8888 --memory=512m --cpus=1 \
   -e API_KEY=your-secret-key \
   ghcr.io/whw23/searxng-http-mcp:latest
 ```
 
 <table>
-<tr><td>🔗 <strong>MCP Endpoint</strong></td><td><code>http://{your-server}:{port}/mcp/</code></td></tr>
-<tr><td>🖥 <strong>SearXNG Web UI</strong></td><td><code>http://{your-server}:{port}/</code></td></tr>
+<tr><td>🔗 <strong>MCP Endpoint</strong></td><td><code>http://YOUR_HOST:YOUR_PORT/mcp/</code></td></tr>
+<tr><td>🖥 <strong>SearXNG Web UI</strong></td><td><code>http://YOUR_HOST:YOUR_PORT/</code></td></tr>
 </table>
 
 ### 📡 stdio Mode
@@ -277,7 +277,7 @@ Use this to discover what engines are available before calling `search` with spe
 {
   "mcpServers": {
     "searxng": {
-      "url": "http://{your-server}:{port}/mcp/",
+      "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -307,7 +307,7 @@ Use this to discover what engines are available before calling `search` with spe
 **Server mode**:
 
 ```bash
-claude mcp add --transport http --header "x-api-key: your-secret-key" searxng http://{your-server}:{port}/mcp/
+claude mcp add --transport http --header "x-api-key: your-secret-key" searxng http://YOUR_HOST:YOUR_PORT/mcp/
 ```
 
 **Local mode**:
@@ -325,7 +325,7 @@ claude mcp add --transport stdio searxng -- docker run --rm -i --memory=512m --c
 
 ```toml
 [mcp_servers.searxng]
-url = "http://{your-server}:{port}/mcp/"
+url = "http://YOUR_HOST:YOUR_PORT/mcp/"
 http_headers = { "x-api-key" = "your-secret-key" }
 ```
 
@@ -348,7 +348,7 @@ args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng
 {
   "mcpServers": {
     "searxng": {
-      "url": "http://{your-server}:{port}/mcp/",
+      "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -382,7 +382,7 @@ args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng
   "servers": {
     "searxng": {
       "type": "http",
-      "url": "http://{your-server}:{port}/mcp/",
+      "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -416,7 +416,7 @@ args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng
 {
   "mcpServers": {
     "searxng": {
-      "serverUrl": "http://{your-server}:{port}/mcp/",
+      "serverUrl": "http://YOUR_HOST:YOUR_PORT/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -451,7 +451,7 @@ Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`
 {
   "mcpServers": {
     "searxng": {
-      "url": "http://{your-server}:{port}/mcp/",
+      "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -485,7 +485,7 @@ Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`
   "mcp": {
     "searxng": {
       "type": "remote",
-      "url": "http://{your-server}:{port}/mcp/",
+      "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -517,7 +517,7 @@ Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`
 ```yaml
 mcp_servers:
   searxng:
-    url: "http://{your-server}:{port}/mcp/"
+    url: "http://YOUR_HOST:YOUR_PORT/mcp/"
     headers:
       x-api-key: "your-secret-key"
 ```
@@ -574,7 +574,7 @@ Add to `~/.claude/settings.json` under the `env` field:
 ```json
 {
   "env": {
-    "SEARXNG_MCP_URL": "http://{your-server}:{port}/mcp/",
+    "SEARXNG_MCP_URL": "http://YOUR_HOST:YOUR_PORT/mcp/",
     "SEARXNG_API_KEY": "your-api-key"
   }
 }
@@ -593,7 +593,7 @@ Then restart Claude Code.
 
 <br>
 
-Access the SearXNG Web UI at `http://{your-server}:{port}/` to configure search engines, languages, and other settings. Changes persist during the container's lifetime.
+Access the SearXNG Web UI at `http://YOUR_HOST:YOUR_PORT/` to configure search engines, languages, and other settings. Changes persist during the container's lifetime.
 
 </details>
 
@@ -606,7 +606,7 @@ Mount the SearXNG config directory for persistent configuration:
 
 ```bash
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p <port>:8888 --memory=512m --cpus=1 \
+  -p YOUR_PORT:8888 --memory=512m --cpus=1 \
   -v /path/to/searxng-config:/etc/searxng \
   ghcr.io/whw23/searxng-http-mcp:latest
 ```
@@ -624,7 +624,7 @@ git clone https://github.com/whw23/searxng_http_mcp.git
 cd searxng-http-mcp
 docker build -t searxng-http-mcp:local .
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p <port>:8888 --memory=512m --cpus=1 \
+  -p YOUR_PORT:8888 --memory=512m --cpus=1 \
   searxng-http-mcp:local
 ```
 
