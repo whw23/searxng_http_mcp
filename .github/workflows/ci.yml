@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [dev]
     paths-ignore:
       - "*.md"
       - "docs/**"
@@ -22,6 +21,7 @@ env:
 permissions:
   contents: read
   pull-requests: read
+  actions: read
 
 jobs:
   # === PR policy checks (pull_request only) ===
@@ -98,7 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Check plugin consistency (local vs remote)
         run: |
@@ -106,19 +106,19 @@ jobs:
           diff -r plugins/local/agents plugins/remote/agents || { echo "::error::Agents differ between local and remote plugins"; exit 1; }
           echo "Plugins are consistent."
 
-  # === Tests (push only — never runs external code on PRs) ===
+  # === Tests (push only, exclude main — never runs external code on PRs) ===
   test:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.14"
           cache: pip
@@ -131,13 +131,13 @@ jobs:
 
       - name: Test report summary
         if: always()
-        uses: test-summary/action@v2
+        uses: test-summary/action@37b508cfee6d4d080eedd00b5bb240a6a784a6a5 # v2
         with:
           paths: test-results.xml
 
       - name: Coverage report
         if: always()
-        uses: py-cov-action/python-coverage-comment-action@v3
+        uses: py-cov-action/python-coverage-comment-action@53ff7553078bad69030786e486677315346c2dd2 # v3
         with:
           GITHUB_TOKEN: ${{ github.token }}
           MINIMUM_GREEN: 80
@@ -145,7 +145,7 @@ jobs:
 
       - name: Upload test artifacts
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: test-reports
           path: |
