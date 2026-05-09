@@ -12,11 +12,13 @@ graph LR
     D --> E{Fork CI passes?}
     E -->|No| C
     E -->|Yes| F[PR to dev]
-    F --> G{Maintainer review}
+    F --> G{Copilot review}
     G -->|Changes requested| C
-    G -->|Approved| H[Merge to dev]
-    H --> I[Maintainer PRs dev → main]
-    I --> J[Build & Publish]
+    G -->|Passed| H{Maintainer review}
+    H -->|Changes requested| C
+    H -->|Approved| I[Merge to dev]
+    I --> J[Maintainer PRs dev → main]
+    J --> K[Build & Publish]
 ```
 
 1. **Fork** this repository
@@ -25,9 +27,17 @@ graph LR
 4. **Push** to your fork — CI runs automatically
 5. **Wait for CI to pass** in your fork
 6. Open a **Pull Request to the `dev` branch** (not `main`)
-7. A maintainer will review and merge
+7. **Wait for Copilot code review** — address any feedback if changes are requested
+8. A maintainer will review and merge
 
 ## Rules
+
+### Branch protection
+
+Both `main` and `dev` are protected branches — **direct pushes are not allowed**. All changes must go through pull requests:
+
+- Create a feature branch from `dev`, push it, and open a PR to `dev`
+- `main` is only updated from `dev` by maintainers via PR
 
 ### PR target
 
@@ -53,7 +63,7 @@ Fork PRs **cannot** modify files in the `.github/` directory (workflows, CI conf
 
 ### Copilot code review
 
-All PRs targeting `dev` are automatically reviewed by GitHub Copilot. The `copilot-review` CI check waits for Copilot to finish its review before passing. If Copilot requests changes, review its suggestions before merging. PRs from `dev` to `main` skip this check since the code has already been reviewed.
+PRs targeting `dev` are automatically reviewed by GitHub Copilot (PRs from `dev` to `main` skip this check since the code has already been reviewed). The `copilot-review` CI check waits for Copilot to finish its review before passing. If Copilot requests changes, fix the issues and push new commits to the **same PR branch** — do not open a separate PR. After pushing fixes, mark the resolved review threads as **Resolved** on GitHub.
 
 ### Plugin consistency
 

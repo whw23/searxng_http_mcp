@@ -30,7 +30,8 @@ while [ "$i" -lt 30 ]; do
     fi
     i=$((i + 1))
     if [ "$i" -eq 30 ]; then
-        echo "Warning: SearXNG health check timed out, starting MCP server anyway." >&2
+        echo "Error: SearXNG failed to start after 30 seconds." >&2
+        exit 1
     fi
     sleep 1
 done
