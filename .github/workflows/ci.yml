@@ -86,13 +86,16 @@ jobs:
         run: |
           TOTAL=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&event=push" --jq '.total_count // 0')
           if [ "${TOTAL:-0}" -eq 0 ]; then
-            CHANGED=$(gh pr diff "$PR_NUMBER" --name-only --repo "$BASE_REPO")
-            NON_IGNORED=$(echo "$CHANGED" | grep -v -E '(^[^/]*\.md$|^docs/|^assets/|^LICENSE$)' || true)
+            # No push CI for this commit — check if this commit only changed ignored files.
+            # Use the commit diff (not the full PR diff) so that earlier commits with passing
+            # CI are not penalised by a later docs-only commit.
+            COMMIT_FILES=$(gh api "repos/$HEAD_REPO/commits/$HEAD_SHA" --jq '[.files[].filename] | join("\n")')
+            NON_IGNORED=$(echo "$COMMIT_FILES" | grep -v -E '(^[^/]*\.md$|^docs/|^assets/|^LICENSE$)' || true)
             if [ -z "$NON_IGNORED" ]; then
-              echo "No push CI runs and all changed files match paths-ignore. Passing."
+              echo "Head commit only changes ignored files and push CI was skipped. Passing."
               exit 0
             fi
-            echo "::error::No push-triggered CI run found but PR changes non-ignored files: $NON_IGNORED"
+            echo "::error::No push-triggered CI run found but head commit changes non-ignored files: $NON_IGNORED"
             exit 1
           fi
           MAX_ATTEMPTS=12
