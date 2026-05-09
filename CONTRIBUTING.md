@@ -12,11 +12,13 @@ graph LR
     D --> E{Fork CI passes?}
     E -->|No| C
     E -->|Yes| F[PR to dev]
-    F --> G{Maintainer review}
+    F --> G{Copilot review}
     G -->|Changes requested| C
-    G -->|Approved| H[Merge to dev]
-    H --> I[Maintainer PRs dev → main]
-    I --> J[Build & Publish]
+    G -->|Passed| H{Maintainer review}
+    H -->|Changes requested| C
+    H -->|Approved| I[Merge to dev]
+    I --> J[Maintainer PRs dev → main]
+    J --> K[Build & Publish]
 ```
 
 1. **Fork** this repository
@@ -25,7 +27,8 @@ graph LR
 4. **Push** to your fork — CI runs automatically
 5. **Wait for CI to pass** in your fork
 6. Open a **Pull Request to the `dev` branch** (not `main`)
-7. A maintainer will review and merge
+7. **Wait for Copilot code review** — address any feedback if changes are requested
+8. A maintainer will review and merge
 
 ## Rules
 
