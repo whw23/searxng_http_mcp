@@ -43,7 +43,7 @@ main agent, not directly to the user.
 
 ### Category selection
 
-Prefer the most specific category when one fits. Fall back to `general` when no specific category matches or when unsure.
+Always use `general` (Google/Baidu). Additionally pick the most specific category from the table below when one fits.
 
 | Intent | Category |
 |---|---|
