@@ -3,18 +3,8 @@ name: CI
 on:
   push:
     branches-ignore: [main]
-    paths-ignore:
-      - "*.md"
-      - "docs/**"
-      - "assets/**"
-      - "LICENSE"
   pull_request:
     branches: [dev, main]
-    paths-ignore:
-      - "*.md"
-      - "docs/**"
-      - "assets/**"
-      - "LICENSE"
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -190,24 +180,41 @@ jobs:
           diff -r plugins/local/agents plugins/remote/agents || { echo "::error::Agents differ between local and remote plugins"; exit 1; }
           echo "Plugins are consistent."
 
-  # === Tests (push only, exclude main — never runs external code on PRs) ===
+  # === Tests (push only, skip for docs-only changes) ===
   test:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 2
+
+      - name: Check for code changes
+        id: changes
+        run: |
+          FILES=$(git diff --name-only HEAD~1)
+          NON_DOCS=$(echo "$FILES" | grep -v -E '(^[^/]*\.md$|^docs/|^assets/|^LICENSE$)' || true)
+          if [ -z "$NON_DOCS" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Only docs changed, skipping tests."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Set up Python
+        if: steps.changes.outputs.skip != 'true'
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
           python-version: "3.14"
           cache: pip
 
       - name: Install dependencies
+        if: steps.changes.outputs.skip != 'true'
         run: pip install "mcp[cli]" pytest pytest-anyio httpx pytest-cov pyyaml
 
       - name: Run tests
+        if: steps.changes.outputs.skip != 'true'
         run: pytest tests/ -v --tb=short --junitxml=test-results.xml --cov=mcp_server --cov-report=term-missing --cov-report=xml:coverage.xml --cov-fail-under=80
 
       - name: Test report summary
