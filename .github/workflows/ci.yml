@@ -101,6 +101,30 @@ jobs:
           HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
+      - name: Wait for Copilot code review
+        run: |
+          for i in $(seq 1 20); do
+            STATE=$(gh api "repos/$REPO/pulls/$PR_NUMBER/reviews" \
+              --jq '[.[] | select(.user.login == "copilot-pull-request-reviewer")] | last | .state // empty')
+            if [ -n "$STATE" ]; then
+              echo "Copilot review received (state: $STATE)."
+              if [ "$STATE" = "CHANGES_REQUESTED" ]; then
+                echo "::warning::Copilot requested changes — review before merging."
+              fi
+              exit 0
+            fi
+            if [ "$i" -eq 20 ]; then
+              echo "::warning::Copilot review not received after 5 minutes — proceeding without it."
+              exit 0
+            fi
+            echo "Waiting for Copilot review... (attempt $i/20)"
+            sleep 15
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+
   # === Plugin consistency (push + pull_request) ===
   plugin-consistency:
     runs-on: ubuntu-latest
