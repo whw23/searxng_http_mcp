@@ -136,20 +136,20 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Install mcp-publisher
-        if: steps.decide.outputs.should_build == 'true' && github.run_attempt == '1'
+        if: steps.decide.outputs.should_build == 'true'
         run: |
           curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
 
       - name: Update server.json version
-        if: steps.decide.outputs.should_build == 'true' && github.run_attempt == '1'
+        if: steps.decide.outputs.should_build == 'true'
         run: |
           VERSION="$(date -u +%Y).${{ github.run_number }}.0"
           jq --arg v "$VERSION" '.version = $v' server.json > server.tmp && mv server.tmp server.json
 
       - name: Authenticate to MCP Registry
-        if: steps.decide.outputs.should_build == 'true' && github.run_attempt == '1'
+        if: steps.decide.outputs.should_build == 'true'
         run: ./mcp-publisher login github-oidc
 
       - name: Publish to MCP Registry
-        if: steps.decide.outputs.should_build == 'true' && github.run_attempt == '1'
-        run: ./mcp-publisher publish
+        if: steps.decide.outputs.should_build == 'true'
+        run: ./mcp-publisher publish || echo "Publish failed (version may already exist), continuing."
