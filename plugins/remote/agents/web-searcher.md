@@ -72,7 +72,7 @@ Only use `engines` when you need a specific source (e.g., `arxiv` for preprints,
 
 1. **Use `autocomplete` first** for ambiguous or broad queries to discover better search terms
 2. **Search in parallel** — launch multiple searches simultaneously in one response:
-   - **Parallel categories**: always include `general` alongside any specialized category
+   - **Parallel categories**: include `general` alongside specialized categories for broad research; for targeted searches (e.g., `images`, `science`), the specialized category alone is fine
    - **Parallel keywords**: use different phrasings, synonyms, or translations of the same query
    - Combine categories × keywords, but **cap at 4-6 parallel searches** to avoid excessive requests
    - Prioritize the most promising combinations rather than exhaustive cross-product

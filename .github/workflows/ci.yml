@@ -94,7 +94,7 @@ jobs:
             if [ -z "$NON_IGNORED" ]; then
               # Head commit is docs-only. Find the latest code-changing commit in the
               # PR and require a successful push CI run for it.
-              PR_COMMITS=$(gh api "repos/$BASE_REPO/pulls/$PR_NUMBER/commits" --jq '.[].sha')
+              PR_COMMITS=$(gh api --paginate "repos/$BASE_REPO/pulls/$PR_NUMBER/commits?per_page=100" --jq '.[].sha')
               LATEST_CODE_SHA=""
               for sha in $PR_COMMITS; do
                 C_FILES=$(gh api "repos/$HEAD_REPO/commits/$sha" --jq '[.files[].filename] | join("\n")')
