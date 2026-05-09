@@ -84,6 +84,17 @@ jobs:
       - name: Require CI to have passed in source repo
         if: github.event.pull_request.user.login != 'dependabot[bot]'
         run: |
+          TOTAL=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&event=push" --jq '.total_count // 0')
+          if [ "${TOTAL:-0}" -eq 0 ]; then
+            CHANGED=$(gh pr diff "$PR_NUMBER" --name-only --repo "$BASE_REPO")
+            NON_IGNORED=$(echo "$CHANGED" | grep -v -E '(^[^/]*\.md$|^docs/|^assets/|^LICENSE$)' || true)
+            if [ -z "$NON_IGNORED" ]; then
+              echo "No push CI runs and all changed files match paths-ignore. Passing."
+              exit 0
+            fi
+            echo "::error::No push-triggered CI run found but PR changes non-ignored files: $NON_IGNORED"
+            exit 1
+          fi
           MAX_ATTEMPTS=12
           for i in $(seq 1 $MAX_ATTEMPTS); do
             RUNS=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&status=success&event=push" --jq '.total_count')
@@ -110,7 +121,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_REPO: ${{ github.repository }}
 
   # === Copilot code review gate (pull_request only) ===
   copilot-review:
@@ -121,7 +133,7 @@ jobs:
         run: |
           for i in $(seq 1 20); do
             STATE=$(gh api "repos/$REPO/pulls/$PR_NUMBER/reviews" \
-              --jq '[.[] | select(.user.login == "copilot-pull-request-reviewer")] | last | .state // empty')
+              --jq '[.[] | select(.user.login == "copilot-pull-request-reviewer[bot]")] | last | .state // empty')
             if [ -n "$STATE" ]; then
               echo "Copilot review received (state: $STATE)."
               if [ "$STATE" = "CHANGES_REQUESTED" ]; then
