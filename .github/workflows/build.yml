@@ -6,9 +6,7 @@ on:
   schedule:
     - cron: "17 3 * * *"
 
-permissions:
-  contents: read
-  packages: write
+permissions: read-all
 
 env:
   IMAGE_NAME: ghcr.io/whw23/searxng-http-mcp
