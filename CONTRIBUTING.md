@@ -63,7 +63,7 @@ Fork PRs **cannot** modify files in the `.github/` directory (workflows, CI conf
 
 ### Copilot code review
 
-PRs targeting `dev` are automatically reviewed by GitHub Copilot (PRs from `dev` to `main` skip this check since the code has already been reviewed). The `copilot-review` CI check waits for Copilot to finish its review before passing. If Copilot requests changes, fix the issues and push new commits to the **same PR branch** — do not open a separate PR.
+PRs targeting `dev` are automatically reviewed by GitHub Copilot (PRs from `dev` to `main` skip this check since the code has already been reviewed). The `copilot-review` CI check waits for Copilot to finish its review before passing. If Copilot requests changes, fix the issues and push new commits to the **same PR branch** — do not open a separate PR. After pushing fixes, mark the resolved review threads as **Resolved** on GitHub.
 
 ### Plugin consistency
 
