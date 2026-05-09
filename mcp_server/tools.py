@@ -2,9 +2,12 @@ import asyncio
 import json
 import os
 import time
+from typing import Annotated, Literal
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+from mcp.types import ToolAnnotations
+from pydantic import Field
 
 SEARXNG_BASE_URL = os.environ.get("SEARXNG_URL", "http://127.0.0.1:8080")
 CACHE_TTL = int(os.environ.get("CACHE_TTL", "60"))
@@ -125,18 +128,51 @@ def _build_diagnostics(query: str, params: dict, errors: list[str]) -> dict:
     return diag
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=True,
+    )
+)
 async def search(
-    query: str,
-    categories: str = "",
-    language: str = "",
-    time_range: str = "",
-    safesearch: int = 0,
-    pageno: int = 1,
-    pages: int = 1,
-    max_results: int = 10,
-    format: str = "compact",
-    engines: str = "",
+    query: Annotated[str, Field(
+        description="The search query to use",
+    )],
+    categories: Annotated[str, Field(
+        description="Comma-separated category names to focus on (e.g., 'general,news,science')",
+    )] = "",
+    engines: Annotated[str, Field(
+        description="Comma-separated engine names to use (e.g., 'google,arxiv,wikipedia')",
+    )] = "",
+    language: Annotated[str, Field(
+        description="Search language code (e.g., 'en', 'zh', 'ja', 'de')",
+    )] = "",
+    time_range: Annotated[
+        Literal["day", "week", "month", "year"] | None,
+        Field(description="Restrict results to those published within this time window"),
+    ] = None,
+    safesearch: Annotated[
+        Literal[0, 1, 2],
+        Field(description="Safe search level: 0=off, 1=moderate, 2=strict"),
+    ] = 0,
+    pageno: Annotated[int, Field(
+        ge=1,
+        description="Starting page number",
+    )] = 1,
+    pages: Annotated[int, Field(
+        ge=1, le=5,
+        description="Number of pages to fetch in parallel (multi-page fanout)",
+    )] = 1,
+    max_results: Annotated[int, Field(
+        ge=1, le=100,
+        description="Maximum number of results to return",
+    )] = 10,
+    format: Annotated[
+        Literal["compact", "full"],
+        Field(description="Result detail level: 'compact' returns title/url/content only, 'full' includes engines/score/category/date/thumbnails"),
+    ] = "compact",
 ) -> str:
     """Search the web using SearXNG metasearch engine.
 
@@ -144,8 +180,6 @@ async def search(
     with privacy. Returns results, answers, suggestions, corrections, and infoboxes.
     Use 'categories' to focus on specific content types. Use 'pages' for more results.
     """
-    pages = max(1, min(pages, 5))
-    max_results = max(1, min(max_results, 100))
     fields = COMPACT_FIELDS if format == "compact" else FULL_FIELDS
 
     params: dict = {"q": query, "format": "json"}
@@ -153,7 +187,7 @@ async def search(
         params["categories"] = categories
     if language:
         params["language"] = language
-    if time_range:
+    if time_range is not None:
         params["time_range"] = time_range
     if safesearch:
         params["safesearch"] = str(safesearch)
