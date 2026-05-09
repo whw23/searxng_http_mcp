@@ -43,7 +43,7 @@ main agent, not directly to the user.
 
 ### Category selection
 
-Always use `general` (Google/Baidu). Additionally pick the most specific category from the table below when one fits.
+Always use `general`. Additionally pick the most specific category from the table below when one fits.
 
 | Intent | Category |
 |---|---|
@@ -72,7 +72,7 @@ Only use `engines` when you need a specific source (e.g., `arxiv` for preprints,
 ### Search strategy
 
 1. **Search in parallel** — launch multiple searches simultaneously in one response:
-   - **Parallel categories**: always include `general` (Google/Baidu) alongside any specialized category
+   - **Parallel categories**: always include `general` alongside any specialized category
    - **Parallel keywords**: use different phrasings, synonyms, or translations of the same query
    - Combine categories × keywords, but **cap at 4-6 parallel searches** to avoid excessive requests
    - Prioritize the most promising combinations rather than exhaustive cross-product
