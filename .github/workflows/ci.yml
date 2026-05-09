@@ -24,17 +24,51 @@ permissions:
   pull-requests: read
 
 jobs:
-  source-branch-check:
-    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+  # === PR policy checks (pull_request only) ===
+  pr-policy:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Verify PR source is dev branch
+      - name: Block fork PRs to main
+        if: github.base_ref == 'main' && github.event.pull_request.head.repo.fork == true
+        run: |
+          echo "::error::Fork PRs cannot target main. Please PR to dev first."
+          exit 1
+
+      - name: Verify PRs to main come from dev
+        if: github.base_ref == 'main'
         run: |
           if [ "${{ github.head_ref }}" != "dev" ]; then
             echo "::error::PRs to main must come from the dev branch, got '${{ github.head_ref }}'"
             exit 1
           fi
 
+      - name: Block fork PRs that modify protected files
+        if: github.event.pull_request.head.repo.fork == true
+        run: |
+          CHANGED=$(gh pr diff ${{ github.event.pull_request.number }} --name-only --repo ${{ github.repository }})
+          PROTECTED=$(echo "$CHANGED" | grep -E '^\.github/' || true)
+          if [ -n "$PROTECTED" ]; then
+            echo "::error::Fork PRs cannot modify files in .github/. Changed: $PROTECTED"
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Require CI to have passed in source repo
+        run: |
+          HEAD_REPO="${{ github.event.pull_request.head.repo.full_name }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          RUNS=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&status=success&event=push" --jq '.total_count')
+          if [ "$RUNS" -eq 0 ]; then
+            echo "::error::No successful push-triggered CI run found in $HEAD_REPO for commit $HEAD_SHA. CI must pass before submitting a PR."
+            exit 1
+          fi
+          echo "Source repo CI passed ($RUNS successful run(s) found in $HEAD_REPO)."
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  # === Plugin consistency (push + pull_request) ===
   plugin-consistency:
     runs-on: ubuntu-latest
     steps:
@@ -47,7 +81,9 @@ jobs:
           diff -r plugins/local/agents plugins/remote/agents || { echo "::error::Agents differ between local and remote plugins"; exit 1; }
           echo "Plugins are consistent."
 
+  # === Tests (push only — never runs external code on PRs) ===
   test:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write
