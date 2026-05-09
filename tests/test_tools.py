@@ -1,5 +1,4 @@
 import json
-import time
 from unittest.mock import AsyncMock, patch, MagicMock
 
 import pytest
@@ -179,7 +178,7 @@ class TestSearchTool:
         mock_client = _make_mock_client(response)
         mock_client_cls.return_value = mock_client
 
-        result1 = await search(query="test")
+        await search(query="test")
         result2 = await search(query="test")
 
         assert mock_client.get.call_count == 1
@@ -374,9 +373,9 @@ class TestFetchEngineInfo:
     @pytest.mark.anyio
     @patch("mcp_server.tools.httpx.AsyncClient")
     async def test_fetch_engine_info_fallback(self, mock_client_cls):
-        mock_client_cls.return_value.__aenter__ = AsyncMock(
-            side_effect=Exception("Connection refused")
-        )
+        mock_client = _make_mock_client(MagicMock())
+        mock_client.get = AsyncMock(side_effect=Exception("Connection refused"))
+        mock_client_cls.return_value = mock_client
 
         info = await fetch_engine_info()
 
@@ -435,9 +434,9 @@ class TestEngineInfoTool:
     @pytest.mark.anyio
     @patch("mcp_server.tools.httpx.AsyncClient")
     async def test_engine_info_fallback(self, mock_client_cls):
-        mock_client_cls.return_value.__aenter__ = AsyncMock(
-            side_effect=Exception("Connection refused")
-        )
+        mock_client = _make_mock_client(MagicMock())
+        mock_client.get = AsyncMock(side_effect=Exception("Connection refused"))
+        mock_client_cls.return_value = mock_client
 
         result = await engine_info()
         data = json.loads(result)

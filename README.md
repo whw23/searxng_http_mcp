@@ -39,7 +39,7 @@ A self-contained MCP server that wraps [SearXNG](https://github.com/searxng/sear
 
 ```bash
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p {port}:8888 --memory=512m --cpus=1 \
+  -p <port>:8888 --memory=512m --cpus=1 \
   ghcr.io/whw23/searxng-http-mcp:latest
 ```
 
@@ -141,12 +141,12 @@ graph LR
 ```bash
 # Without authentication
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p {port}:8888 --memory=512m --cpus=1 \
+  -p <port>:8888 --memory=512m --cpus=1 \
   ghcr.io/whw23/searxng-http-mcp:latest
 
 # With authentication
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p {port}:8888 --memory=512m --cpus=1 \
+  -p <port>:8888 --memory=512m --cpus=1 \
   -e API_KEY=your-secret-key \
   ghcr.io/whw23/searxng-http-mcp:latest
 ```
@@ -606,7 +606,7 @@ Mount the SearXNG config directory for persistent configuration:
 
 ```bash
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p {port}:8888 --memory=512m --cpus=1 \
+  -p <port>:8888 --memory=512m --cpus=1 \
   -v /path/to/searxng-config:/etc/searxng \
   ghcr.io/whw23/searxng-http-mcp:latest
 ```
@@ -624,7 +624,7 @@ git clone https://github.com/whw23/searxng_http_mcp.git
 cd searxng-http-mcp
 docker build -t searxng-http-mcp:local .
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p {port}:8888 --memory=512m --cpus=1 \
+  -p <port>:8888 --memory=512m --cpus=1 \
   searxng-http-mcp:local
 ```
 
