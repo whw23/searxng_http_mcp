@@ -1,9 +1,7 @@
 name: Build and Publish
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
+  push:
     branches: [main]
   schedule:
     - cron: "17 3 * * *"
@@ -19,9 +17,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: >-
-      github.event_name == 'schedule' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     permissions:
       contents: read
       packages: write
