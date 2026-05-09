@@ -261,8 +261,19 @@ async def search(
     return json.dumps(return_data, ensure_ascii=False)
 
 
-@mcp.tool()
-async def autocomplete(query: str) -> str:
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=True,
+    )
+)
+async def autocomplete(
+    query: Annotated[str, Field(
+        description="Partial query string to get suggestions for",
+    )],
+) -> str:
     """Get search query suggestions from SearXNG.
 
     Returns a list of autocomplete suggestions for the given partial query.
