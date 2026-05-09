@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+    branches-ignore: [main]
     paths-ignore:
       - "*.md"
       - "docs/**"
@@ -155,7 +156,7 @@ jobs:
 
   # === Tests (push only, exclude main — never runs external code on PRs) ===
   test:
-    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
