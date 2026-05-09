@@ -3,13 +3,6 @@ name: Build and Publish
 on:
   push:
     branches: [main]
-    paths:
-      - "Dockerfile"
-      - "entrypoint.sh"
-      - "mcp_server/**"
-      - "pyproject.toml"
-      - "server.json"
-      - ".github/workflows/build.yml"
   schedule:
     - cron: "17 3 * * *"
 
@@ -22,26 +15,7 @@ env:
   UPSTREAM_IMAGE: ghcr.io/searxng/searxng:latest
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.14"
-          cache: pip
-
-      - name: Install dependencies
-        run: pip install "mcp[cli]" pytest pytest-anyio httpx
-
-      - name: Run tests
-        run: pytest tests/ -v
-
   build:
-    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -52,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Check upstream image digest
         id: upstream

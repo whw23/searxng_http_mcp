@@ -2,9 +2,12 @@ import asyncio
 import json
 import os
 import time
+from typing import Annotated, Literal
 
 import httpx
 from mcp.server.fastmcp import FastMCP
+from mcp.types import ToolAnnotations
+from pydantic import Field
 
 SEARXNG_BASE_URL = os.environ.get("SEARXNG_URL", "http://127.0.0.1:8080")
 CACHE_TTL = int(os.environ.get("CACHE_TTL", "60"))
@@ -75,12 +78,22 @@ async def fetch_engine_info() -> dict:
                 categories = list(raw_categories.keys())
             else:
                 categories = []
-            engines = [
-                e["name"]
-                for e in data.get("engines", [])
-                if e.get("enabled", True)
-            ]
-            return {"categories": categories, "engines": engines}
+
+            engines = []
+            category_engines: dict[str, list[str]] = {}
+            for e in data.get("engines", []):
+                if not e.get("enabled", True):
+                    continue
+                name = e["name"]
+                engines.append(name)
+                for cat in e.get("categories", []):
+                    category_engines.setdefault(cat, []).append(name)
+
+            return {
+                "categories": categories,
+                "engines": engines,
+                "category_engines": category_engines,
+            }
     except Exception:
         pass
     return {
@@ -93,6 +106,7 @@ async def fetch_engine_info() -> dict:
             "currency", "weather", "other",
         ],
         "engines": [],
+        "category_engines": {},
     }
 
 
@@ -125,18 +139,51 @@ def _build_diagnostics(query: str, params: dict, errors: list[str]) -> dict:
     return diag
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=True,
+    )
+)
 async def search(
-    query: str,
-    categories: str = "",
-    language: str = "",
-    time_range: str = "",
-    safesearch: int = 0,
-    pageno: int = 1,
-    pages: int = 1,
-    max_results: int = 10,
-    format: str = "compact",
-    engines: str = "",
+    query: Annotated[str, Field(
+        description="The search query to use",
+    )],
+    categories: Annotated[str, Field(
+        description="Comma-separated category names to focus on (e.g., 'general,news,science')",
+    )] = "",
+    engines: Annotated[str, Field(
+        description="Comma-separated engine names to use (e.g., 'google,arxiv,wikipedia')",
+    )] = "",
+    language: Annotated[str, Field(
+        description="Search language code (e.g., 'en', 'zh', 'ja', 'de')",
+    )] = "",
+    time_range: Annotated[
+        Literal["day", "week", "month", "year"] | None,
+        Field(description="Restrict results to those published within this time window"),
+    ] = None,
+    safesearch: Annotated[
+        Literal[0, 1, 2],
+        Field(description="Safe search level: 0=off, 1=moderate, 2=strict"),
+    ] = 0,
+    pageno: Annotated[int, Field(
+        ge=1,
+        description="Starting page number",
+    )] = 1,
+    pages: Annotated[int, Field(
+        ge=1, le=5,
+        description="Number of pages to fetch in parallel (multi-page fanout)",
+    )] = 1,
+    max_results: Annotated[int, Field(
+        ge=1, le=100,
+        description="Maximum number of results to return",
+    )] = 10,
+    format: Annotated[
+        Literal["compact", "full"],
+        Field(description="Result detail level: 'compact' returns title/url/content only, 'full' includes engines/score/category/date/thumbnails"),
+    ] = "compact",
 ) -> str:
     """Search the web using SearXNG metasearch engine.
 
@@ -144,8 +191,6 @@ async def search(
     with privacy. Returns results, answers, suggestions, corrections, and infoboxes.
     Use 'categories' to focus on specific content types. Use 'pages' for more results.
     """
-    pages = max(1, min(pages, 5))
-    max_results = max(1, min(max_results, 100))
     fields = COMPACT_FIELDS if format == "compact" else FULL_FIELDS
 
     params: dict = {"q": query, "format": "json"}
@@ -153,7 +198,7 @@ async def search(
         params["categories"] = categories
     if language:
         params["language"] = language
-    if time_range:
+    if time_range is not None:
         params["time_range"] = time_range
     if safesearch:
         params["safesearch"] = str(safesearch)
@@ -227,8 +272,19 @@ async def search(
     return json.dumps(return_data, ensure_ascii=False)
 
 
-@mcp.tool()
-async def autocomplete(query: str) -> str:
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=True,
+    )
+)
+async def autocomplete(
+    query: Annotated[str, Field(
+        description="Partial query string to get suggestions for",
+    )],
+) -> str:
     """Get search query suggestions from SearXNG.
 
     Returns a list of autocomplete suggestions for the given partial query.
@@ -243,6 +299,37 @@ async def autocomplete(query: str) -> str:
     if resp.status_code != 200:
         return json.dumps({"error": f"Autocomplete failed with status {resp.status_code}"})
     return json.dumps(resp.json(), ensure_ascii=False)
+
+
+_engine_info_cache: dict | None = None
+_engine_info_cache_ts: float = 0
+ENGINE_INFO_CACHE_TTL = 300
+
+
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    )
+)
+async def engine_info() -> str:
+    """Get available search engines and categories from the SearXNG instance.
+
+    Returns the list of enabled engines grouped by category.
+    Use this to discover what engines and categories are available
+    before calling search with specific engines or categories filters.
+    """
+    global _engine_info_cache, _engine_info_cache_ts
+    now = time.monotonic()
+    if _engine_info_cache is not None and now - _engine_info_cache_ts < ENGINE_INFO_CACHE_TTL:
+        return json.dumps(_engine_info_cache, ensure_ascii=False)
+
+    info = await fetch_engine_info()
+    _engine_info_cache = info
+    _engine_info_cache_ts = now
+    return json.dumps(info, ensure_ascii=False)
 
 
 async def cleanup():

@@ -28,12 +28,8 @@ def create_app() -> Starlette:
                     search_tool.description = (
                         f"{original_desc}\n\n"
                         f"Available categories: {categories_str}\n"
+                        f"Use the engine_info tool to discover available engines and their categories."
                     )
-                    if info["engines"]:
-                        engines_str = ", ".join(info["engines"][:50])
-                        search_tool.description += (
-                            f"Available engines (top 50): {engines_str}"
-                        )
             try:
                 yield
             finally:
