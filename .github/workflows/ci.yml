@@ -38,15 +38,17 @@ jobs:
       - name: Verify PRs to main come from dev
         if: github.base_ref == 'main'
         run: |
-          if [ "${{ github.head_ref }}" != "dev" ]; then
-            echo "::error::PRs to main must come from the dev branch, got '${{ github.head_ref }}'"
+          if [ "$HEAD_REF" != "dev" ]; then
+            echo "::error::PRs to main must come from the dev branch, got '$HEAD_REF'"
             exit 1
           fi
+        env:
+          HEAD_REF: ${{ github.head_ref }}
 
       - name: Block fork PRs that modify protected files
         if: github.event.pull_request.head.repo.fork == true
         run: |
-          CHANGED=$(gh pr diff ${{ github.event.pull_request.number }} --name-only --repo ${{ github.repository }})
+          CHANGED=$(gh pr diff "$PR_NUMBER" --name-only --repo "$REPO")
           PROTECTED=$(echo "$CHANGED" | grep -E '^\.github/' || true)
           if [ -n "$PROTECTED" ]; then
             echo "::error::Fork PRs cannot modify files in .github/. Changed: $PROTECTED"
@@ -54,11 +56,11 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
 
       - name: Require CI to have passed in source repo
         run: |
-          HEAD_REPO="${{ github.event.pull_request.head.repo.full_name }}"
-          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
           RUNS=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&status=success&event=push" --jq '.total_count')
           if [ "$RUNS" -eq 0 ]; then
             echo "::error::No successful push-triggered CI run found in $HEAD_REPO for commit $HEAD_SHA. CI must pass before submitting a PR."
@@ -67,6 +69,8 @@ jobs:
           echo "Source repo CI passed ($RUNS successful run(s) found in $HEAD_REPO)."
         env:
           GH_TOKEN: ${{ github.token }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
   # === Plugin consistency (push + pull_request) ===
   plugin-consistency:
