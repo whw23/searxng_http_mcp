@@ -96,6 +96,7 @@ async def fetch_engine_info() -> dict:
             }
     except Exception:
         pass
+    # Fallback from SearXNG 2024.12 — update if upstream categories change
     return {
         "categories": [
             "general", "images", "videos", "news", "map",
@@ -206,7 +207,7 @@ async def search(
     if engines:
         params["engines"] = engines
 
-    cache_params = {**params, "pageno": pageno, "pages": pages}
+    cache_params = {**params, "pageno": pageno, "pages": pages, "format": format}
     cache_k = _cache_key(cache_params)
     cached = _get_cached(cache_k)
     if cached is not None:
