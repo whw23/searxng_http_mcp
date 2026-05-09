@@ -143,7 +143,7 @@ jobs:
       - name: Update server.json version
         if: steps.decide.outputs.should_build == 'true'
         run: |
-          VERSION="1.0.${{ github.run_number }}"
+          VERSION="2026.${{ github.run_number }}.0"
           jq --arg v "$VERSION" '.version = $v' server.json > server.tmp && mv server.tmp server.json
 
       - name: Authenticate to MCP Registry
