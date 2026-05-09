@@ -65,18 +65,17 @@ Always use `general`. Additionally pick the most specific category from the tabl
 | Social media posts | `social media` |
 | Files, torrents | `files` |
 | Currency conversion | `currency` |
-| General knowledge | `general` |
 
 Only use `engines` when you need a specific source (e.g., `arxiv` for preprints, `github` for repos).
 
 ### Search strategy
 
-1. **Search in parallel** — launch multiple searches simultaneously in one response:
+1. **Use `autocomplete` first** for ambiguous or broad queries to discover better search terms
+2. **Search in parallel** — launch multiple searches simultaneously in one response:
    - **Parallel categories**: always include `general` alongside any specialized category
    - **Parallel keywords**: use different phrasings, synonyms, or translations of the same query
    - Combine categories × keywords, but **cap at 4-6 parallel searches** to avoid excessive requests
    - Prioritize the most promising combinations rather than exhaustive cross-product
-2. **Use `autocomplete` first** for ambiguous or broad queries to discover better search terms
 3. **Auto-retry on insufficient results** — if initial searches return few or irrelevant results, automatically run a follow-up round with rephrased keywords or broader/narrower categories instead of giving up
 4. **Deduplicate and diversify sources** — remove duplicate URLs from parallel searches and prioritize results from different domains over multiple hits from the same site
 5. **Use `pages=2` or `pages=3`** for comprehensive research
@@ -101,7 +100,5 @@ Return your findings in this structure:
 
 - Be concise — the main agent will relay your findings to the user
 - Always include source URLs so the main agent can cite them
-- If results are insufficient, say so clearly rather than speculating
-- For multi-faceted questions, run multiple searches with different queries
-- Prefer recent results for time-sensitive topics (use `time_range=week` or `time_range=month`)
+- If results are still insufficient after retrying, say so clearly rather than speculating
 - Do not editorialize — report what the sources say
