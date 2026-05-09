@@ -92,6 +92,22 @@ jobs:
             COMMIT_FILES=$(gh api "repos/$HEAD_REPO/commits/$HEAD_SHA" --jq '[.files[].filename] | join("\n")')
             NON_IGNORED=$(echo "$COMMIT_FILES" | grep -v -E '(^[^/]*\.md$|^docs/|^assets/|^LICENSE$)' || true)
             if [ -z "$NON_IGNORED" ]; then
+              # Head commit is docs-only. Verify that the PR's code-changing commits
+              # have a successful push CI run by walking earlier commits.
+              PR_COMMITS=$(gh api "repos/$BASE_REPO/pulls/$PR_NUMBER/commits" --jq '.[].sha')
+              FOUND_CI=false
+              for sha in $PR_COMMITS; do
+                RUNS=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$sha&status=success&event=push" --jq '.total_count // 0')
+                if [ "${RUNS:-0}" -gt 0 ]; then
+                  echo "Head commit is docs-only; found passing push CI on earlier commit $sha."
+                  FOUND_CI=true
+                  break
+                fi
+              done
+              if [ "$FOUND_CI" = "true" ]; then
+                exit 0
+              fi
+              # No code-changing commits in this PR, or all changes are docs-only
               echo "Head commit only changes ignored files and push CI was skipped. Passing."
               exit 0
             fi

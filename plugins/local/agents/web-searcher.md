@@ -43,7 +43,7 @@ main agent, not directly to the user.
 
 ### Category selection
 
-Always use `general`. Additionally pick the most specific category from the table below when one fits.
+Use `general` as the default. When a more specific category fits, prefer it — combine with `general` for broad research, or use it alone for targeted searches (e.g., `images`, `science`). Call `engine_info` to confirm available categories if unsure.
 
 | Intent | Category |
 |---|---|
