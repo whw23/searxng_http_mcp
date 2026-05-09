@@ -83,17 +83,26 @@ jobs:
       - name: Require CI to have passed in source repo
         if: github.event.pull_request.user.login != 'dependabot[bot]'
         run: |
-          for i in $(seq 1 12); do
+          MAX_ATTEMPTS=12
+          for i in $(seq 1 $MAX_ATTEMPTS); do
             RUNS=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&status=success&event=push" --jq '.total_count')
             if [ "$RUNS" -gt 0 ]; then
               echo "Source repo CI passed ($RUNS successful run(s) found in $HEAD_REPO)."
               exit 0
             fi
-            if [ "$i" -eq 12 ]; then
-              echo "::error::No successful push-triggered CI run found in $HEAD_REPO for commit $HEAD_SHA after 3 minutes. CI must pass before submitting a PR."
+            FAILED=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&event=push" \
+              --jq '[.workflow_runs[] | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out")] | first | .conclusion // empty')
+            if [ -n "$FAILED" ]; then
+              URL=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&event=push" \
+                --jq '[.workflow_runs[] | select(.conclusion == "failure" or .conclusion == "cancelled" or .conclusion == "timed_out")] | first | .html_url')
+              echo "::error::Push-triggered CI run concluded with '$FAILED': $URL"
               exit 1
             fi
-            echo "Waiting for push CI to complete... (attempt $i/12)"
+            if [ "$i" -eq "$MAX_ATTEMPTS" ]; then
+              echo "::error::No successful push-triggered CI run found in $HEAD_REPO for commit $HEAD_SHA after $((MAX_ATTEMPTS * 15)) seconds."
+              exit 1
+            fi
+            echo "Waiting for push CI to complete... (attempt $i/$MAX_ATTEMPTS)"
             sleep 15
           done
         env:
