@@ -593,7 +593,7 @@ Then restart Claude Code.
 
 <br>
 
-Access the SearXNG Web UI at `http://localhost:8888/` to configure search engines, languages, and other settings. Changes persist during the container's lifetime.
+Access the SearXNG Web UI at `http://{your-server}:{port}/` to configure search engines, languages, and other settings. Changes persist during the container's lifetime.
 
 </details>
 
