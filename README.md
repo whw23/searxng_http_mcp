@@ -218,7 +218,7 @@ Aggregates results from multiple search engines.
 ## 🔌 Client Configuration
 
 <details>
-<summary><sub><img src="https://cdn.simpleicons.org/claude/D97757" width="16" height="16" alt="Claude"></sub> <b>Claude Desktop</b></summary>
+<summary><img src="assets/icons/claude.svg" width="16" height="16" alt="Claude"> <b>Claude Desktop</b></summary>
 
 **Server mode** — edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
@@ -251,7 +251,7 @@ Aggregates results from multiple search engines.
 </details>
 
 <details>
-<summary><b>Claude Code</b></summary>
+<summary><img src="assets/icons/claude.svg" width="16" height="16" alt="Claude"> <b>Claude Code</b></summary>
 
 **Server mode**:
 
@@ -268,7 +268,7 @@ claude mcp add searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw2
 </details>
 
 <details>
-<summary><b>Cursor</b></summary>
+<summary><img src="assets/icons/cursor.svg" width="16" height="16" alt="Cursor"> <b>Cursor</b></summary>
 
 **Server mode** — add to Cursor MCP settings:
 
@@ -301,7 +301,7 @@ claude mcp add searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw2
 </details>
 
 <details>
-<summary><b>VS Code Copilot</b></summary>
+<summary><img src="assets/icons/githubcopilot.svg" width="16" height="16" alt="Copilot"> <b>VS Code Copilot</b></summary>
 
 **Server mode** — add to `.vscode/mcp.json`:
 
@@ -334,7 +334,7 @@ claude mcp add searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw2
 </details>
 
 <details>
-<summary><b>Windsurf</b></summary>
+<summary><img src="assets/icons/windsurf.svg" width="16" height="16" alt="Windsurf"> <b>Windsurf</b></summary>
 
 **Server mode** — add to `~/.codeium/windsurf/mcp_config.json`:
 
@@ -367,7 +367,7 @@ claude mcp add searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw2
 </details>
 
 <details>
-<summary><b>Cline</b></summary>
+<summary><img src="assets/icons/cline.svg" width="16" height="16" alt="Cline"> <b>Cline</b></summary>
 
 Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`).
 
@@ -461,7 +461,7 @@ mcpServers:
 </details>
 
 <details>
-<summary><b>Hermes Agent</b></summary>
+<summary><img src="assets/icons/hermes.svg" width="16" height="16" alt="Hermes"> <b>Hermes Agent</b></summary>
 
 **Server mode** — edit `~/.hermes/config.yaml`:
 
