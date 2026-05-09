@@ -121,7 +121,7 @@ jobs:
         run: |
           for i in $(seq 1 20); do
             STATE=$(gh api "repos/$REPO/pulls/$PR_NUMBER/reviews" \
-              --jq '[.[] | select(.user.login == "copilot-pull-request-reviewer[bot]")] | last | .state // empty')
+              --jq '[.[] | select(.user.login == "copilot-pull-request-reviewer[bot]" and .commit_id == "'"$HEAD_SHA"'")] | last | .state // empty')
             if [ -n "$STATE" ]; then
               echo "Copilot review received (state: $STATE)."
               if [ "$STATE" = "CHANGES_REQUESTED" ]; then
@@ -140,6 +140,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
   # === Plugin consistency (push + pull_request) ===
   plugin-consistency:
