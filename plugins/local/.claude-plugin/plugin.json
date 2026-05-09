@@ -7,7 +7,5 @@
   },
   "repository": "https://github.com/whw23/searxng-http-mcp",
   "license": "MIT",
-  "keywords": ["search", "searxng", "web-search", "mcp"],
-  "skills": "./skills/",
-  "agents": "./agents/"
+  "keywords": ["search", "searxng", "web-search", "mcp"]
 }
