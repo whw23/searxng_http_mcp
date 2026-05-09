@@ -83,12 +83,19 @@ jobs:
       - name: Require CI to have passed in source repo
         if: github.event.pull_request.user.login != 'dependabot[bot]'
         run: |
-          RUNS=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&status=success&event=push" --jq '.total_count')
-          if [ "$RUNS" -eq 0 ]; then
-            echo "::error::No successful push-triggered CI run found in $HEAD_REPO for commit $HEAD_SHA. CI must pass before submitting a PR."
-            exit 1
-          fi
-          echo "Source repo CI passed ($RUNS successful run(s) found in $HEAD_REPO)."
+          for i in $(seq 1 12); do
+            RUNS=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&status=success&event=push" --jq '.total_count')
+            if [ "$RUNS" -gt 0 ]; then
+              echo "Source repo CI passed ($RUNS successful run(s) found in $HEAD_REPO)."
+              exit 0
+            fi
+            if [ "$i" -eq 12 ]; then
+              echo "::error::No successful push-triggered CI run found in $HEAD_REPO for commit $HEAD_SHA after 3 minutes. CI must pass before submitting a PR."
+              exit 1
+            fi
+            echo "Waiting for push CI to complete... (attempt $i/12)"
+            sleep 15
+          done
         env:
           GH_TOKEN: ${{ github.token }}
           HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
