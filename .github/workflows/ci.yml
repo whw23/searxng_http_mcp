@@ -9,6 +9,10 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -34,19 +38,13 @@ jobs:
         with:
           paths: test-results.xml
 
-      - name: Coverage summary
+      - name: Coverage report
         if: always()
-        uses: irongut/CodeCoverageSummary@v1.3.0
+        uses: py-cov-action/python-coverage-comment-action@v3
         with:
-          filename: coverage.xml
-          format: markdown
-          output: both
-          badge: true
-          thresholds: '60 80'
-
-      - name: Add coverage to summary
-        if: always()
-        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+          GITHUB_TOKEN: ${{ github.token }}
+          MINIMUM_GREEN: 80
+          MINIMUM_ORANGE: 60
 
       - name: Upload test artifacts
         if: always()
