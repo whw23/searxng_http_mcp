@@ -13,6 +13,7 @@
   <img src="https://img.shields.io/badge/python-3.14+-blue?logo=python&logoColor=white" alt="Python 3.14+">
   <img src="https://img.shields.io/badge/transport-HTTP%20%7C%20stdio-orange" alt="Transport">
   <img src="https://img.shields.io/badge/MCP-compatible-brightgreen" alt="MCP Compatible">
+  <a href="https://registry.modelcontextprotocol.io/?q=io.github.whw23/searxng-http-mcp"><img src="https://img.shields.io/badge/MCP_Registry-published-brightgreen" alt="MCP Registry"></a>
 </p>
 
 <p>
