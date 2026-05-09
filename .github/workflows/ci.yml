@@ -59,6 +59,27 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
 
+      - name: Verify fork uses unmodified workflow
+        if: github.event.pull_request.head.repo.fork == true
+        run: |
+          OUR_SHA=$(gh api "repos/$BASE_REPO/contents/.github/workflows/ci.yml?ref=$BASE_REF" --jq '.sha')
+          FORK_SHA=$(gh api "repos/$HEAD_REPO/contents/.github/workflows/ci.yml?ref=$HEAD_SHA" --jq '.sha' 2>/dev/null || echo "missing")
+          if [ "$FORK_SHA" = "missing" ]; then
+            echo "::error::Fork is missing .github/workflows/ci.yml"
+            exit 1
+          fi
+          if [ "$OUR_SHA" != "$FORK_SHA" ]; then
+            echo "::error::Fork's ci.yml differs from upstream. CI results are not trustworthy. Please sync your fork's workflow."
+            exit 1
+          fi
+          echo "Fork workflow matches upstream."
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_REPO: ${{ github.repository }}
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
       - name: Require CI to have passed in source repo
         run: |
           RUNS=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$HEAD_SHA&status=success&event=push" --jq '.total_count')
