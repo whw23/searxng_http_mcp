@@ -24,7 +24,7 @@ Main search tool. Parameters:
 - `query` (required): Search terms
 - `categories`: Filter by type — general, images, videos, news, map, music, it, science, files, social media, packages, repos, q&a, etc.
 - `language`: Language code (e.g., zh, en, ja)
-- `time_range`: day, month, year
+- `time_range`: day, week, month, year
 - `safesearch`: 0 (off), 1 (moderate), 2 (strict)
 - `pageno`: Starting page number (default 1)
 - `pages`: Number of pages to fetch, 1-5 (default 1). Use for comprehensive results
@@ -38,6 +38,12 @@ Get search query suggestions. Use before searching to discover relevant terms.
 
 - `query` (required): Partial query to autocomplete
 
+### `engine_info`
+
+Discover available search engines and categories. No parameters. Returns engines grouped by category.
+
+Use this when you need to target specific engines or categories (e.g., "search academic papers" → call engine_info to find science engines, then search with `categories=science`).
+
 ## Rules
 
 1. Always include a **Sources** section at the end with clickable markdown links
@@ -46,3 +52,4 @@ Get search query suggestions. Use before searching to discover relevant terms.
 4. Use `language` when the user writes in a specific language
 5. Use `format=full` when you need to evaluate result quality (scores, engines)
 6. Use `autocomplete` to refine ambiguous queries before searching
+7. Use `engine_info` to discover available engines before targeting specific ones
