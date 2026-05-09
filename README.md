@@ -3,7 +3,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="assets/banner-light.svg">
-  <img alt="SearXNG HTTP MCP" src="assets/banner-light.svg" width="600">
+  <img alt="SearXNG HTTP MCP" src="assets/banner-light.svg" width="100%">
 </picture>
 
 <p>
@@ -161,6 +161,8 @@ When `API_KEY` is set, all requests require one of:
 
 > [!TIP]
 > **Browser Login:** When accessing the Web UI with `API_KEY` enabled, the browser will show a login dialog. **Leave the username empty** and enter your API key as the **password**.
+>
+> <img src="assets/browser_login.jpg" alt="Browser Login Dialog" width="450">
 
 When `API_KEY` is not set, all requests are open.
 
