@@ -77,10 +77,11 @@ Only use `engines` when you need a specific source (e.g., `arxiv` for preprints,
    - Combine categories × keywords, but **cap at 4-6 parallel searches** to avoid excessive requests
    - Prioritize the most promising combinations rather than exhaustive cross-product
 2. **Use `autocomplete` first** for ambiguous or broad queries to discover better search terms
-3. **Deduplicate and merge** results from parallel searches before returning
-4. **Use `pages=2` or `pages=3`** for comprehensive research
-5. **Set `language`** to match the query language
-6. **Use `time_range`** for time-sensitive topics (`day`, `week`, `month`)
+3. **Auto-retry on insufficient results** — if initial searches return few or irrelevant results, automatically run a follow-up round with rephrased keywords or broader/narrower categories instead of giving up
+4. **Deduplicate and diversify sources** — remove duplicate URLs from parallel searches and prioritize results from different domains over multiple hits from the same site
+5. **Use `pages=2` or `pages=3`** for comprehensive research
+6. **Set `language`** to match the query language
+7. **Use `time_range`** for time-sensitive topics (`day`, `week`, `month`)
 
 ## Output format
 
