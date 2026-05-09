@@ -9,8 +9,8 @@
 
 set -euo pipefail
 
-for cmd in gh docker rsync; do
-    command -v "$cmd" >/dev/null 2>&1 || { echo "Error: $cmd is required but not found."; exit 1; }
+for cmd in git gh docker rsync; do
+    command -v "$cmd" >/dev/null 2>&1 || { echo "Error: $cmd is required but not found." >&2; exit 1; }
 done
 
 PR_NUMBER="${1:?Usage: $0 <PR_NUMBER>}"
