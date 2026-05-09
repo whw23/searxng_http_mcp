@@ -3,32 +3,33 @@
 # Usage: ./scripts/review-pr.sh <PR_NUMBER>
 #
 # - Network only during pip install, disabled for tests
-# - No access to host credentials
+# - No access to host credentials or .git directory
 # - Read-only source mount
 # - Disposable container (--rm)
 
-set -uo pipefail
+set -euo pipefail
 
 PR_NUMBER="${1:?Usage: $0 <PR_NUMBER>}"
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 WORKDIR="/tmp/pr-review-$$"
-ORIGINAL_REF="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || git rev-parse HEAD)"
-EXIT_CODE=0
+
+# Capture original ref robustly (handles detached HEAD)
+ORIGINAL_REF="$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse HEAD)"
 
 cleanup() {
     echo "==> Cleaning up..."
     rm -rf "$WORKDIR"
-    git checkout "$ORIGINAL_REF" 2>/dev/null
+    git checkout "$ORIGINAL_REF" 2>/dev/null || true
 }
 trap cleanup EXIT
 
 echo "==> Fetching PR #$PR_NUMBER..."
 gh pr checkout "$PR_NUMBER" --detach
 
-echo "==> Copying source to temp directory..."
-mkdir -p "$WORKDIR"
+echo "==> Exporting source to temp directory (excluding .git)..."
+mkdir -p "$WORKDIR/src"
 git diff main...HEAD --stat
-cp -r "$REPO_ROOT" "$WORKDIR/src"
+rsync -a --exclude '.git' "$REPO_ROOT/" "$WORKDIR/src/"
 
 echo "==> Installing dependencies (network enabled)..."
 docker run --rm \
@@ -40,6 +41,7 @@ docker run --rm \
     pip install --quiet --target /deps "mcp[cli]" pytest pytest-anyio httpx pytest-cov pyyaml
 
 echo "==> Running tests (network disabled)..."
+EXIT_CODE=0
 docker run --rm \
     --network none \
     --memory 512m \
