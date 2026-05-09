@@ -10,7 +10,7 @@
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
   <a href="https://github.com/whw23/searxng_http_mcp/pkgs/container/searxng-http-mcp"><img src="https://img.shields.io/badge/ghcr.io-searxng--http--mcp-blue?logo=docker&logoColor=white" alt="Docker Image"></a>
   <a href="https://github.com/whw23/searxng_http_mcp/actions/workflows/build.yml"><img src="https://github.com/whw23/searxng_http_mcp/actions/workflows/build.yml/badge.svg" alt="Build Status"></a>
-  <img src="https://img.shields.io/badge/python-3.12+-blue?logo=python&logoColor=white" alt="Python 3.12+">
+  <img src="https://img.shields.io/badge/python-3.14+-blue?logo=python&logoColor=white" alt="Python 3.14+">
   <img src="https://img.shields.io/badge/transport-HTTP%20%7C%20stdio-orange" alt="Transport">
   <img src="https://img.shields.io/badge/MCP-compatible-brightgreen" alt="MCP Compatible">
 </p>
@@ -33,48 +33,61 @@
 
 ## 🚀 Quick Start
 
+**Server mode** — deploy once, connect from any client:
+
 ```bash
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p 8888:8888 --memory=512m --cpus=1 \
+  -p {port}:8888 --memory=512m --cpus=1 \
   ghcr.io/whw23/searxng-http-mcp:latest
 ```
 
-That's it. SearXNG + MCP server running on port 8888.
+Then [connect your client](#-client-configuration) to `http://{your-server}:{port}/mcp/`. To enable API key auth, see [Authentication](#-authentication).
+
+**Local mode** — no server needed, run directly in your client:
+
+```bash
+docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw23/searxng-http-mcp:latest --stdio
+```
+
+Add this as a stdio MCP server in your client — see [Client Configuration](#-client-configuration) for details.
 
 ## ✨ Features
 
-<table>
-<tr>
-  <td width="50%">
+### Search
 
-  - 📦 **Self-contained** — SearXNG built into the Docker image
-  - 🔄 **Dual transport** — HTTP (Streamable HTTP) and stdio
-  - 🔐 **Authentication** — `x-api-key` + HTTP Basic Auth
-  - 🌐 **Reverse proxy** — SearXNG Web UI on the same port
+- 🔍 200+ search engines — Google, Bing, DuckDuckGo, Brave, and more via SearXNG
+- 📂 30+ categories — news, images, videos, science, IT, and more
+- 📄 Multi-page fanout — up to 5 pages per call
+- 🎯 Token-efficient — results trimmed to essentials
 
-  </td>
-  <td width="50%">
+### Infrastructure
 
-  - 📄 **Multi-page fanout** — up to 5 pages per call
-  - ⚡ **Dynamic tool descriptions** — live engine/category lists
-  - 🎯 **Token-efficient** — results trimmed to essentials
-  - 🧩 **Claude Code Plugin** — self-hosted marketplace
-
-  </td>
-</tr>
-</table>
+- 📦 Self-contained — SearXNG built into Docker image
+- 🔄 Dual transport — HTTP (Streamable HTTP) and stdio
+- 🔐 Authentication — `x-api-key` + HTTP Basic Auth
+- 🌐 Reverse proxy — SearXNG Web UI on the same port
+- ⚡ Dynamic tool descriptions — live engine/category lists
+- 🧩 Claude Code Plugin — self-hosted marketplace
 
 ## 🏛 Architecture
 
 ```mermaid
 graph LR
-  Client([Client]) -->|:8888| Auth{Auth Middleware}
-  Auth -->|/mcp| MCP[FastMCP Server]
-  Auth -->|/*| Proxy[Reverse Proxy]
-  MCP --> SearXNG[SearXNG :8080]
-  Proxy --> SearXNG
+  Client(["client:{port}"]) --> Expose(":8888")
+
+  subgraph Container["🐳 Docker Container"]
+    direction LR
+    Expose --> Auth{Auth}
+    Auth -->|/mcp| MCP[FastMCP Server]
+    Auth -->|/*| Proxy[Reverse Proxy]
+    MCP --> SearXNG[SearXNG :8080]
+    Proxy --> SearXNG
+  end
+
+  style Expose fill:none,stroke:#2496ed,stroke-dasharray:5 5,color:#2496ed
 
   style Client fill:#4a90d9,color:#fff,stroke:#3a7bc8
+  style Container fill:#f0f4f8,stroke:#2496ed,stroke-width:2px,color:#2496ed
   style Auth fill:#f5a623,color:#fff,stroke:#d4900e
   style MCP fill:#50c878,color:#fff,stroke:#3da85e
   style Proxy fill:#9b59b6,color:#fff,stroke:#8344a5
@@ -95,6 +108,8 @@ graph LR
   </tr>
 </thead>
 <tbody>
+  <tr><td>200+ search engines</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
+  <tr><td>30+ search categories</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
   <tr><td>Free &amp; open source</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060; (paid API)</td></tr>
   <tr><td>Zero-install Docker deploy</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
   <tr><td>Self-contained (built-in SearXNG)</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">N/A</td></tr>
@@ -116,12 +131,12 @@ graph LR
 ```bash
 # Without authentication
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p 8888:8888 --memory=512m --cpus=1 \
+  -p {port}:8888 --memory=512m --cpus=1 \
   ghcr.io/whw23/searxng-http-mcp:latest
 
 # With authentication
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p 8888:8888 --memory=512m --cpus=1 \
+  -p {port}:8888 --memory=512m --cpus=1 \
   -e API_KEY=your-secret-key \
   ghcr.io/whw23/searxng-http-mcp:latest
 ```
@@ -226,7 +241,7 @@ Aggregates results from multiple search engines.
 {
   "mcpServers": {
     "searxng": {
-      "url": "http://your-server:8888/mcp/",
+      "url": "http://{your-server}:{port}/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -256,13 +271,34 @@ Aggregates results from multiple search engines.
 **Server mode**:
 
 ```bash
-claude mcp add searxng --transport http http://your-server:8888/mcp/ -- --header "x-api-key: your-secret-key"
+claude mcp add searxng --transport http http://{your-server}:{port}/mcp/ -- --header "x-api-key: your-secret-key"
 ```
 
 **Local mode**:
 
 ```bash
 claude mcp add searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw23/searxng-http-mcp:latest --stdio
+```
+
+</details>
+
+<details>
+<summary><img src="assets/icons/codex.svg" height="16" alt="Codex"> <b>Codex</b></summary>
+
+**Server mode** — add to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.searxng]
+url = "http://{your-server}:{port}/mcp/"
+http_headers = { "x-api-key" = "your-secret-key" }
+```
+
+**Local mode**:
+
+```toml
+[mcp_servers.searxng]
+command = "docker"
+args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
 ```
 
 </details>
@@ -276,7 +312,7 @@ claude mcp add searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw2
 {
   "mcpServers": {
     "searxng": {
-      "url": "http://your-server:8888/mcp/",
+      "url": "http://{your-server}:{port}/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -309,7 +345,7 @@ claude mcp add searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw2
 {
   "servers": {
     "searxng": {
-      "url": "http://your-server:8888/mcp/",
+      "url": "http://{your-server}:{port}/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -342,7 +378,7 @@ claude mcp add searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw2
 {
   "mcpServers": {
     "searxng": {
-      "url": "http://your-server:8888/mcp/",
+      "url": "http://{your-server}:{port}/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -377,7 +413,7 @@ Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`
 {
   "mcpServers": {
     "searxng": {
-      "url": "http://your-server:8888/mcp/",
+      "url": "http://{your-server}:{port}/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -402,31 +438,7 @@ Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`
 </details>
 
 <details>
-<summary><b>Continue.dev</b></summary>
-
-**Server mode** — add to `~/.continue/config.yaml`:
-
-```yaml
-mcpServers:
-  - name: searxng
-    url: "http://your-server:8888/mcp/"
-    headers:
-      x-api-key: "your-secret-key"
-```
-
-**Local mode**:
-
-```yaml
-mcpServers:
-  - name: searxng
-    command: docker
-    args: ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
-```
-
-</details>
-
-<details>
-<summary><b>OpenCode</b></summary>
+<summary><img src="assets/icons/opencode.svg" height="16" alt="OpenCode"> <b>OpenCode</b></summary>
 
 **Server mode** — edit `.opencode.json`:
 
@@ -435,7 +447,7 @@ mcpServers:
   "mcpServers": {
     "searxng": {
       "type": "sse",
-      "url": "http://your-server:8888/mcp/",
+      "url": "http://{your-server}:{port}/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
       }
@@ -468,7 +480,7 @@ mcpServers:
 ```yaml
 mcp_servers:
   searxng:
-    url: "http://your-server:8888/mcp/"
+    url: "http://{your-server}:{port}/mcp/"
     headers:
       x-api-key: "your-secret-key"
 ```
@@ -512,7 +524,7 @@ Both plugins include the 🔍 `/web-search-via-searxng` skill for web search.
 > ```json
 > {
 >   "env": {
->     "SEARXNG_MCP_URL": "http://your-server:8888/mcp/",
+>     "SEARXNG_MCP_URL": "http://{your-server}:{port}/mcp/",
 >     "SEARXNG_API_KEY": "your-api-key"
 >   }
 > }
@@ -541,7 +553,7 @@ Mount the SearXNG config directory for persistent configuration:
 
 ```bash
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p 8888:8888 --memory=512m --cpus=1 \
+  -p {port}:8888 --memory=512m --cpus=1 \
   -v /path/to/searxng-config:/etc/searxng \
   ghcr.io/whw23/searxng-http-mcp:latest
 ```
@@ -559,7 +571,7 @@ git clone https://github.com/whw23/searxng_http_mcp.git
 cd searxng-http-mcp
 docker build -t searxng-http-mcp:local .
 docker run -d --name searxng-mcp --restart unless-stopped \
-  -p 8888:8888 --memory=512m --cpus=1 \
+  -p {port}:8888 --memory=512m --cpus=1 \
   searxng-http-mcp:local
 ```
 
