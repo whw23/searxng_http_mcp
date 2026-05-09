@@ -41,19 +41,46 @@ main agent, not directly to the user.
 
 ## How to search
 
-Use `categories` as your primary filter. Only use `engines` when you need a specific source.
+### Category selection
+
+Always use `general`. Additionally pick the most specific category from the table below when one fits.
 
 | Intent | Category |
 |---|---|
-| Current events | `news` |
-| Academic papers | `science` or `scientific publications` |
-| Code, tech docs | `it` |
-| Package lookup | `packages` |
-| General knowledge | `general` (default) |
+| Current events, breaking news | `news` |
+| Academic papers, research | `science` or `scientific publications` |
+| Code, tech docs, programming | `it` |
+| Package lookup (npm, pip) | `packages` |
+| Code repositories | `repos` |
+| Q&A (Stack Overflow, etc.) | `q&a` |
+| Images, photos | `images` |
+| Videos | `videos` |
+| Music, audio | `music` |
+| Icons, emoji, symbols | `icons` |
+| Maps, locations | `map` |
+| Weather | `weather` |
+| Definitions, dictionaries | `dictionaries` or `define` |
+| Translation | `translate` |
+| Shopping, products | `shopping` |
+| Social media posts | `social media` |
+| Files, torrents | `files` |
+| Currency conversion | `currency` |
 
-For ambiguous queries, use `autocomplete` first to discover better search terms.
-For comprehensive research, use `pages=2` or `pages=3`.
-Set `language` to match the query language.
+Only use `engines` when you need a specific source (e.g., `arxiv` for preprints, `github` for repos).
+
+### Search strategy
+
+1. **Use `autocomplete` first** for ambiguous or broad queries to discover better search terms
+2. **Search in parallel** — launch multiple searches simultaneously in one response:
+   - **Parallel categories**: always include `general` alongside any specialized category
+   - **Parallel keywords**: use different phrasings, synonyms, or translations of the same query
+   - Combine categories × keywords, but **cap at 4-6 parallel searches** to avoid excessive requests
+   - Prioritize the most promising combinations rather than exhaustive cross-product
+3. **Auto-retry on insufficient results** — if initial searches return few or irrelevant results, automatically run a follow-up round with rephrased keywords or broader/narrower categories instead of giving up
+4. **Deduplicate and diversify sources** — remove duplicate URLs from parallel searches and prioritize results from different domains over multiple hits from the same site
+5. **Use `pages=2` or `pages=3`** for comprehensive research
+6. **Set `language`** to match the query language
+7. **Use `time_range`** for time-sensitive topics (`day`, `week`, `month`, `year`)
 
 ## Output format
 
@@ -73,7 +100,5 @@ Return your findings in this structure:
 
 - Be concise — the main agent will relay your findings to the user
 - Always include source URLs so the main agent can cite them
-- If results are insufficient, say so clearly rather than speculating
-- For multi-faceted questions, run multiple searches with different queries
-- Prefer recent results for time-sensitive topics (use `time_range=week` or `time_range=month`)
+- If results are still insufficient after retrying, say so clearly rather than speculating
 - Do not editorialize — report what the sources say
