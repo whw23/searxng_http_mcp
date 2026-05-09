@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "searxng-http-mcp",
-      "source": "./local",
+      "source": "./plugins/local",
       "description": "SearXNG MCP server (local Docker stdio) — zero-config, self-contained",
       "version": "1.0.0",
       "license": "MIT",
@@ -15,7 +15,7 @@
     },
     {
       "name": "searxng-http-mcp-remote",
-      "source": "./remote",
+      "source": "./plugins/remote",
       "description": "SearXNG MCP server (remote HTTP) — connect to a deployed instance",
       "version": "1.0.0",
       "license": "MIT",

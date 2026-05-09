@@ -44,12 +44,34 @@ Discover available search engines and categories. No parameters. Returns engines
 
 Use this when you need to target specific engines or categories (e.g., "search academic papers" → call engine_info to find science engines, then search with `categories=science`).
 
+## Category Selection Guide
+
+Use `categories` as the primary filter. Only fall back to `engines` when categories produce poor results.
+
+| User intent | Category | When to use `engines` instead |
+|---|---|---|
+| Current events, breaking news | `news` | — |
+| Academic papers, research | `science` or `scientific publications` | `arxiv` for preprints, `pubmed` for biomedical |
+| Code, libraries, tech docs | `it` | `github` for repos, `stackoverflow` for Q&A |
+| Package lookup (npm, pip) | `packages` | `pypi`, `docker hub` by name |
+| Images, photos | `images` | — |
+| Videos | `videos` | `youtube` for YouTube-specific |
+| Maps, locations | `map` | — |
+| Definitions, word meanings | `dictionaries` or `define` | — |
+| Weather | `weather` | — |
+| Translation | `translate` | — |
+| Shopping, products | `shopping` | — |
+| Torrents, file search | `files` | — |
+| Social media posts | `social media` | — |
+| General knowledge | `general` (default) | — |
+
 ## Rules
 
 1. Always include a **Sources** section at the end with clickable markdown links
-2. Use `categories` to narrow results (e.g., `news` for current events, `it` for tech, `science` for papers)
-3. Use `pages=3` when you need comprehensive results
-4. Use `language` when the user writes in a specific language
-5. Use `format=full` when you need to evaluate result quality (scores, engines)
-6. Use `autocomplete` to refine ambiguous queries before searching
-7. Use `engine_info` to discover available engines before targeting specific ones
+2. **Prefer `categories` over `engines`** to narrow results — categories leverage multiple engines automatically
+3. Only use `engines` when you need a specific source (e.g., `arxiv` for preprints, `github` for repos)
+4. Use `pages=3` when you need comprehensive results
+5. Use `language` when the user writes in a specific language
+6. Use `format=full` when you need to evaluate result quality (scores, engines)
+7. Use `autocomplete` to refine ambiguous queries before searching
+8. Use `engine_info` only when the category table above doesn't cover the use case
