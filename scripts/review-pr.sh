@@ -9,6 +9,10 @@
 
 set -euo pipefail
 
+for cmd in gh docker rsync; do
+    command -v "$cmd" >/dev/null 2>&1 || { echo "Error: $cmd is required but not found."; exit 1; }
+done
+
 PR_NUMBER="${1:?Usage: $0 <PR_NUMBER>}"
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 WORKDIR="/tmp/pr-review-$$"
