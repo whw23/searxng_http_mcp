@@ -24,6 +24,18 @@ permissions:
   pull-requests: read
 
 jobs:
+  plugin-consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check plugin consistency (local vs remote)
+        run: |
+          diff -r plugins/local/skills plugins/remote/skills || { echo "::error::Skills differ between local and remote plugins"; exit 1; }
+          diff -r plugins/local/agents plugins/remote/agents || { echo "::error::Agents differ between local and remote plugins"; exit 1; }
+          echo "Plugins are consistent."
+
   test:
     runs-on: ubuntu-latest
     permissions:
