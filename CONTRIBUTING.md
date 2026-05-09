@@ -18,7 +18,9 @@ graph LR
     H -->|Changes requested| C
     H -->|Approved| I[Merge to dev]
     I --> J[Maintainer PRs dev → main]
-    J --> K[Build & Publish]
+    J --> K[Copilot review non-blocking]
+    K --> L[Merge to main]
+    L --> M[Build & Publish]
 ```
 
 1. **Fork** this repository
@@ -28,7 +30,8 @@ graph LR
 5. **Wait for CI to pass** in your fork
 6. Open a **Pull Request to the `dev` branch** (not `main`)
 7. **Wait for Copilot code review** — address any feedback if changes are requested
-8. A maintainer will review and merge
+8. A maintainer will review and merge to `dev`
+9. Maintainer PRs `dev` → `main` — Copilot may post a non-blocking review; maintainer addresses feedback at their discretion
 
 ## Rules
 
