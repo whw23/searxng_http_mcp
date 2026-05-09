@@ -3,14 +3,19 @@ from unittest.mock import AsyncMock, patch, MagicMock
 
 import pytest
 
-from mcp_server.tools import search, autocomplete, fetch_engine_info, _cache
+from mcp_server.tools import search, autocomplete, fetch_engine_info, engine_info, _cache
 
 
 @pytest.fixture(autouse=True)
 def clear_cache():
+    import mcp_server.tools as _mod
     _cache.clear()
+    _mod._engine_info_cache = None
+    _mod._engine_info_cache_ts = 0
     yield
     _cache.clear()
+    _mod._engine_info_cache = None
+    _mod._engine_info_cache_ts = 0
 
 
 @pytest.fixture
@@ -276,3 +281,39 @@ class TestFetchEngineInfo:
         assert "general" in info["categories"]
         assert info["engines"] == []
         assert info["category_engines"] == {}
+
+
+class TestEngineInfoTool:
+    @pytest.mark.anyio
+    @patch("mcp_server.tools.httpx.AsyncClient")
+    async def test_engine_info_basic(self, mock_client_cls):
+        response = _make_httpx_response({
+            "categories": {"general": {}, "science": {}},
+            "engines": [
+                {"name": "google", "enabled": True, "categories": ["general"]},
+                {"name": "arxiv", "enabled": True, "categories": ["science"]},
+            ],
+        })
+        mock_client_cls.return_value = _make_mock_client(response)
+
+        result = await engine_info()
+        data = json.loads(result)
+
+        assert "general" in data["categories"]
+        assert "google" in data["engines"]
+        assert "google" in data["category_engines"]["general"]
+        assert "arxiv" in data["category_engines"]["science"]
+
+    @pytest.mark.anyio
+    @patch("mcp_server.tools.httpx.AsyncClient")
+    async def test_engine_info_fallback(self, mock_client_cls):
+        mock_client_cls.return_value.__aenter__ = AsyncMock(
+            side_effect=Exception("Connection refused")
+        )
+
+        result = await engine_info()
+        data = json.loads(result)
+
+        assert "general" in data["categories"]
+        assert data["engines"] == []
+        assert data["category_engines"] == {}

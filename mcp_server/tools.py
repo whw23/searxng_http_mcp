@@ -301,6 +301,37 @@ async def autocomplete(
     return json.dumps(resp.json(), ensure_ascii=False)
 
 
+_engine_info_cache: dict | None = None
+_engine_info_cache_ts: float = 0
+ENGINE_INFO_CACHE_TTL = 300
+
+
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=True,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    )
+)
+async def engine_info() -> str:
+    """Get available search engines and categories from the SearXNG instance.
+
+    Returns the list of enabled engines grouped by category.
+    Use this to discover what engines and categories are available
+    before calling search with specific engines or categories filters.
+    """
+    global _engine_info_cache, _engine_info_cache_ts
+    now = time.monotonic()
+    if _engine_info_cache is not None and now - _engine_info_cache_ts < ENGINE_INFO_CACHE_TTL:
+        return json.dumps(_engine_info_cache, ensure_ascii=False)
+
+    info = await fetch_engine_info()
+    _engine_info_cache = info
+    _engine_info_cache_ts = now
+    return json.dumps(info, ensure_ascii=False)
+
+
 async def cleanup():
     global _http_client
     if _http_client and not _http_client.is_closed:
