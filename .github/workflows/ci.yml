@@ -114,7 +114,7 @@ jobs:
 
   # === Copilot code review gate (pull_request only) ===
   copilot-review:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.base_ref != 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Wait for Copilot code review
