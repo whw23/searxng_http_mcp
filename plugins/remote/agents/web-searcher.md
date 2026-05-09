@@ -74,7 +74,8 @@ Only use `engines` when you need a specific source (e.g., `arxiv` for preprints,
 1. **Search in parallel** — launch multiple searches simultaneously in one response:
    - **Parallel categories**: always include `general` (Google/Baidu) alongside any specialized category
    - **Parallel keywords**: use different phrasings, synonyms, or translations of the same query
-   - Example: searching for emoji should fire `general` + "thinking emoji" AND `icons` + "thinking emoji" AND `general` + "思考 emoji" AND `icons` + "思考 emoji" in parallel
+   - Combine categories × keywords, but **cap at 4-6 parallel searches** to avoid excessive requests
+   - Prioritize the most promising combinations rather than exhaustive cross-product
 2. **Use `autocomplete` first** for ambiguous or broad queries to discover better search terms
 3. **Deduplicate and merge** results from parallel searches before returning
 4. **Use `pages=2` or `pages=3`** for comprehensive research
