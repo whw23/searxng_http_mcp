@@ -92,24 +92,29 @@ jobs:
             COMMIT_FILES=$(gh api "repos/$HEAD_REPO/commits/$HEAD_SHA" --jq '[.files[].filename] | join("\n")')
             NON_IGNORED=$(echo "$COMMIT_FILES" | grep -v -E '(^[^/]*\.md$|^docs/|^assets/|^LICENSE$)' || true)
             if [ -z "$NON_IGNORED" ]; then
-              # Head commit is docs-only. Verify that the PR's code-changing commits
-              # have a successful push CI run by walking earlier commits.
+              # Head commit is docs-only. Find the latest code-changing commit in the
+              # PR and require a successful push CI run for it.
               PR_COMMITS=$(gh api "repos/$BASE_REPO/pulls/$PR_NUMBER/commits" --jq '.[].sha')
-              FOUND_CI=false
+              LATEST_CODE_SHA=""
               for sha in $PR_COMMITS; do
-                RUNS=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$sha&status=success&event=push" --jq '.total_count // 0')
-                if [ "${RUNS:-0}" -gt 0 ]; then
-                  echo "Head commit is docs-only; found passing push CI on earlier commit $sha."
-                  FOUND_CI=true
-                  break
+                C_FILES=$(gh api "repos/$HEAD_REPO/commits/$sha" --jq '[.files[].filename] | join("\n")')
+                C_NON_IGNORED=$(echo "$C_FILES" | grep -v -E '(^[^/]*\.md$|^docs/|^assets/|^LICENSE$)' || true)
+                if [ -n "$C_NON_IGNORED" ]; then
+                  LATEST_CODE_SHA="$sha"
                 fi
               done
-              if [ "$FOUND_CI" = "true" ]; then
+              if [ -z "$LATEST_CODE_SHA" ]; then
+                echo "All PR commits are docs-only. Passing."
                 exit 0
               fi
-              # No code-changing commits in this PR, or all changes are docs-only
-              echo "Head commit only changes ignored files and push CI was skipped. Passing."
-              exit 0
+              # Found a code-changing commit — require passing CI for it
+              RUNS=$(gh api "repos/$HEAD_REPO/actions/runs?head_sha=$LATEST_CODE_SHA&status=success&event=push" --jq '.total_count // 0')
+              if [ "${RUNS:-0}" -gt 0 ]; then
+                echo "Head commit is docs-only; latest code commit $LATEST_CODE_SHA has passing push CI."
+                exit 0
+              fi
+              echo "::error::Head commit is docs-only but latest code-changing commit $LATEST_CODE_SHA has no successful push CI run."
+              exit 1
             fi
             echo "::error::No push-triggered CI run found but head commit changes non-ignored files: $NON_IGNORED"
             exit 1
