@@ -38,6 +38,7 @@ jobs:
       contents: read
       packages: write
       id-token: write
+      security-events: write
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -122,6 +123,7 @@ jobs:
 
       - name: Build and push
         if: steps.decide.outputs.should_build == 'true'
+        id: build
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7
         with:
           context: .
@@ -132,6 +134,33 @@ jobs:
             ${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Scan image for vulnerabilities
+        if: steps.decide.outputs.should_build == 'true'
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:latest
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+
+      - name: Upload Trivy results to GitHub Security
+        if: steps.decide.outputs.should_build == 'true'
+        uses: github/codeql-action/upload-sarif@7fd177fa680c9881b53cdab4d346d32574c9f7f4 # v3
+        with:
+          sarif_file: trivy-results.sarif
+
+      - name: Install Cosign
+        if: steps.decide.outputs.should_build == 'true'
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+
+      - name: Sign container image
+        if: steps.decide.outputs.should_build == 'true'
+        run: |
+          cosign sign --yes "$IMAGE@$DIGEST"
+        env:
+          IMAGE: ${{ env.IMAGE_NAME }}
+          DIGEST: ${{ steps.build.outputs.digest }}
 
       - name: Install mcp-publisher
         if: steps.decide.outputs.should_build == 'true'
