@@ -124,7 +124,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           BASE_REPO: ${{ github.repository }}
 
-  # === Copilot code review gate (pull_request only) ===
+  # === Copilot code review gate (PRs targeting dev only, skipped for dev→main) ===
   copilot-review:
     if: github.event_name == 'pull_request' && github.base_ref != 'main'
     runs-on: ubuntu-latest
