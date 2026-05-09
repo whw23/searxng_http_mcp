@@ -15,7 +15,18 @@ Use the configured SearXNG MCP server to search the web.
 - Finding news or current events
 - Searching for images, videos, academic papers, code, packages
 
-## Tools
+## How to Search
+
+**Prefer delegating to the `web-searcher` agent** via the Agent tool. The agent handles
+searching, deduplication, and summarization, and returns a clean result without polluting
+your context window with raw JSON. Only call the MCP search tools directly when:
+
+- The `web-searcher` agent is unavailable (e.g., no subagent support)
+- You need a single quick lookup where spawning an agent is overkill
+
+## MCP Tools Reference
+
+When searching directly (without the agent), use these tools:
 
 ### `search`
 
@@ -67,11 +78,12 @@ Use `categories` as the primary filter. Only fall back to `engines` when categor
 
 ## Rules
 
-1. Always include a **Sources** section at the end with clickable markdown links
-2. **Prefer `categories` over `engines`** to narrow results — categories leverage multiple engines automatically
-3. Only use `engines` when you need a specific source (e.g., `arxiv` for preprints, `github` for repos)
-4. Use `pages=3` when you need comprehensive results
-5. Use `language` when the user writes in a specific language
-6. Use `format=full` when you need to evaluate result quality (scores, engines)
-7. Use `autocomplete` to refine ambiguous queries before searching
-8. Use `engine_info` only when the category table above doesn't cover the use case
+1. **Delegate to `web-searcher` agent by default** — it returns clean summaries and keeps raw data out of your context
+2. Always include a **Sources** section at the end with clickable markdown links
+3. **Prefer `categories` over `engines`** to narrow results — categories leverage multiple engines automatically
+4. Only use `engines` when you need a specific source (e.g., `arxiv` for preprints, `github` for repos)
+5. Use `pages=3` when you need comprehensive results
+6. Use `language` when the user writes in a specific language
+7. Use `format=full` when you need to evaluate result quality (scores, engines)
+8. Use `autocomplete` to refine ambiguous queries before searching
+9. Use `engine_info` only when the category table above doesn't cover the use case

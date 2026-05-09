@@ -8,6 +8,7 @@ on:
       - "docs/**"
       - "assets/**"
       - "LICENSE"
+      - "!plugins/**/*.md"
   pull_request:
     branches: [dev, main]
     paths-ignore:
@@ -15,6 +16,7 @@ on:
       - "docs/**"
       - "assets/**"
       - "LICENSE"
+      - "!plugins/**/*.md"
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -41,6 +43,12 @@ jobs:
 
       - name: Install dependencies
         run: pip install "mcp[cli]" pytest pytest-anyio httpx pytest-cov pyyaml
+
+      - name: Check plugin consistency (local vs remote)
+        run: |
+          diff -r plugins/local/skills plugins/remote/skills || { echo "::error::Skills differ between local and remote plugins"; exit 1; }
+          diff -r plugins/local/agents plugins/remote/agents || { echo "::error::Agents differ between local and remote plugins"; exit 1; }
+          echo "Plugins are consistent."
 
       - name: Run tests
         run: pytest tests/ -v --tb=short --junitxml=test-results.xml --cov=mcp_server --cov-report=term-missing --cov-report=xml:coverage.xml
