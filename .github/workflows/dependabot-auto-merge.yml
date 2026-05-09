@@ -13,12 +13,15 @@ jobs:
     steps:
       - name: Fetch Dependabot metadata
         id: metadata
-        uses: dependabot/fetch-metadata@v2
+        uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a # v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Approve and auto-merge patch/minor updates
-        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
+      - name: Approve and auto-merge patch/minor/security updates
+        if: >-
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-minor' ||
+          steps.metadata.outputs.update-type == 'security-update'
         run: |
           gh pr review "$PR_URL" --approve
           gh pr merge "$PR_URL" --auto --merge

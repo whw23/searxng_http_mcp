@@ -111,9 +111,6 @@ jobs:
   test:
     if: github.event_name == 'push' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -135,16 +132,6 @@ jobs:
         uses: test-summary/action@37b508cfee6d4d080eedd00b5bb240a6a784a6a5 # v2
         with:
           paths: test-results.xml
-
-      - name: Coverage report
-        if: always()
-        uses: py-cov-action/python-coverage-comment-action@53ff7553078bad69030786e486677315346c2dd2 # v3
-        with:
-          GITHUB_TOKEN: ${{ github.token }}
-          MINIMUM_GREEN: 80
-          MINIMUM_ORANGE: 60
-          ANNOTATE_MISSING_LINES: false
-          COMMENT_ARTIFACT_NAME: ""
 
       - name: Upload test artifacts
         if: always()
