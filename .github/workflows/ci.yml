@@ -27,7 +27,7 @@ jobs:
 
       - name: Test report summary
         if: always()
-        uses: test-summary/action@v3
+        uses: test-summary/action@v2
         with:
           paths: test-results.xml
 
