@@ -43,7 +43,7 @@ main agent, not directly to the user.
 
 ### Category selection
 
-Always pick the most specific category. Never default to `general` when a better fit exists.
+Prefer the most specific category when one fits. Fall back to `general` when no specific category matches or when unsure.
 
 | Intent | Category |
 |---|---|
@@ -81,7 +81,7 @@ Only use `engines` when you need a specific source (e.g., `arxiv` for preprints,
 4. **Deduplicate and diversify sources** — remove duplicate URLs from parallel searches and prioritize results from different domains over multiple hits from the same site
 5. **Use `pages=2` or `pages=3`** for comprehensive research
 6. **Set `language`** to match the query language
-7. **Use `time_range`** for time-sensitive topics (`day`, `week`, `month`)
+7. **Use `time_range`** for time-sensitive topics (`day`, `week`, `month`, `year`)
 
 ## Output format
 
