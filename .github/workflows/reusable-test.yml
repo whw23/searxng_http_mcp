@@ -1,0 +1,66 @@
+name: Reusable Test
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install "mcp[cli]" pytest pytest-anyio httpx pytest-cov pyyaml
+
+      - name: Run tests
+        run: pytest tests/ -v --tb=short --junitxml=test-results.xml --cov=mcp_server --cov-report=term-missing --cov-report=xml:coverage.xml --cov-fail-under=80
+
+      - name: Coverage summary
+        if: always()
+        run: |
+          if [ -f coverage.xml ]; then
+            echo "## Coverage Report" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            python -m coverage report 2>/dev/null || echo "Coverage data not available"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Test report summary
+        if: always()
+        uses: test-summary/action@37b508cfee6d4d080eedd00b5bb240a6a784a6a5 # v2
+        with:
+          paths: test-results.xml
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: test-reports
+          path: |
+            test-results.xml
+            coverage.xml
+
+  consistency-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Check plugin consistency (local vs remote)
+        run: |
+          diff -r plugins/local/skills plugins/remote/skills || { echo "::error::Skills differ between local and remote plugins"; exit 1; }
+          diff -r plugins/local/agents plugins/remote/agents || { echo "::error::Agents differ between local and remote plugins"; exit 1; }
+          echo "Plugins are consistent."

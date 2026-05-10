@@ -6,77 +6,52 @@ Thanks for your interest in contributing to SearXNG HTTP MCP!
 
 ```mermaid
 graph LR
-    A[Fork repo] --> B[Enable Actions]
-    B --> C[Create branch & code]
-    C --> D[Push to fork]
-    D --> E{Fork CI passes?}
-    E -->|No| C
-    E -->|Yes| F[PR to dev]
-    F --> G{Copilot review}
-    G -->|Changes requested| C
+    A[Fork repo] --> B[Create branch & code]
+    B --> C[Push to fork]
+    C --> D[PR to dev]
+    D --> E{Maintainer approves CI}
+    E --> F{CI passes?}
+    F -->|No| B
+    F -->|Yes| G{Copilot review}
+    G -->|Changes requested| B
     G -->|Passed| H{Maintainer review}
-    H -->|Changes requested| C
+    H -->|Changes requested| B
     H -->|Approved| I[Merge to dev]
     I --> J[Maintainer PRs dev → main]
-    J --> K[Copilot review non-blocking]
-    K --> L[Merge to main]
-    L --> M[Build & Publish]
+    J --> K[Auto-merge]
+    K --> L[Build & Publish]
 ```
 
+## For External Contributors
+
 1. **Fork** this repository
-2. **Enable GitHub Actions** in your fork (Settings → Actions → General → Allow all actions)
-3. Create a feature branch and make your changes
-4. **Push** to your fork — CI runs automatically
-5. **Wait for CI to pass** in your fork
-6. Open a **Pull Request to the `dev` branch** (not `main`)
-7. **Wait for Copilot code review** — address any feedback if changes are requested
-8. A maintainer will review and merge to `dev`
-9. Maintainer PRs `dev` → `main` — Copilot may post a non-blocking review; maintainer addresses feedback at their discretion
+2. Create a feature branch and make your changes
+3. **Push** to your fork
+4. Open a **Pull Request to the `dev` branch** (not `main`)
+5. **Wait for maintainer to approve CI** — all fork PRs require approval before CI runs
+6. **Wait for Copilot code review** — address any feedback, push fixes to the same branch, and resolve comment threads
+7. A maintainer will review and merge to `dev`
 
-## Rules
+### Rules
 
-### Branch protection
+- PRs must target the **`dev`** branch — PRs directly to `main` will be rejected
+- Fork PRs **cannot** modify files in the `.github/` directory — if you need CI changes, open an issue
+- Follow [Conventional Commits](https://www.conventionalcommits.org/) for commit messages
 
-Both `main` and `dev` are protected branches — **direct pushes are not allowed**. All changes must go through pull requests:
+## For Maintainers
 
-- Create a feature branch from `dev`, push it, and open a PR to `dev`
-- `main` is only updated from `dev` by maintainers via PR
-
-### PR target
-
-- PRs must target the **`dev`** branch
-- PRs directly to `main` will be rejected — `main` is only updated from `dev` by maintainers
-
-### CI must pass in your fork first
-
-**We do not run tests on PR submissions.** All CI must pass in your fork **before** you open a PR. This is enforced automatically — if your fork has no successful CI run for the PR's head commit, the PR cannot be merged.
-
-If you see an error like:
-
-> No successful push-triggered CI run found in your-username/searxng_http_mcp
-
-Make sure:
-
-1. GitHub Actions is enabled in your fork (Settings → Actions → General → Allow all actions)
-2. You have pushed your latest commit and the CI workflow has completed successfully
-
-### Protected files
-
-Fork PRs **cannot** modify files in the `.github/` directory (workflows, CI configs). If you need changes to CI, open an issue to discuss.
-
-### Copilot code review
-
-All PRs are automatically reviewed by GitHub Copilot. For PRs targeting `dev`, the `copilot-review` CI check waits up to 5 minutes for Copilot to finish; if no review is received within that window, the check passes with a warning. PRs from `dev` to `main` skip this CI gate (the code was already reviewed on `dev`), but Copilot will still post a review. If Copilot requests changes, fix the issues and push new commits to the **same PR branch** — do not open a separate PR. After pushing fixes, mark the resolved review threads as **Resolved** on GitHub.
-
-### Plugin consistency
-
-If your changes touch `plugins/local/` or `plugins/remote/`, the `skills/` and `agents/` directories must stay identical between the two. The `plugin-consistency` check enforces this.
+1. Create a feature branch in the upstream repository
+2. Develop and push (triggers test.yml automatically)
+3. Open a PR to `dev`
+4. Wait for Copilot review, address feedback, resolve comments
+5. Merge after tests pass
+6. When ready to release: create PR `dev` → `main` (auto-merges immediately), triggering build and publish
 
 ## Development Setup
 
 ```bash
-# Clone your fork
-git clone https://github.com/YOUR_USERNAME/searxng_http_mcp.git
+# Clone the repo
+git clone https://github.com/whw23/searxng_http_mcp.git
 cd searxng_http_mcp
 
 # Create virtual environment
@@ -89,6 +64,16 @@ pip install "mcp[cli]" pytest pytest-anyio httpx pytest-cov pyyaml
 # Run tests
 pytest tests/ -v
 ```
+
+## Reviewing External PRs Locally
+
+Use the sandboxed review script to safely test untrusted code:
+
+```bash
+./scripts/review-pr.sh <PR_NUMBER>
+```
+
+This runs tests in an isolated Docker container with no network access and read-only source.
 
 ## Commit Messages
 
