@@ -18,15 +18,15 @@
 </p>
 
 <p>
-  <a href="#quick-start">Quick Start</a> ·
-  <a href="#features">Features</a> ·
-  <a href="#architecture">Architecture</a> ·
-  <a href="#comparison-with-alternatives">Comparison</a> ·
-  <a href="#usage">Usage</a> ·
-  <a href="#mcp-tools-reference">MCP Tools</a> ·
-  <a href="#client-configuration">Client Config</a> ·
-  <a href="#claude-code-plugin">Plugin</a> ·
-  <a href="#contributing">Contributing</a>
+  <a href="#-quick-start">Quick Start</a> ·
+  <a href="#-features">Features</a> ·
+  <a href="#-architecture">Architecture</a> ·
+  <a href="#-comparison-with-alternatives">Comparison</a> ·
+  <a href="#-usage">Usage</a> ·
+  <a href="#-mcp-tools-reference">MCP Tools</a> ·
+  <a href="#-client-configuration">Client Config</a> ·
+  <a href="#-claude-code-plugin">Plugin</a> ·
+  <a href="#-contributing">Contributing</a>
 </p>
 
 </div>
@@ -632,10 +632,12 @@ docker run -d --name searxng-mcp --restart unless-stopped \
 
 ## 🤝 Contributing
 
-1. 🍴 Fork the repository
+See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full workflow, CI requirements, and development setup.
+
+1. 🍴 Fork the repository and enable GitHub Actions in your fork
 2. 🌿 Create a feature branch from `dev`
 3. ✍️ Make your changes
-4. ✅ Run tests: `pytest tests/ -v`
+4. ✅ Run tests: `pytest tests/ -v` — CI must pass in your fork before opening a PR
 5. 📬 Submit a PR to `dev`
 
 Development happens on the `dev` branch. Merges to `main` trigger image builds.
@@ -644,4 +646,4 @@ Development happens on the `dev` branch. Merges to `main` trigger image builds.
 
 [MIT](LICENSE) — MCP server code.
 
-SearXNG itself is licensed under [AGPL-3.0-or-later](https://github.com/searxng/searxng/blob/master/LICENSE).
+[SearXNG](https://github.com/searxng/searxng) itself is licensed under [AGPL-3.0-or-later](https://github.com/searxng/searxng/blob/master/LICENSE).
