@@ -55,7 +55,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Check for docs-only changes
         id: changes
@@ -63,7 +63,7 @@ jobs:
           if [ "$EVENT_NAME" = "pull_request" ]; then
             FILES=$(gh pr diff "$PR_NUMBER" --name-only --repo "$REPO")
           else
-            FILES=$(git diff --name-only HEAD~1)
+            FILES=$(git diff --name-only "$BEFORE_SHA".."$AFTER_SHA")
           fi
           NON_DOCS=$(echo "$FILES" | grep -v -E '(^[^/]*\.md$|^docs/|^assets/|^LICENSE$)' || true)
           if [ -z "$NON_DOCS" ]; then
@@ -77,6 +77,8 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
 
   call-test:
     needs: check-changes
