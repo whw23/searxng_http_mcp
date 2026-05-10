@@ -11,14 +11,14 @@ RUN python -m ensurepip --upgrade && \
 COPY mcp_server/ /usr/local/searxng/mcp_server/
 
 # Copy custom entrypoint
-COPY entrypoint.sh /usr/local/searxng/custom-entrypoint.sh
+COPY scripts/entrypoint.sh /usr/local/searxng/custom-entrypoint.sh
 RUN chmod +x /usr/local/searxng/custom-entrypoint.sh
 
 LABEL io.modelcontextprotocol.server.name="io.github.whw23/searxng-http-mcp"
 
 EXPOSE 8888
 
-COPY healthcheck.sh /usr/local/searxng/healthcheck.sh
+COPY scripts/healthcheck.sh /usr/local/searxng/healthcheck.sh
 RUN chmod +x /usr/local/searxng/healthcheck.sh
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \

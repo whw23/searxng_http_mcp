@@ -1,13 +1,16 @@
 ## Project Workflow
 
-- 分支策略：`dev` 为开发分支，`main` 为发布分支，所有改动通过 PR
-- PR 规则：feature → dev → main，不可直接 PR 到 main
-- Copilot review 流程：PR 到 dev 后等待 Copilot review（Ruleset 原生触发），在同一分支 push 修复，resolve 已处理的评论，合并后删除本地分支（远程分支由 GitHub 自动删除）
-- CI：push 触发 test.yml，PR 到 main 只跑来源分支检查（不跑测试）
-- 所有本地分支（feat/fix/docs/ci 等）在 PR 前先 rebase 到最新 dev（`git fetch origin && git rebase origin/dev`），确保基于最新代码
-- push 后必须等 push 触发的 test.yml CI 通过，再创建 PR
-- 合并方式：始终使用 merge commit（GitHub 上选 "Create a merge commit"，CLI 用 `gh pr merge --merge`），不使用 squash 或 rebase merge，保留分支历史
-- commit 风格：Conventional Commits
-- `.github/` 目录受保护，fork PR 不可修改
-- 本地审查外部 PR 时使用 `scripts/review-pr.sh` 在隔离 Docker 容器中运行测试，不要直接在主机执行不信任的代码
-- 等待 CI/Copilot review 时，使用 Bash 工具的 `run_in_background` 参数轮询状态（如 `gh pr checks --watch`），不要用 sleep 阻塞对话
+- Branching: `dev` is the development branch, `main` is the release branch. All changes go through PRs.
+- PR rules: feature/fix branches → dev → main. PRs to main must come from dev only.
+- Copilot review flow: After PR to dev, wait for CI to pass, then confirm Copilot review is submitted (use `gh api repos/{owner}/{repo}/pulls/{number}/reviews` to verify `copilot-pull-request-reviewer[bot]` has posted a review — don't just check comment count). Fix feedback on the same branch, resolve addressed comments, then merge. Delete local branch after merge (remote branch is auto-deleted by GitHub).
+- CI: push triggers test.yml. PRs to main run policy checks only (source-branch verification + fork protections), no tests.
+- Rebase all local branches (feat/fix/docs/ci etc.) onto latest dev before PR (`git fetch origin && git rebase origin/dev`).
+- After push, wait for push-triggered test.yml CI to pass before creating PR.
+- Merge strategy: always use merge commit (GitHub: "Create a merge commit", CLI: `gh pr merge --merge`). Never use squash or rebase merge.
+- Commit style: Conventional Commits.
+- `.github/` directory is protected — fork PRs cannot modify it.
+- Review external PRs locally using `scripts/review-pr.sh` (runs tests in isolated Docker container). Never execute untrusted code directly on the host.
+- When waiting for CI/Copilot review, use Bash tool's `run_in_background` parameter to poll status (e.g., `gh run watch`). Don't block the conversation with sleep.
+- Copilot review comments must be actually fixed before resolving. Never batch-resolve without fixing.
+- Manage GitHub Rulesets via `gh api repos/{owner}/{repo}/rulesets` — no need for Web UI.
+- Reusable workflow status check names use the format `{caller-job} / {reusable-job}` (e.g., `call-test / test`). Keep this in mind when configuring required checks.
