@@ -73,6 +73,7 @@ def server_url():
     """Start a real HTTP MCP server with mocked SearXNG and return its URL."""
     import mcp_server.tools as tools_mod
 
+    prev_client = tools_mod._http_client
     mock_client = AsyncMock(spec=httpx.AsyncClient)
     mock_client.get = _mock_get
     mock_client.is_closed = False
@@ -90,24 +91,25 @@ def server_url():
     thread = threading.Thread(target=server.run, daemon=True)
     thread.start()
 
-    deadline = time.monotonic() + 10
-    while time.monotonic() < deadline:
-        if server.started:
-            break
-        time.sleep(0.1)
-    else:
-        raise RuntimeError("Server did not start in time")
+    try:
+        deadline = time.monotonic() + 10
+        while time.monotonic() < deadline:
+            if server.started:
+                break
+            time.sleep(0.1)
+        else:
+            raise RuntimeError("Server did not start in time")
 
-    yield f"http://127.0.0.1:{port}/mcp/"
+        yield f"http://127.0.0.1:{port}/mcp/"
+    finally:
+        server.should_exit = True
+        thread.join(timeout=5)
+        assert not thread.is_alive(), "Server thread did not shut down cleanly"
 
-    server.should_exit = True
-    thread.join(timeout=5)
-    assert not thread.is_alive(), "Server thread did not shut down cleanly"
-
-    tools_mod._http_client = None
-    tools_mod._cache.clear()
-    tools_mod._engine_info_cache = None
-    tools_mod._engine_info_cache_ts = 0
+        tools_mod._http_client = prev_client
+        tools_mod._cache.clear()
+        tools_mod._engine_info_cache = None
+        tools_mod._engine_info_cache_ts = 0
 
 
 @pytest.fixture
