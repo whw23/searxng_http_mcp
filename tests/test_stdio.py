@@ -16,7 +16,7 @@ MOCK_SERVER = str(Path(__file__).parent / "stdio_server_mock.py")
 @pytest.fixture
 async def session():
     """Start the mock MCP server in stdio mode and return a connected session."""
-    env = {**os.environ, "PYTHONPATH": PROJECT_ROOT}
+    env = {"PYTHONPATH": PROJECT_ROOT, "PATH": os.environ.get("PATH", "")}
     async with stdio_client(
         StdioServerParameters(command=sys.executable, args=[MOCK_SERVER], env=env)
     ) as (read_stream, write_stream):

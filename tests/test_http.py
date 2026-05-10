@@ -57,7 +57,9 @@ async def _mock_get(url, **kwargs):
         return _mock_response(MOCK_AUTOCOMPLETE_RESPONSE)
     if "/config" in str(url):
         return _mock_response(MOCK_CONFIG_RESPONSE)
-    return _mock_response({"error": "not found"})
+    resp = _mock_response({"error": "not found"})
+    resp.status_code = 404
+    return resp
 
 
 def _find_free_port():
@@ -100,6 +102,7 @@ def server_url():
 
     server.should_exit = True
     thread.join(timeout=5)
+    assert not thread.is_alive(), "Server thread did not shut down cleanly"
 
     tools_mod._http_client = None
     tools_mod._cache.clear()
