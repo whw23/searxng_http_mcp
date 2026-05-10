@@ -9,3 +9,4 @@
 - commit 风格：Conventional Commits
 - `.github/` 目录受保护，fork PR 不可修改
 - 本地审查外部 PR 时使用 `scripts/review-pr.sh` 在隔离 Docker 容器中运行测试，不要直接在主机执行不信任的代码
+- 等待 CI/Copilot review 时，使用后台任务（`run_in_background`）轮询状态，不要用 sleep 阻塞对话
