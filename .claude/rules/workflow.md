@@ -11,3 +11,6 @@
 - `.github/` 目录受保护，fork PR 不可修改
 - 本地审查外部 PR 时使用 `scripts/review-pr.sh` 在隔离 Docker 容器中运行测试，不要直接在主机执行不信任的代码
 - 等待 CI/Copilot review 时，使用 Bash 工具的 `run_in_background` 参数轮询状态（如 `gh pr checks --watch`），不要用 sleep 阻塞对话
+- Copilot review 评论必须实际修复后才能 resolve，不要直接批量 resolve
+- GitHub Rulesets 管理用 `gh api repos/{owner}/{repo}/rulesets`，不需要手动在 Web UI 操作
+- Reusable workflow 的 status check 名称格式是 `{caller-job} / {reusable-job}`（如 `call-test / test`），配置 required checks 时注意
