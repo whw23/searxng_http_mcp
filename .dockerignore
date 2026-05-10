@@ -3,12 +3,13 @@
 .venv
 .pytest_cache
 .playwright-mcp
+.claude
 .claude-plugin
 .vscode
 __pycache__
 tests
 plugins
-scripts
+scripts/review-pr.sh
 docs
 assets
 *.md
