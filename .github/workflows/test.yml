@@ -1,0 +1,84 @@
+name: Test
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+    branches: [dev, main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  check-pr-source:
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify PRs to main come from upstream dev
+        run: |
+          if [ "$IS_FORK" = "true" ]; then
+            echo "::error::Fork PRs cannot target main. Please PR to dev instead."
+            exit 1
+          fi
+          if [ "$HEAD_REF" != "dev" ]; then
+            echo "::error::PRs to main must come from the dev branch, got '$HEAD_REF'"
+            exit 1
+          fi
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
+
+  check-protected-files:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Block fork PRs that modify .github/
+        run: |
+          CHANGED=$(gh pr diff "$PR_NUMBER" --name-only --repo "$REPO")
+          PROTECTED=$(echo "$CHANGED" | grep -E '^\.github/' || true)
+          if [ -n "$PROTECTED" ]; then
+            echo "::error::Fork PRs cannot modify files in .github/. Changed: $PROTECTED"
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+
+  check-changes:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.base_ref == 'dev')
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.changes.outputs.skip }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 2
+
+      - name: Check for docs-only changes
+        id: changes
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            FILES=$(gh pr diff "$PR_NUMBER" --name-only --repo "$REPO")
+          else
+            FILES=$(git diff --name-only HEAD~1)
+          fi
+          NON_DOCS=$(echo "$FILES" | grep -v -E '(^[^/]*\.md$|^docs/|^assets/|^LICENSE$)' || true)
+          if [ -z "$NON_DOCS" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Only docs changed, skipping tests."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+
+  call-test:
+    needs: check-changes
+    if: needs.check-changes.outputs.skip != 'true'
+    uses: ./.github/workflows/reusable-test.yml
