@@ -1,9 +1,9 @@
 ## Project Workflow
 
 - Branching: `dev` is the development branch, `main` is the release branch. All changes go through PRs.
-- PR rules: feature → dev → main. Never PR directly to main.
+- PR rules: feature/fix branches → dev → main. PRs to main must come from dev only.
 - Copilot review flow: After PR to dev, wait for CI to pass, then confirm Copilot review is submitted (use `gh api repos/{owner}/{repo}/pulls/{number}/reviews` to verify `copilot-pull-request-reviewer[bot]` has posted a review — don't just check comment count). Fix feedback on the same branch, resolve addressed comments, then merge. Delete local branch after merge (remote branch is auto-deleted by GitHub).
-- CI: push triggers test.yml. PR to main only runs source branch check (no tests).
+- CI: push triggers test.yml. PRs to main run policy checks only (source-branch verification + fork protections), no tests.
 - Rebase all local branches (feat/fix/docs/ci etc.) onto latest dev before PR (`git fetch origin && git rebase origin/dev`).
 - After push, wait for push-triggered test.yml CI to pass before creating PR.
 - Merge strategy: always use merge commit (GitHub: "Create a merge commit", CLI: `gh pr merge --merge`). Never use squash or rebase merge.
