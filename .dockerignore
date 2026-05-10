@@ -8,7 +8,7 @@
 __pycache__
 tests
 plugins
-scripts
+scripts/review-pr.sh
 docs
 assets
 *.md
