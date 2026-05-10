@@ -63,7 +63,11 @@ jobs:
           if [ "$EVENT_NAME" = "pull_request" ]; then
             FILES=$(gh pr diff "$PR_NUMBER" --name-only --repo "$REPO")
           else
-            FILES=$(git diff --name-only "$BEFORE_SHA".."$AFTER_SHA")
+            if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
+              FILES=$(git diff --name-only HEAD~1)
+            else
+              FILES=$(git diff --name-only "$BEFORE_SHA".."$AFTER_SHA")
+            fi
           fi
           NON_DOCS=$(echo "$FILES" | grep -v -E '(^[^/]*\.md$|^docs/|^assets/|^LICENSE$)' || true)
           if [ -z "$NON_DOCS" ]; then
