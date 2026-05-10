@@ -15,14 +15,19 @@ jobs:
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
     runs-on: ubuntu-latest
     steps:
-      - name: Verify PRs to main come from dev
+      - name: Verify PRs to main come from upstream dev
         run: |
+          if [ "$IS_FORK" = "true" ]; then
+            echo "::error::Fork PRs cannot target main. Please PR to dev instead."
+            exit 1
+          fi
           if [ "$HEAD_REF" != "dev" ]; then
             echo "::error::PRs to main must come from the dev branch, got '$HEAD_REF'"
             exit 1
           fi
         env:
           HEAD_REF: ${{ github.head_ref }}
+          IS_FORK: ${{ github.event.pull_request.head.repo.fork }}
 
   check-protected-files:
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true
