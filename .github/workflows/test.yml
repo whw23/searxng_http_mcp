@@ -4,13 +4,26 @@ on:
   push:
     branches-ignore: [main]
   pull_request:
-    branches: [dev]
+    branches: [dev, main]
 
 permissions:
   contents: read
   pull-requests: read
 
 jobs:
+  check-pr-source:
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify PRs to main come from dev
+        run: |
+          if [ "$HEAD_REF" != "dev" ]; then
+            echo "::error::PRs to main must come from the dev branch, got '$HEAD_REF'"
+            exit 1
+          fi
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+
   check-protected-files:
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true
     runs-on: ubuntu-latest
@@ -29,6 +42,7 @@ jobs:
           REPO: ${{ github.repository }}
 
   check-changes:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.base_ref == 'dev')
     runs-on: ubuntu-latest
     outputs:
       skip: ${{ steps.changes.outputs.skip }}
