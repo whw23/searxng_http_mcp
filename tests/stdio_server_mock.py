@@ -4,7 +4,6 @@ Patches httpx so the MCP tools work without a real SearXNG instance.
 Launched as a subprocess by test_stdio.py.
 """
 
-import json
 from unittest.mock import AsyncMock, MagicMock
 
 import httpx
