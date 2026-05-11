@@ -27,8 +27,8 @@ env/
 .DS_Store
 Thumbs.db
 
-# Docs (design specs and plans)
-docs/
+# Docs (plugin caches)
+docs/superpowers/
 
 # Playwright MCP
 .playwright-mcp/
