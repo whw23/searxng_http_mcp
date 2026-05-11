@@ -88,3 +88,23 @@ jobs:
     needs: check-changes
     if: needs.check-changes.outputs.skip != 'true'
     uses: ./.github/workflows/reusable-test.yml
+
+  test-gate:
+    needs: [check-changes, call-test]
+    if: always() && (github.event_name == 'push' || (github.event_name == 'pull_request' && github.base_ref == 'dev'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate test results
+        run: |
+          if [ "$SKIP" = "true" ]; then
+            echo "Tests skipped (docs-only changes)"
+            exit 0
+          fi
+          if [ "$RESULT" != "success" ]; then
+            echo "Tests failed or were cancelled"
+            exit 1
+          fi
+          echo "All tests passed"
+        env:
+          SKIP: ${{ needs.check-changes.outputs.skip }}
+          RESULT: ${{ needs.call-test.result }}
