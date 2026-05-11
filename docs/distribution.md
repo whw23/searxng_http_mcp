@@ -16,7 +16,7 @@ Tracking all platforms where searxng-http-mcp is published, submitted, or planne
 |----------|-----------|--------|------|
 | awesome-mcp-servers (86k stars) | 2026-05-11 | PR pending | [#6181](https://github.com/punkpeye/awesome-mcp-servers/pull/6181) |
 | Glama.ai | 2026-05-11 | Pending review | [glama.ai/mcp/servers](https://glama.ai/mcp/servers) |
-| mcpservers.org | 2026-05-11 | Pending review, email → whw23@hotmail.com | [mcpservers.org](https://mcpservers.org) |
+| mcpservers.org | 2026-05-11 | Pending review | [mcpservers.org](https://mcpservers.org) |
 
 ## Not Yet Submitted
 
