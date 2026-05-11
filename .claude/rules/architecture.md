@@ -27,5 +27,5 @@ plugins/             # Claude Code plugin (local + remote variants)
 
 ## Gotchas
 
-- `docs/` is in `.gitignore` — spec and plan files are local only, not tracked in git
+- `docs/superpowers/` is in `.gitignore` — plugin caches are local only
 - `mcp_server` is not installed as a package — tests need `PYTHONPATH` set to project root
