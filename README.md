@@ -624,7 +624,7 @@ SearXNG generates `settings.yml` on first startup. The container automatically e
 
 ```bash
 git clone https://github.com/whw23/searxng_http_mcp.git
-cd searxng-http-mcp
+cd searxng_http_mcp
 docker build -t searxng-http-mcp:local .
 docker run -d --name searxng-mcp --restart unless-stopped \
   -p YOUR_PORT:8888 --memory=512m --cpus=1 \
