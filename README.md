@@ -104,38 +104,66 @@ graph LR
 
 ## 📊 Comparison with Alternatives
 
+<details>
+<summary>Why these five?</summary>
+
+There are [20+ SearXNG MCP servers](https://glama.ai/mcp/servers?query=searxng) and many more general-purpose search MCPs. Most SearXNG wrappers only expose a basic search tool, leaving SearXNG's categories, autocomplete, and engine metadata unused. We picked five alternatives that each represent a distinct category:
+
+- **88plug/searxng-mcp** — richest tool surface among SearXNG MCPs (7 tools: rendered fetch, research mode, parallel queries)
+- **ihor/mcp-searxng** — most GitHub stars among SearXNG MCPs
+- **open-webSearch** — top free multi-engine alternative outside the SearXNG ecosystem (Bing, Baidu, DuckDuckGo, Brave, etc.)
+- **exa-mcp-server** — most popular commercial search API MCP
+- **Perplexity MCP** — commercial AI-powered search, highest star count in the search MCP space
+
+</details>
+
 <table>
 <thead>
   <tr>
     <th>Feature</th>
     <th>✨ This project</th>
-    <th><a href="https://github.com/ihor-sokoliuk/mcp-searxng">mcp-searxng</a></th>
-    <th><a href="https://github.com/aicrafted/searxng-mcp">searxng-mcp</a></th>
-    <th><a href="https://github.com/burakaydinofficial/searxng-deepdive">searxng-deepdive</a></th>
+    <th><a href="https://github.com/88plug/searxng-mcp">88plug/searxng-mcp</a></th>
+    <th><a href="https://github.com/ihor-sokoliuk/mcp-searxng">ihor/mcp-searxng</a></th>
+    <th><a href="https://github.com/Aas-ee/open-webSearch">open-webSearch</a></th>
     <th><a href="https://github.com/exa-labs/exa-mcp-server">exa-mcp-server</a></th>
+    <th><a href="https://github.com/perplexityai/modelcontextprotocol">Perplexity MCP</a></th>
   </tr>
 </thead>
 <tbody>
-  <tr><td colspan="6"><strong>Search</strong></td></tr>
-  <tr><td>200+ engines via SearXNG</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td>30+ search categories</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Multi-page fanout</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Autocomplete suggestions</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Engine discovery tool</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Dynamic tool descriptions</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td colspan="6"><strong>Infrastructure</strong></td></tr>
-  <tr><td>Self-contained (built-in SearXNG)</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">N/A</td></tr>
-  <tr><td>Zero-install Docker deploy</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>HTTP + stdio transport</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Authentication</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td></tr>
-  <tr><td>Web UI reverse proxy</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Claude Code Plugin</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td colspan="6"><strong>General</strong></td></tr>
-  <tr><td>Free &amp; open source</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060; (paid API)</td></tr>
-  <tr><td>Privacy (self-hosted)</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Language</td><td align="center">Python</td><td align="center">Node.js</td><td align="center">Python</td><td align="center">Node.js</td><td align="center">TypeScript</td></tr>
+  <tr><td colspan="7"><strong>Search</strong></td></tr>
+  <tr><td>200+ engines via SearXNG</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>30+ search categories</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Multi-page fanout</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Autocomplete suggestions</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Engine discovery tool</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Dynamic tool descriptions</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td colspan="7"><strong>Infrastructure</strong></td></tr>
+  <tr><td>Self-contained (built-in search)</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">N/A</td><td align="center">N/A</td></tr>
+  <tr><td>Zero-install Docker deploy</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>HTTP + stdio transport</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td></tr>
+  <tr><td>Authentication</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#9989;</td></tr>
+  <tr><td>Web UI reverse proxy</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Claude Code Plugin</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td></tr>
+  <tr><td colspan="7"><strong>General</strong></td></tr>
+  <tr><td>Free &amp; open source</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060; (paid API)</td><td align="center">&#10060; (paid API)</td></tr>
+  <tr><td>Privacy (self-hosted)</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Language</td><td align="center">Python</td><td align="center">Python</td><td align="center">Node.js</td><td align="center">TypeScript</td><td align="center">TypeScript</td><td align="center">TypeScript</td></tr>
+  <tr><td>GitHub Stars</td><td align="center"><a href="https://github.com/whw23/searxng_http_mcp"><img src="https://img.shields.io/github/stars/whw23/searxng_http_mcp?style=social" alt="stars"></a></td><td align="center"><a href="https://github.com/88plug/searxng-mcp"><img src="https://img.shields.io/github/stars/88plug/searxng-mcp?style=social" alt="stars"></a></td><td align="center"><a href="https://github.com/ihor-sokoliuk/mcp-searxng"><img src="https://img.shields.io/github/stars/ihor-sokoliuk/mcp-searxng?style=social" alt="stars"></a></td><td align="center"><a href="https://github.com/Aas-ee/open-webSearch"><img src="https://img.shields.io/github/stars/Aas-ee/open-webSearch?style=social" alt="stars"></a></td><td align="center"><a href="https://github.com/exa-labs/exa-mcp-server"><img src="https://img.shields.io/github/stars/exa-labs/exa-mcp-server?style=social" alt="stars"></a></td><td align="center"><a href="https://github.com/perplexityai/modelcontextprotocol"><img src="https://img.shields.io/github/stars/perplexityai/modelcontextprotocol?style=social" alt="stars"></a></td></tr>
 </tbody>
 </table>
+
+<details>
+<summary>Why fewer tools?</summary>
+
+MCP is designed for composition — clients connect multiple specialized servers, each doing one thing well. Some alternatives bundle URL fetching, rendered page extraction, multi-query fan-out, or research modes into the search server. We keep the tool surface to three (search, autocomplete, engine discovery) by design:
+
+- **URL fetching is a separate concern.** MCP clients already ship dedicated tools (WebFetch, Playwright MCP, Jina Reader). Bundling fetch into a search server mixes responsibilities and duplicates the client ecosystem.
+- **Multi-query parallel search is client-side orchestration.** LLM clients can fire multiple `search` calls in parallel — a `search_many` tool only adds token overhead for tool selection with no real benefit.
+- **Research / synthesis belongs in the LLM layer.** The model is the best synthesizer. Pushing multi-step research logic into the MCP server couples application concerns to infrastructure.
+
+Instead we invest in what the alternatives above lack: **complete SearXNG API coverage** (categories, autocomplete, engine metadata — capabilities most wrappers leave on the table), **self-contained deployment, authentication, Web UI reverse proxy, and Claude Code plugin integration.**
+
+</details>
 
 ## 📖 Usage
 

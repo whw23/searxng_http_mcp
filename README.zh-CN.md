@@ -104,38 +104,66 @@ graph LR
 
 ## 📊 与其他方案对比
 
+<details>
+<summary>为什么选这五个？</summary>
+
+[Glama 上有 20+ 个 SearXNG MCP server](https://glama.ai/mcp/servers?query=searxng)，通用搜索 MCP 更多。大多数 SearXNG 封装只暴露了一个基础搜索工具，没有用上 SearXNG 的分类、自动补全和引擎元数据。我们选了五个分别代表不同类别的竞品：
+
+- **88plug/searxng-mcp** — SearXNG 阵营中工具最丰富（7 个工具：渲染抓取、研究模式、并行查询）
+- **ihor/mcp-searxng** — SearXNG 阵营中 GitHub 星数最高
+- **open-webSearch** — 非 SearXNG 生态中最佳的免费多引擎方案（Bing、Baidu、DuckDuckGo、Brave 等）
+- **exa-mcp-server** — 最热门的商业搜索 API MCP
+- **Perplexity MCP** — 商业 AI 搜索，搜索类 MCP 中星数最高
+
+</details>
+
 <table>
 <thead>
   <tr>
     <th>功能</th>
     <th>✨ 本项目</th>
-    <th><a href="https://github.com/ihor-sokoliuk/mcp-searxng">mcp-searxng</a></th>
-    <th><a href="https://github.com/aicrafted/searxng-mcp">searxng-mcp</a></th>
-    <th><a href="https://github.com/burakaydinofficial/searxng-deepdive">searxng-deepdive</a></th>
+    <th><a href="https://github.com/88plug/searxng-mcp">88plug/searxng-mcp</a></th>
+    <th><a href="https://github.com/ihor-sokoliuk/mcp-searxng">ihor/mcp-searxng</a></th>
+    <th><a href="https://github.com/Aas-ee/open-webSearch">open-webSearch</a></th>
     <th><a href="https://github.com/exa-labs/exa-mcp-server">exa-mcp-server</a></th>
+    <th><a href="https://github.com/perplexityai/modelcontextprotocol">Perplexity MCP</a></th>
   </tr>
 </thead>
 <tbody>
-  <tr><td colspan="6"><strong>搜索</strong></td></tr>
-  <tr><td>200+ 引擎（SearXNG）</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td>30+ 搜索分类</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td>多页并行获取</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td>自动补全建议</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>引擎发现工具</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>动态工具描述</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td colspan="6"><strong>基础设施</strong></td></tr>
-  <tr><td>自包含（内置 SearXNG）</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">N/A</td></tr>
-  <tr><td>零安装 Docker 部署</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>HTTP + stdio 传输</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>认证</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td></tr>
-  <tr><td>Web UI 反向代理</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Claude Code 插件</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td colspan="6"><strong>通用</strong></td></tr>
-  <tr><td>免费开源</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;（付费 API）</td></tr>
-  <tr><td>隐私保护（自托管）</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td>语言</td><td align="center">Python</td><td align="center">Node.js</td><td align="center">Python</td><td align="center">Node.js</td><td align="center">TypeScript</td></tr>
+  <tr><td colspan="7"><strong>搜索</strong></td></tr>
+  <tr><td>200+ 引擎（SearXNG）</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>30+ 搜索分类</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>多页并行获取</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>自动补全建议</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>引擎发现工具</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>动态工具描述</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td colspan="7"><strong>基础设施</strong></td></tr>
+  <tr><td>自包含（内置搜索引擎）</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">N/A</td><td align="center">N/A</td></tr>
+  <tr><td>零安装 Docker 部署</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>HTTP + stdio 传输</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td></tr>
+  <tr><td>认证</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#9989;</td></tr>
+  <tr><td>Web UI 反向代理</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Claude Code 插件</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#9989;</td></tr>
+  <tr><td colspan="7"><strong>通用</strong></td></tr>
+  <tr><td>免费开源</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;（付费 API）</td><td align="center">&#10060;（付费 API）</td></tr>
+  <tr><td>隐私保护（自托管）</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>语言</td><td align="center">Python</td><td align="center">Python</td><td align="center">Node.js</td><td align="center">TypeScript</td><td align="center">TypeScript</td><td align="center">TypeScript</td></tr>
+  <tr><td>GitHub Stars</td><td align="center"><a href="https://github.com/whw23/searxng_http_mcp"><img src="https://img.shields.io/github/stars/whw23/searxng_http_mcp?style=social" alt="stars"></a></td><td align="center"><a href="https://github.com/88plug/searxng-mcp"><img src="https://img.shields.io/github/stars/88plug/searxng-mcp?style=social" alt="stars"></a></td><td align="center"><a href="https://github.com/ihor-sokoliuk/mcp-searxng"><img src="https://img.shields.io/github/stars/ihor-sokoliuk/mcp-searxng?style=social" alt="stars"></a></td><td align="center"><a href="https://github.com/Aas-ee/open-webSearch"><img src="https://img.shields.io/github/stars/Aas-ee/open-webSearch?style=social" alt="stars"></a></td><td align="center"><a href="https://github.com/exa-labs/exa-mcp-server"><img src="https://img.shields.io/github/stars/exa-labs/exa-mcp-server?style=social" alt="stars"></a></td><td align="center"><a href="https://github.com/perplexityai/modelcontextprotocol"><img src="https://img.shields.io/github/stars/perplexityai/modelcontextprotocol?style=social" alt="stars"></a></td></tr>
 </tbody>
 </table>
+
+<details>
+<summary>为什么工具更少？</summary>
+
+MCP 的设计哲学是组合 — 客户端连接多个专用 server，每个做好一件事。一些竞品把 URL 抓取、渲染提取、多查询并行或研究模式塞进搜索 server。我们有意将工具面控制在三个（搜索、自动补全、引擎发现）：
+
+- **URL 抓取是独立关注点。** MCP 客户端已有专用工具（WebFetch、Playwright MCP、Jina Reader 等）。将 fetch 塞进搜索 server 混淆了职责，与客户端生态重复。
+- **多查询并行是客户端编排。** LLM 客户端本身就能并行发起多个 `search` 调用 — 增加 `search_many` 工具只会增加工具选择时的 token 开销，没有实际收益。
+- **研究/合成属于 LLM 层。** 模型本身就是最好的合成器。将多步研究逻辑推入 MCP server 会把应用层关注点耦合到基础设施。
+
+我们选择把精力投入到竞品缺失的方向：**完整的 SearXNG API 覆盖**（分类、自动补全、引擎元数据 — 大多数封装都没有暴露这些能力），以及**自包含部署、认证、Web UI 反向代理和 Claude Code 插件集成**。
+
+</details>
 
 ## 📖 使用方法
 
