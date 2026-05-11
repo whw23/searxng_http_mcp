@@ -18,6 +18,7 @@
 </p>
 
 <p>
+  <a href="README.zh-CN.md">中文</a> ·
   <a href="#-quick-start">Quick Start</a> ·
   <a href="#-features">Features</a> ·
   <a href="#-architecture">Architecture</a> ·
@@ -107,7 +108,7 @@ graph LR
 <thead>
   <tr>
     <th>Feature</th>
-    <th style="background:#e8f5e9">✨ This project</th>
+    <th>✨ This project</th>
     <th><a href="https://github.com/ihor-sokoliuk/mcp-searxng">mcp-searxng</a></th>
     <th><a href="https://github.com/aicrafted/searxng-mcp">searxng-mcp</a></th>
     <th><a href="https://github.com/burakaydinofficial/searxng-deepdive">searxng-deepdive</a></th>
@@ -116,23 +117,23 @@ graph LR
 </thead>
 <tbody>
   <tr><td colspan="6"><strong>Search</strong></td></tr>
-  <tr><td>200+ engines via SearXNG</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td>30+ search categories</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Multi-page fanout</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Autocomplete suggestions</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Engine discovery tool</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Dynamic tool descriptions</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
+  <tr><td>200+ engines via SearXNG</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
+  <tr><td>30+ search categories</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Multi-page fanout</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Autocomplete suggestions</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Engine discovery tool</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Dynamic tool descriptions</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
   <tr><td colspan="6"><strong>Infrastructure</strong></td></tr>
-  <tr><td>Self-contained (built-in SearXNG)</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">N/A</td></tr>
-  <tr><td>Zero-install Docker deploy</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>HTTP + stdio transport</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Authentication</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td></tr>
-  <tr><td>Web UI reverse proxy</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Claude Code Plugin</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Self-contained (built-in SearXNG)</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">N/A</td></tr>
+  <tr><td>Zero-install Docker deploy</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>HTTP + stdio transport</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Authentication</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td></tr>
+  <tr><td>Web UI reverse proxy</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Claude Code Plugin</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
   <tr><td colspan="6"><strong>General</strong></td></tr>
-  <tr><td>Free &amp; open source</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060; (paid API)</td></tr>
-  <tr><td>Privacy (self-hosted)</td><td align="center" style="background:#f1f8e9">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Language</td><td align="center" style="background:#f1f8e9">Python</td><td align="center">Node.js</td><td align="center">Python</td><td align="center">Node.js</td><td align="center">TypeScript</td></tr>
+  <tr><td>Free &amp; open source</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060; (paid API)</td></tr>
+  <tr><td>Privacy (self-hosted)</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td></tr>
+  <tr><td>Language</td><td align="center">Python</td><td align="center">Node.js</td><td align="center">Python</td><td align="center">Node.js</td><td align="center">TypeScript</td></tr>
 </tbody>
 </table>
 
@@ -623,7 +624,7 @@ SearXNG generates `settings.yml` on first startup. The container automatically e
 
 ```bash
 git clone https://github.com/whw23/searxng_http_mcp.git
-cd searxng-http-mcp
+cd searxng_http_mcp
 docker build -t searxng-http-mcp:local .
 docker run -d --name searxng-mcp --restart unless-stopped \
   -p YOUR_PORT:8888 --memory=512m --cpus=1 \
