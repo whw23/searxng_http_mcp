@@ -14,6 +14,7 @@ Tracking all platforms where searxng-http-mcp is published, submitted, or planne
 
 | Platform | Submitted | Status | Link |
 |----------|-----------|--------|------|
+| Docker MCP Catalog | 2026-05-11 | PR pending | [#3389](https://github.com/docker/mcp-registry/pull/3389) |
 | awesome-mcp-servers (86k stars) | 2026-05-11 | PR pending | [#6181](https://github.com/punkpeye/awesome-mcp-servers/pull/6181) |
 | Glama.ai | 2026-05-11 | Pending review | [glama.ai/mcp/servers](https://glama.ai/mcp/servers) |
 | mcpservers.org | 2026-05-11 | Pending review | [mcpservers.org](https://mcpservers.org) |
