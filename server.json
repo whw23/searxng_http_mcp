@@ -7,8 +7,24 @@
     "url": "https://github.com/whw23/searxng_http_mcp",
     "source": "github"
   },
-  "version": "1.0.0",
+  "version": "1.1.0",
   "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "searxng-http-mcp",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtimeHint": "uvx",
+      "environmentVariables": [
+        {
+          "name": "SEARXNG_URL",
+          "description": "SearXNG instance URL. Required for uvx mode.",
+          "isRequired": true,
+          "format": "string"
+        }
+      ]
+    },
     {
       "registryType": "oci",
       "identifier": "ghcr.io/whw23/searxng-http-mcp",
