@@ -25,7 +25,7 @@
   "remoteServers": [
     {
       "type": "streamable-http",
-      "url": "https://your-instance.example.com/"
+      "url": "https://your-instance.example.com/mcp/"
     }
   ],
   "mcpServers": {
@@ -33,7 +33,6 @@
       "command": "docker",
       "args": [
         "run", "-i", "--rm",
-        "-e", "SEARXNG_URL=http://host.docker.internal:8080",
         "ghcr.io/whw23/searxng-http-mcp:latest",
         "--stdio"
       ]
