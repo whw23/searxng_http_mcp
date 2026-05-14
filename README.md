@@ -56,6 +56,14 @@ docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw23/searxng-http-mcp:latest 
 
 Add this as a stdio MCP server in your client — see [Client Configuration](#-client-configuration) for details.
 
+**uvx mode** — if you already have SearXNG running ([install guide](https://docs.searxng.org/admin/installation.html)):
+
+```bash
+uvx searxng-http-mcp
+```
+
+Set `SEARXNG_URL` to point to your SearXNG instance (default: `http://127.0.0.1:8080`).
+
 ## ✨ Features
 
 ### Search
@@ -196,6 +204,18 @@ docker run --rm -i --memory=512m --cpus=1 \
 
 No ports exposed. Communication via stdin/stdout. SearXNG runs internally for the MCP tools.
 
+### 🐍 uvx Mode
+
+```bash
+# Connect to a local SearXNG instance (default: http://127.0.0.1:8080)
+uvx searxng-http-mcp
+
+# Connect to a remote SearXNG instance
+SEARXNG_URL=http://your-searxng:8080 uvx searxng-http-mcp
+```
+
+Requires Python 3.14+ and an existing SearXNG instance. No Docker needed.
+
 ### ⚙️ Environment Variables
 
 <table>
@@ -204,6 +224,7 @@ No ports exposed. Communication via stdin/stdout. SearXNG runs internally for th
 </thead>
 <tbody>
   <tr><td><code>API_KEY</code></td><td><em>(empty, no auth)</em></td><td>API key for authentication</td></tr>
+  <tr><td><code>SEARXNG_URL</code></td><td><code>http://127.0.0.1:8080</code></td><td>SearXNG instance URL (for uvx/standalone mode)</td></tr>
 </tbody>
 </table>
 
@@ -330,6 +351,20 @@ Use this to discover what engines are available before calling `search` with spe
 }
 ```
 
+**uvx mode**:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "uvx",
+      "args": ["searxng-http-mcp"],
+      "env": { "SEARXNG_URL": "http://localhost:8080" }
+    }
+  }
+}
+```
+
 </details>
 
 <details>
@@ -345,6 +380,12 @@ claude mcp add --transport http --header "x-api-key: your-secret-key" searxng ht
 
 ```bash
 claude mcp add --transport stdio searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw23/searxng-http-mcp:latest --stdio
+```
+
+**uvx mode**:
+
+```bash
+claude mcp add --transport stdio searxng -- uvx searxng-http-mcp
 ```
 
 </details>
@@ -366,6 +407,14 @@ http_headers = { "x-api-key" = "your-secret-key" }
 [mcp_servers.searxng]
 command = "docker"
 args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+```
+
+**uvx mode**:
+
+```toml
+[mcp_servers.searxng]
+command = "uvx"
+args = ["searxng-http-mcp"]
 ```
 
 </details>
@@ -396,6 +445,20 @@ args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng
     "searxng": {
       "command": "docker",
       "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+    }
+  }
+}
+```
+
+**uvx mode**:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "uvx",
+      "args": ["searxng-http-mcp"],
+      "env": { "SEARXNG_URL": "http://localhost:8080" }
     }
   }
 }
@@ -436,6 +499,21 @@ args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng
 }
 ```
 
+**uvx mode**:
+
+```json
+{
+  "servers": {
+    "searxng": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["searxng-http-mcp"],
+      "env": { "SEARXNG_URL": "http://localhost:8080" }
+    }
+  }
+}
+```
+
 </details>
 
 <details>
@@ -464,6 +542,20 @@ args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng
     "searxng": {
       "command": "docker",
       "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+    }
+  }
+}
+```
+
+**uvx mode**:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "uvx",
+      "args": ["searxng-http-mcp"],
+      "env": { "SEARXNG_URL": "http://localhost:8080" }
     }
   }
 }
@@ -504,6 +596,20 @@ Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`
 }
 ```
 
+**uvx mode**:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "uvx",
+      "args": ["searxng-http-mcp"],
+      "env": { "SEARXNG_URL": "http://localhost:8080" }
+    }
+  }
+}
+```
+
 </details>
 
 <details>
@@ -538,6 +644,19 @@ Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`
 }
 ```
 
+**uvx mode**:
+
+```json
+{
+  "mcp": {
+    "searxng": {
+      "type": "local",
+      "command": ["uvx", "searxng-http-mcp"]
+    }
+  }
+}
+```
+
 </details>
 
 <details>
@@ -560,6 +679,15 @@ mcp_servers:
   searxng:
     command: "docker"
     args: ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+```
+
+**uvx mode**:
+
+```yaml
+mcp_servers:
+  searxng:
+    command: "uvx"
+    args: ["searxng-http-mcp"]
 ```
 
 </details>
