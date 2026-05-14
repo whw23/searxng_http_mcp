@@ -6,6 +6,6 @@ search:
     - json
 
 server:
-  secret_key: "glama-mcp-deployment"
+  secret_key: "${SEARXNG_SECRET_KEY}"
   port: 8080
   bind_address: "127.0.0.1"
