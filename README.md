@@ -14,10 +14,11 @@
   <img src="https://img.shields.io/badge/transport-HTTP%20%7C%20stdio-orange" alt="Transport">
   <img src="https://img.shields.io/badge/MCP-compatible-brightgreen" alt="MCP Compatible">
   <a href="https://pypi.org/project/searxng-http-mcp/"><img src="https://img.shields.io/pypi/v/searxng-http-mcp?logo=pypi&logoColor=white" alt="PyPI"></a>
-  <a href="https://glama.ai/mcp/servers/whw23/searxng_http_mcp"><img src="https://img.shields.io/badge/Glama-hosted-brightgreen" alt="Glama"></a>
   <a href="https://registry.modelcontextprotocol.io/?q=io.github.whw23/searxng-http-mcp"><img src="https://img.shields.io/badge/MCP_Registry-published-brightgreen" alt="MCP Registry"></a>
   <a href="https://scorecard.dev/viewer/?uri=github.com/whw23/searxng_http_mcp"><img src="https://api.scorecard.dev/projects/github.com/whw23/searxng_http_mcp/badge" alt="OpenSSF Scorecard"></a>
 </p>
+
+<a href="https://glama.ai/mcp/servers/whw23/searxng_http_mcp"><img width="380" height="200" src="https://glama.ai/mcp/servers/whw23/searxng_http_mcp/badge" alt="searxng-http-mcp MCP server"></a>
 
 <p>
   <a href="README.zh-CN.md">中文</a> ·
