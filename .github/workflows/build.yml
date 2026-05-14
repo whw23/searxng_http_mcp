@@ -152,10 +152,10 @@ jobs:
         run: |
           curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
 
-      - name: Update server.json version
+      - name: Sync server.json version from pyproject.toml
         if: steps.decide.outputs.should_build == 'true'
         run: |
-          VERSION="$(date -u +%Y).${{ github.run_number }}.0"
+          VERSION=$(grep '^version' pyproject.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
           jq --arg v "$VERSION" '.version = $v' server.json > server.tmp && mv server.tmp server.json
 
       - name: Authenticate to MCP Registry
@@ -189,3 +189,39 @@ jobs:
         uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
         with:
           skip-existing: true
+
+  release:
+    needs: [build, pypi]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Check if version changed
+        id: version
+        run: |
+          VERSION=$(grep '^version' pyproject.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          echo "current=$VERSION" >> "$GITHUB_OUTPUT"
+          if gh release view "v$VERSION" --repo "$REPO" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+
+      - name: Create GitHub Release
+        if: steps.version.outputs.exists == 'false'
+        run: |
+          gh release create "v$VERSION" \
+            --repo "$REPO" \
+            --title "v$VERSION" \
+            --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          VERSION: ${{ steps.version.outputs.current }}
