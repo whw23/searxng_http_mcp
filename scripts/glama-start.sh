@@ -2,7 +2,7 @@
 set -e
 
 # Start SearXNG Flask dev server in background (logs to stderr for diagnostics)
-SEARXNG_SETTINGS_PATH=/etc/searxng/settings.yml python -m searx.webapp >&2 2>&1 &
+SEARXNG_SETTINGS_PATH=/etc/searxng/settings.yml .venv/bin/python -m searx.webapp >&2 2>&1 &
 
 # Wait for SearXNG to be ready
 i=0
