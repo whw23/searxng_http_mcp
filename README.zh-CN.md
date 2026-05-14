@@ -56,6 +56,14 @@ docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw23/searxng-http-mcp:latest 
 
 将此作为 stdio MCP 服务器添加到客户端中 —— 详见[客户端配置](#-客户端配置)。
 
+**uvx 模式** —— 如果你已有运行中的 SearXNG（[安装指南](https://docs.searxng.org/admin/installation.html)）：
+
+```bash
+uvx searxng-http-mcp
+```
+
+设置 `SEARXNG_URL` 指向你的 SearXNG 实例（默认：`http://127.0.0.1:8080`）。
+
 ## ✨ 功能特性
 
 ### 搜索
@@ -196,6 +204,18 @@ docker run --rm -i --memory=512m --cpus=1 \
 
 不暴露端口。通过 stdin/stdout 通信。SearXNG 在容器内部运行，供 MCP 工具使用。
 
+### 🐍 uvx 模式
+
+```bash
+# 连接本地 SearXNG 实例（默认：http://127.0.0.1:8080）
+uvx searxng-http-mcp
+
+# 连接远程 SearXNG 实例
+SEARXNG_URL=http://your-searxng:8080 uvx searxng-http-mcp
+```
+
+需要 Python 3.14+ 和已有的 SearXNG 实例。无需 Docker。
+
 ### ⚙️ 环境变量
 
 <table>
@@ -204,6 +224,7 @@ docker run --rm -i --memory=512m --cpus=1 \
 </thead>
 <tbody>
   <tr><td><code>API_KEY</code></td><td><em>（空，不启用认证）</em></td><td>用于认证的 API Key</td></tr>
+  <tr><td><code>SEARXNG_URL</code></td><td><code>http://127.0.0.1:8080</code></td><td>SearXNG 实例地址（用于 uvx/独立运行模式）</td></tr>
 </tbody>
 </table>
 
@@ -330,6 +351,22 @@ docker run --rm -i --memory=512m --cpus=1 \
 }
 ```
 
+**uvx 模式**：
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "uvx",
+      "args": ["searxng-http-mcp"],
+      "env": {
+        "SEARXNG_URL": "http://localhost:8080"
+      }
+    }
+  }
+}
+```
+
 </details>
 
 <details>
@@ -345,6 +382,12 @@ claude mcp add --transport http --header "x-api-key: your-secret-key" searxng ht
 
 ```bash
 claude mcp add --transport stdio searxng -- docker run --rm -i --memory=512m --cpus=1 ghcr.io/whw23/searxng-http-mcp:latest --stdio
+```
+
+**uvx 模式**：
+
+```bash
+claude mcp add --transport stdio searxng -- uvx searxng-http-mcp
 ```
 
 </details>
@@ -366,6 +409,14 @@ http_headers = { "x-api-key" = "your-secret-key" }
 [mcp_servers.searxng]
 command = "docker"
 args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+```
+
+**uvx 模式**：
+
+```toml
+[mcp_servers.searxng]
+command = "uvx"
+args = ["searxng-http-mcp"]
 ```
 
 </details>
@@ -396,6 +447,22 @@ args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng
     "searxng": {
       "command": "docker",
       "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+    }
+  }
+}
+```
+
+**uvx 模式**：
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "uvx",
+      "args": ["searxng-http-mcp"],
+      "env": {
+        "SEARXNG_URL": "http://localhost:8080"
+      }
     }
   }
 }
@@ -436,6 +503,20 @@ args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng
 }
 ```
 
+**uvx 模式**：
+
+```json
+{
+  "servers": {
+    "searxng": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["searxng-http-mcp"]
+    }
+  }
+}
+```
+
 </details>
 
 <details>
@@ -464,6 +545,22 @@ args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng
     "searxng": {
       "command": "docker",
       "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+    }
+  }
+}
+```
+
+**uvx 模式**：
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "uvx",
+      "args": ["searxng-http-mcp"],
+      "env": {
+        "SEARXNG_URL": "http://localhost:8080"
+      }
     }
   }
 }
@@ -504,6 +601,22 @@ args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng
 }
 ```
 
+**uvx 模式**：
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "uvx",
+      "args": ["searxng-http-mcp"],
+      "env": {
+        "SEARXNG_URL": "http://localhost:8080"
+      }
+    }
+  }
+}
+```
+
 </details>
 
 <details>
@@ -538,6 +651,19 @@ args = ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng
 }
 ```
 
+**uvx 模式**：
+
+```json
+{
+  "mcp": {
+    "searxng": {
+      "type": "local",
+      "command": ["uvx", "searxng-http-mcp"]
+    }
+  }
+}
+```
+
 </details>
 
 <details>
@@ -560,6 +686,15 @@ mcp_servers:
   searxng:
     command: "docker"
     args: ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+```
+
+**uvx 模式**：
+
+```yaml
+mcp_servers:
+  searxng:
+    command: "uvx"
+    args: ["searxng-http-mcp"]
 ```
 
 </details>

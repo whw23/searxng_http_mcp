@@ -543,7 +543,7 @@ wheels = [
 [[package]]
 name = "searxng-http-mcp"
 version = "1.0.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "httpx" },
     { name = "mcp", extra = ["cli"] },
