@@ -7,7 +7,7 @@ SEARXNG_SETTINGS_PATH=/etc/searxng/settings.yml .venv/bin/python -m searx.webapp
 # Wait for SearXNG to be ready
 i=0
 while [ "$i" -lt 30 ]; do
-    if wget -qO /dev/null http://127.0.0.1:8080/ 2>/dev/null; then
+    if wget -qO /dev/null http://127.0.0.1:9090/ 2>/dev/null; then
         echo "SearXNG is ready." >&2
         break
     fi
@@ -21,4 +21,5 @@ if [ "$i" -eq 30 ]; then
 fi
 
 # Start MCP server in stdio mode
+export SEARXNG_URL=http://127.0.0.1:9090
 exec .venv/bin/python -m mcp_server.main --stdio
