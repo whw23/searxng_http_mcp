@@ -1,0 +1,41 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "maintainers": ["whw23"],
+  "name": "searxng-http-mcp",
+  "description": "Privacy-first metasearch MCP server powered by SearXNG. Aggregates 200+ search engines with API key auth, reverse proxy, and multi-page fanout. Supports HTTP and stdio transports.",
+  "repository": "https://github.com/whw23/searxng_http_mcp",
+  "license": "MIT",
+  "runtime": "python",
+  "categories": ["search", "web", "privacy"],
+  "keywords": ["searxng", "metasearch", "web-search", "privacy", "mcp", "search-engine"],
+  "tools": [
+    {
+      "name": "search",
+      "description": "Search the web using SearXNG metasearch engine. Aggregates results from 200+ engines with multi-page fanout, filtering by category/engine/language/time range."
+    },
+    {
+      "name": "autocomplete",
+      "description": "Get search query suggestions from SearXNG for a given partial query."
+    },
+    {
+      "name": "engine_info",
+      "description": "Get available search engines and categories from the SearXNG instance, grouped by category."
+    }
+  ],
+  "remoteServers": [
+    {
+      "type": "streamable-http",
+      "url": "https://your-instance.example.com/mcp/"
+    }
+  ],
+  "mcpServers": {
+    "searxng-http-mcp": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "ghcr.io/whw23/searxng-http-mcp:latest",
+        "--stdio"
+      ]
+    }
+  }
+}
