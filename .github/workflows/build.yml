@@ -183,12 +183,9 @@ jobs:
         uses: astral-sh/setup-uv@0c5e2b8115b80b4c7c5ddf6ffdd634974642d182 # v5
 
       - name: Build package
-        run: |
-          VERSION="$(date -u +%Y).${RUN_NUMBER}.0"
-          sed -i "s/^version = .*/version = \"$VERSION\"/" pyproject.toml
-          uv build
-        env:
-          RUN_NUMBER: ${{ github.run_number }}
+        run: uv build
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
+        with:
+          skip-existing: true
