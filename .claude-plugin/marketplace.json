@@ -20,6 +20,14 @@
       "version": "1.1.0",
       "license": "MIT",
       "keywords": ["search", "searxng", "web-search", "mcp", "remote", "http"]
+    },
+    {
+      "name": "searxng-http-mcp-standalone",
+      "source": "./plugins/standalone",
+      "description": "SearXNG MCP server (uvx standalone) — no Docker, connect to your own SearXNG",
+      "version": "1.1.0",
+      "license": "MIT",
+      "keywords": ["search", "searxng", "web-search", "mcp", "uvx", "standalone"]
     }
   ]
 }
