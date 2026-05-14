@@ -191,4 +191,4 @@ jobs:
           RUN_NUMBER: ${{ github.run_number }}
 
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b54a752e1b56c88a6e32cc7a # v1.12.4
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
