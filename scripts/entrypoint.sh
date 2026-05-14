@@ -42,5 +42,5 @@ if [ "$1" = "--stdio" ]; then
     exec python -m mcp_server.main --stdio
 else
     echo "Starting MCP server in HTTP mode on port 8888..." >&2
-    exec python -m mcp_server.main
+    exec python -m mcp_server.main --http
 fi
