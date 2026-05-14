@@ -211,7 +211,7 @@ No ports exposed. Communication via stdin/stdout. SearXNG runs internally for th
 uvx searxng-http-mcp
 
 # Connect to a remote SearXNG instance
-SEARXNG_URL=http://your-searxng:8080 uvx searxng-http-mcp
+SEARXNG_URL=http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT uvx searxng-http-mcp
 ```
 
 Requires Python 3.14+ and an existing SearXNG instance. No Docker needed.
@@ -359,7 +359,7 @@ Use this to discover what engines are available before calling `search` with spe
     "searxng": {
       "command": "uvx",
       "args": ["searxng-http-mcp"],
-      "env": { "SEARXNG_URL": "http://localhost:8080" }
+      "env": { "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT" }
     }
   }
 }
@@ -458,7 +458,7 @@ args = ["searxng-http-mcp"]
     "searxng": {
       "command": "uvx",
       "args": ["searxng-http-mcp"],
-      "env": { "SEARXNG_URL": "http://localhost:8080" }
+      "env": { "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT" }
     }
   }
 }
@@ -508,7 +508,7 @@ args = ["searxng-http-mcp"]
       "type": "stdio",
       "command": "uvx",
       "args": ["searxng-http-mcp"],
-      "env": { "SEARXNG_URL": "http://localhost:8080" }
+      "env": { "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT" }
     }
   }
 }
@@ -555,7 +555,7 @@ args = ["searxng-http-mcp"]
     "searxng": {
       "command": "uvx",
       "args": ["searxng-http-mcp"],
-      "env": { "SEARXNG_URL": "http://localhost:8080" }
+      "env": { "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT" }
     }
   }
 }
@@ -604,7 +604,7 @@ Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`
     "searxng": {
       "command": "uvx",
       "args": ["searxng-http-mcp"],
-      "env": { "SEARXNG_URL": "http://localhost:8080" }
+      "env": { "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT" }
     }
   }
 }
@@ -702,7 +702,28 @@ Add the marketplace, then install the plugin that fits your setup:
 /plugin marketplace add whw23/searxng_http_mcp
 ```
 
-Both plugins include the 🔍 `/web-search-via-searxng` skill for web search.
+All plugins include the 🔍 `/web-search-via-searxng` skill for web search.
+
+<details>
+<summary>🐍 <b>Standalone mode</b> — uvx, no Docker, bring your own SearXNG</summary>
+
+<br>
+
+```bash
+/plugin install searxng-http-mcp@searxng-http-mcp-standalone
+```
+
+Runs via `uvx`. Requires Python 3.14+ and an existing SearXNG instance. Set `SEARXNG_URL` in `~/.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT"
+  }
+}
+```
+
+</details>
 
 <details>
 <summary>🐳 <b>Local mode</b> — Docker stdio, zero config</summary>

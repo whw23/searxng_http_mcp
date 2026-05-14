@@ -211,7 +211,7 @@ docker run --rm -i --memory=512m --cpus=1 \
 uvx searxng-http-mcp
 
 # 连接远程 SearXNG 实例
-SEARXNG_URL=http://your-searxng:8080 uvx searxng-http-mcp
+SEARXNG_URL=http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT uvx searxng-http-mcp
 ```
 
 需要 Python 3.14+ 和已有的 SearXNG 实例。无需 Docker。
@@ -360,7 +360,7 @@ SEARXNG_URL=http://your-searxng:8080 uvx searxng-http-mcp
       "command": "uvx",
       "args": ["searxng-http-mcp"],
       "env": {
-        "SEARXNG_URL": "http://localhost:8080"
+        "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT"
       }
     }
   }
@@ -461,7 +461,7 @@ args = ["searxng-http-mcp"]
       "command": "uvx",
       "args": ["searxng-http-mcp"],
       "env": {
-        "SEARXNG_URL": "http://localhost:8080"
+        "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT"
       }
     }
   }
@@ -559,7 +559,7 @@ args = ["searxng-http-mcp"]
       "command": "uvx",
       "args": ["searxng-http-mcp"],
       "env": {
-        "SEARXNG_URL": "http://localhost:8080"
+        "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT"
       }
     }
   }
@@ -610,7 +610,7 @@ args = ["searxng-http-mcp"]
       "command": "uvx",
       "args": ["searxng-http-mcp"],
       "env": {
-        "SEARXNG_URL": "http://localhost:8080"
+        "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT"
       }
     }
   }
@@ -709,7 +709,28 @@ mcp_servers:
 /plugin marketplace add whw23/searxng_http_mcp
 ```
 
-两个插件都包含 🔍 `/web-search-via-searxng` 技能用于网络搜索。
+所有插件都包含 🔍 `/web-search-via-searxng` 技能用于网络搜索。
+
+<details>
+<summary>🐍 <b>独立模式</b> —— uvx 启动，无需 Docker，自备 SearXNG</summary>
+
+<br>
+
+```bash
+/plugin install searxng-http-mcp@searxng-http-mcp-standalone
+```
+
+通过 `uvx` 运行。需要 Python 3.14+ 和已有的 SearXNG 实例。在 `~/.claude/settings.json` 中设置 `SEARXNG_URL`：
+
+```json
+{
+  "env": {
+    "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT"
+  }
+}
+```
+
+</details>
 
 <details>
 <summary>🐳 <b>本地模式</b> —— Docker stdio，零配置</summary>
