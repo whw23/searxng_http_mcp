@@ -7,13 +7,16 @@ license = "MIT"
 requires-python = ">=3.14"
 dependencies = [
     "mcp[cli]>=1.0.0",
+    "httpx>=0.28",
 ]
+
+[project.scripts]
+searxng-http-mcp = "mcp_server.main:main"
 
 [project.optional-dependencies]
 dev = [
     "pytest>=9.0",
     "pytest-anyio>=0.0",
-    "httpx>=0.28",
 ]
 
 [tool.pytest.ini_options]
