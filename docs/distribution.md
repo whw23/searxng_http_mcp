@@ -8,7 +8,7 @@ Tracking all platforms where searxng-http-mcp is published, submitted, or planne
 |----------|-----|-------|
 | MCP Registry | [registry.modelcontextprotocol.io](https://registry.modelcontextprotocol.io/?q=io.github.whw23/searxng-http-mcp) | Official MCP registry |
 | GitHub Container Registry | [ghcr.io/whw23/searxng-http-mcp](https://github.com/whw23/searxng_http_mcp/pkgs/container/searxng-http-mcp) | Docker image |
-| Claude Code Plugin Marketplace | `whw23/searxng_http_mcp` | Local + remote plugins |
+| Claude Code Plugin Marketplace | `whw23/searxng_http_mcp` | Local + remote + standalone plugins |
 | Glama.ai | [glama.ai/mcp/servers/whw23/searxng_http_mcp](https://glama.ai/mcp/servers/whw23/searxng_http_mcp) | Listed + Release published (2026-05-14) |
 | PyPI | [pypi.org/project/searxng-http-mcp](https://pypi.org/project/searxng-http-mcp/) | `uvx searxng-http-mcp` |
 
@@ -17,7 +17,7 @@ Tracking all platforms where searxng-http-mcp is published, submitted, or planne
 | Platform | Submitted | Status | Link |
 |----------|-----------|--------|------|
 | Docker MCP Catalog | 2026-05-11 | PR pending | [#3389](https://github.com/docker/mcp-registry/pull/3389) |
-| awesome-mcp-servers (86k stars) | 2026-05-11 | PR pending | [#6181](https://github.com/punkpeye/awesome-mcp-servers/pull/6181) |
+| awesome-mcp-servers (86k stars) | 2026-05-11 | Bot checks passed, awaiting maintainer review | [#6181](https://github.com/punkpeye/awesome-mcp-servers/pull/6181) |
 | mcpservers.org | 2026-05-11 | Pending review | [mcpservers.org](https://mcpservers.org) |
 
 ## Not Yet Submitted
