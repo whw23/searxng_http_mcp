@@ -165,3 +165,30 @@ jobs:
       - name: Publish to MCP Registry
         if: steps.decide.outputs.should_build == 'true'
         run: ./mcp-publisher publish || echo "Publish failed (version may already exist), continuing."
+
+  pypi:
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    environment:
+      name: pypi
+      url: https://pypi.org/project/searxng-http-mcp/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@0c5e2b8115b80b4c7c5ddf6ffdd634974642d182 # v5
+
+      - name: Build package
+        run: |
+          VERSION="$(date -u +%Y).${RUN_NUMBER}.0"
+          sed -i "s/^version = .*/version = \"$VERSION\"/" pyproject.toml
+          uv build
+        env:
+          RUN_NUMBER: ${{ github.run_number }}
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b54a752e1b56c88a6e32cc7a # v1.12.4
