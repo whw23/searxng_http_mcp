@@ -10,6 +10,7 @@ Tracking all platforms where searxng-http-mcp is published, submitted, or planne
 | GitHub Container Registry | [ghcr.io/whw23/searxng-http-mcp](https://github.com/whw23/searxng_http_mcp/pkgs/container/searxng-http-mcp) | Docker image |
 | Claude Code Plugin Marketplace | `whw23/searxng_http_mcp` | Local + remote plugins |
 | Glama.ai | [glama.ai/mcp/servers/whw23/searxng_http_mcp](https://glama.ai/mcp/servers/whw23/searxng_http_mcp) | Listed + Release published (2026-05-14) |
+| PyPI | [pypi.org/project/searxng-http-mcp](https://pypi.org/project/searxng-http-mcp/) | `uvx searxng-http-mcp` |
 
 ## Pending Review
 
@@ -24,7 +25,6 @@ Tracking all platforms where searxng-http-mcp is published, submitted, or planne
 | Platform | Reason | URL |
 |----------|--------|-----|
 | Smithery.ai | Requires public HTTPS URL | [smithery.ai/new](https://smithery.ai/new) |
-| PyPI | Not packaged yet | [pypi.org](https://pypi.org) |
 | Awesome-MCP-ZH (7k stars) | Chinese awesome list, not submitted | [github.com/Yzfly/Awesome-MCP-ZH](https://github.com/Yzfly/Awesome-MCP-ZH) |
 | appcypher/awesome-mcp-servers (5.5k stars) | Not submitted | [github.com/appcypher/awesome-mcp-servers](https://github.com/appcypher/awesome-mcp-servers) |
 

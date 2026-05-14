@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "uvx",
+      "args": ["searxng-http-mcp"],
+      "env": {
+        "SEARXNG_URL": "${SEARXNG_URL}"
+      }
+    }
+  }
+}
