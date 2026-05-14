@@ -59,8 +59,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - name: Check plugin consistency (local vs remote)
+      - name: Check plugin consistency (local vs remote vs standalone)
         run: |
           diff -r plugins/local/skills plugins/remote/skills || { echo "::error::Skills differ between local and remote plugins"; exit 1; }
+          diff -r plugins/local/skills plugins/standalone/skills || { echo "::error::Skills differ between local and standalone plugins"; exit 1; }
           diff -r plugins/local/agents plugins/remote/agents || { echo "::error::Agents differ between local and remote plugins"; exit 1; }
+          diff -r plugins/local/agents plugins/standalone/agents || { echo "::error::Agents differ between local and standalone plugins"; exit 1; }
           echo "Plugins are consistent."
+
+      - name: Check version consistency
+        run: |
+          VERSION=$(grep '^version' pyproject.toml | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          FAIL=0
+          for f in server.json .claude-plugin/marketplace.json plugins/local/.claude-plugin/plugin.json plugins/remote/.claude-plugin/plugin.json plugins/standalone/.claude-plugin/plugin.json; do
+            if ! grep -q "\"version\": \"$VERSION\"" "$f"; then
+              echo "::error::Version mismatch in $f (expected $VERSION). Run: bash scripts/sync-version.sh"
+              FAIL=1
+            fi
+          done
+          if [ "$FAIL" = "1" ]; then exit 1; fi
+          echo "All versions are $VERSION"
