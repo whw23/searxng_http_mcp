@@ -78,15 +78,24 @@ Set `SEARXNG_URL` to point to your SearXNG instance (default: `http://127.0.0.1:
 - 🗂 Engine discovery — query available engines grouped by category
 - 🎯 Token-efficient — results trimmed to essentials
 
+### Intelligence (Claude Code Plugin)
+
+- 🛡 Source credibility tiers — Tier 1 (official docs) > Tier 2 (tech blogs) > Tier 3 (self-media), auto-downgrade on suspicious patterns
+- 🕵️ AI poisoning defense — detects GEO attacks: batch-generated content, fake consensus, keyword stuffing
+- ✅ Cross-validation — key facts require 2+ independent sources before being stated as conclusions
+- 🔍 Deep reading — actively fetches full pages via WebFetch from credible sources, not just search snippets
+- ⏱ Timeliness evaluation — flags outdated content, states source date ranges
+- 🤖 Research subagent — delegates to `web-searcher` agent that handles searching, verification, and summarization in an isolated context
+
 ### Infrastructure
 
 - 📦 Self-contained — SearXNG built into Docker image
-- 🔄 Dual transport — HTTP (Streamable HTTP) and stdio
+- 🔄 Triple transport — HTTP server, Docker stdio, and uvx standalone
 - 🔐 Authentication — `x-api-key` + HTTP Basic Auth
 - 🌐 Reverse proxy — SearXNG Web UI on the same port
 - ⚡ Dynamic tool descriptions — live category lists injected at startup
 - 📐 Rich JSON Schema — enum constraints, range limits, and descriptions on every parameter
-- 🧩 Claude Code Plugin — self-hosted marketplace
+- 🧩 Claude Code Plugin — 3 variants (local, remote, standalone) with skill + agent
 
 ## 🏛 Architecture
 
@@ -705,7 +714,10 @@ Add the marketplace, then install the plugin that fits your setup:
 /plugin marketplace add whw23/searxng_http_mcp
 ```
 
-All plugins include the 🔍 `/web-search-via-searxng` skill for web search.
+All plugins include:
+
+- 🔍 **`/web-search-via-searxng` skill** — search the web with category selection guide and usage rules
+- 🤖 **`web-searcher` agent** — research subagent with source credibility verification, AI poisoning defense, cross-validation, WebFetch deep reading, and timeliness evaluation
 
 <details>
 <summary>🐍 <b>Standalone mode</b> — uvx, no Docker, bring your own SearXNG</summary>

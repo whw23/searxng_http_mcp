@@ -7,7 +7,7 @@ packages = ["mcp_server"]
 
 [project]
 name = "searxng-http-mcp"
-version = "1.1.0"
+version = "1.1.1"
 description = "SearXNG metasearch engine MCP server"
 readme = "README.md"
 license = "MIT"
