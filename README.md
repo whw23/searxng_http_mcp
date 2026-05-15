@@ -78,15 +78,6 @@ Set `SEARXNG_URL` to point to your SearXNG instance (default: `http://127.0.0.1:
 - 🗂 Engine discovery — query available engines grouped by category
 - 🎯 Token-efficient — results trimmed to essentials
 
-### Intelligence (Claude Code Plugin)
-
-- 🛡 Source credibility tiers — Tier 1 (official docs) > Tier 2 (tech blogs) > Tier 3 (self-media), auto-downgrade on suspicious patterns
-- 🕵️ AI poisoning defense — detects GEO attacks: batch-generated content, fake consensus, keyword stuffing
-- ✅ Cross-validation — key facts require 2+ independent sources before being stated as conclusions
-- 🔍 Deep reading — actively fetches full pages via WebFetch from credible sources, not just search snippets
-- ⏱ Timeliness evaluation — flags outdated content, states source date ranges
-- 🤖 Research subagent — delegates to `web-searcher` agent that handles searching, verification, and summarization in an isolated context
-
 ### Infrastructure
 
 - 📦 Self-contained — SearXNG built into Docker image
@@ -95,7 +86,6 @@ Set `SEARXNG_URL` to point to your SearXNG instance (default: `http://127.0.0.1:
 - 🌐 Reverse proxy — SearXNG Web UI on the same port
 - ⚡ Dynamic tool descriptions — live category lists injected at startup
 - 📐 Rich JSON Schema — enum constraints, range limits, and descriptions on every parameter
-- 🧩 Claude Code Plugin — 3 variants (local, remote, standalone) with skill + agent
 
 ## 🏛 Architecture
 
@@ -717,7 +707,14 @@ Add the marketplace, then install the plugin that fits your setup:
 All plugins include:
 
 - 🔍 **`/web-search-via-searxng` skill** — search the web with category selection guide and usage rules
-- 🤖 **`web-searcher` agent** — research subagent with source credibility verification, AI poisoning defense, cross-validation, WebFetch deep reading, and timeliness evaluation
+- 🤖 **`web-searcher` agent** — research subagent with:
+  - 🌐 Multi-language parallel search — auto-detects query language, searches in multiple languages for broader coverage
+  - 🛡 Source credibility tiers — Tier 1/2/3 classification with AI poisoning defense
+  - ✅ Cross-validation — key facts require 2+ independent sources
+  - 🔍 WebFetch deep reading — reads full pages from credible sources, not just snippets
+  - 🔄 Multi-round iterative search — up to 3 rounds with automatic deepening on gaps
+  - ⏱ Timeliness evaluation — flags outdated content, states source date ranges
+  - 📝 Footnote-style references — structured output with inline source citations
 
 <details>
 <summary>🐍 <b>Standalone mode</b> — uvx, no Docker, bring your own SearXNG</summary>

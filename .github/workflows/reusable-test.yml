@@ -77,5 +77,10 @@ jobs:
               FAIL=1
             fi
           done
+          LOCK_VERSION=$(grep -A1 '^name = "searxng-http-mcp"' uv.lock | grep '^version' | sed 's/.*"\(.*\)".*/\1/')
+          if [ "$LOCK_VERSION" != "$VERSION" ]; then
+            echo "::error::Version mismatch in uv.lock (got $LOCK_VERSION, expected $VERSION). Run: uv sync"
+            FAIL=1
+          fi
           if [ "$FAIL" = "1" ]; then exit 1; fi
           echo "All versions are $VERSION"

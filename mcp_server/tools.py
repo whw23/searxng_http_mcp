@@ -154,17 +154,28 @@ async def search(
         description="The search query to use",
     )],
     categories: Annotated[str, Field(
-        description="Comma-separated category names to focus on (e.g., 'general,news,science')",
+        description=(
+            "Comma-separated category names to focus on (e.g., 'general,news,science'). "
+            "Prefer this over 'engines' to narrow results — categories leverage multiple engines automatically. "
+            "Call engine_info to discover available categories."
+        ),
     )] = "",
     engines: Annotated[str, Field(
-        description="Comma-separated engine names to use (e.g., 'google,arxiv,wikipedia')",
+        description=(
+            "Comma-separated engine names to use (e.g., 'google,arxiv,wikipedia'). "
+            "Only use when you need a specific source; otherwise prefer 'categories'. "
+            "Overrides category-based engine selection when set."
+        ),
     )] = "",
     language: Annotated[str, Field(
-        description="Search language code (e.g., 'en', 'zh', 'ja', 'de')",
+        description=(
+            "Search language code (e.g., 'en', 'zh', 'ja', 'de'). "
+            "Filters results to the specified language. Omit to search all languages."
+        ),
     )] = "",
     time_range: Annotated[
         Literal["day", "week", "month", "year"] | None,
-        Field(description="Restrict results to those published within this time window"),
+        Field(description="Restrict results to those published within this time window. Omit for no time restriction."),
     ] = None,
     safesearch: Annotated[
         Literal[0, 1, 2],
@@ -172,15 +183,18 @@ async def search(
     ] = 0,
     pageno: Annotated[int, Field(
         ge=1,
-        description="Starting page number",
+        description="Starting page number. Use with 'pages' for pagination.",
     )] = 1,
     pages: Annotated[int, Field(
         ge=1, le=5,
-        description="Number of pages to fetch in parallel (multi-page fanout)",
+        description=(
+            "Number of pages to fetch in parallel (multi-page fanout). "
+            "Higher values return more results but increase latency. Use 2-3 for comprehensive research."
+        ),
     )] = 1,
     max_results: Annotated[int, Field(
         ge=1, le=100,
-        description="Maximum number of results to return",
+        description="Maximum number of results to return. Applied after aggregation across pages.",
     )] = 10,
     format: Annotated[
         Literal["compact", "full"],
@@ -192,6 +206,9 @@ async def search(
     Aggregates results from 200+ search engines (Google, Bing, DuckDuckGo, Brave, etc.)
     with privacy. Returns results, answers, suggestions, corrections, and infoboxes.
     Use 'categories' to focus on specific content types. Use 'pages' for more results.
+
+    Not suitable for autocomplete suggestions (use autocomplete tool) or discovering
+    available engines/categories (use engine_info tool). Results are cached for 60 seconds.
     """
     fields = COMPACT_FIELDS if format == "compact" else FULL_FIELDS
 
@@ -291,10 +308,13 @@ async def autocomplete(
 
     Returns a list of autocomplete suggestions for the given partial query.
     Use this to discover relevant search terms before performing a full search.
+
+    Makes an external API call to the configured autocomplete backend (e.g., Bing, Google).
+    Not suitable for full web search (use search tool) or engine discovery (use engine_info tool).
     """
     client = await _get_client()
     resp = await client.get(
-        f"{SEARXNG_BASE_URL}/autocomplete",
+        f"{SEARXNG_BASE_URL}/autocompleter",
         params={"q": query},
         timeout=10.0,
     )
@@ -322,6 +342,8 @@ async def engine_info() -> str:
     Returns the list of enabled engines grouped by category.
     Use this to discover what engines and categories are available
     before calling search with specific engines or categories filters.
+
+    Response is cached for 5 minutes. Does not perform any web search — use the search tool for that.
     """
     global _engine_info_cache, _engine_info_cache_ts
     now = time.monotonic()

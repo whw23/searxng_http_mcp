@@ -1,5 +1,4 @@
-## Project Workflow
-
+## Project git Workflow must follow these rules: MUST MUST MUST !
 - Branching: `dev` is the development branch, `main` is the release branch. All changes go through PRs.
 - PR rules: feature/fix branches → dev → main. PRs to main must come from dev only.
 - Copilot review flow: After PR to dev, wait for CI to pass, then confirm Copilot review is submitted (use `gh api repos/{owner}/{repo}/pulls/{number}/reviews` to verify `copilot-pull-request-reviewer[bot]` has posted a review — don't just check comment count). Fix feedback on the same branch, resolve addressed comments, then merge. Delete local branch after merge (remote branch is auto-deleted by GitHub).
