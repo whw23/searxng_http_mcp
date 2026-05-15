@@ -11,4 +11,6 @@ sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/g" \
   plugins/remote/.claude-plugin/plugin.json \
   plugins/standalone/.claude-plugin/plugin.json
 
+sed -i "/^name = \"searxng-http-mcp\"/{n;s/version = \"[^\"]*\"/version = \"$VERSION\"/;}" uv.lock
+
 echo "Done. All version fields set to $VERSION"
