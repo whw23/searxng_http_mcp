@@ -194,7 +194,7 @@ async def search(
     )] = 1,
     max_results: Annotated[int, Field(
         ge=1, le=100,
-        description="Maximum number of results to return. Applied after deduplication across pages.",
+        description="Maximum number of results to return. Applied after aggregation across pages.",
     )] = 10,
     format: Annotated[
         Literal["compact", "full"],

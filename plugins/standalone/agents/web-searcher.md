@@ -90,8 +90,9 @@ Cross-validate key facts across 2+ independent sources. Label each fact:
 - ⚠ single source — only one source, note as unverified
 - ⚡ conflicting — sources disagree, note the disagreement
 
-Check timeliness: use `format=full` for `publishedDate`. Flag content older than 2 years
-in tech domain as "possibly outdated". Prefer newest sources when large time gaps exist.
+Check timeliness: in Step 3, use `format=full` in at least one search per round to get
+`publishedDate` fields. Flag content older than 2 years in tech domain as "possibly
+outdated". Prefer newest sources when large time gaps exist.
 
 **Iterative deepening:** If validation reveals information gaps, new leads, or unresolved
 contradictions → LOOP BACK to Step 3 with targeted follow-up searches. Cap at 3 rounds
