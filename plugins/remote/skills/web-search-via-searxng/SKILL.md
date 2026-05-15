@@ -18,8 +18,9 @@ Use the configured SearXNG MCP server to search the web.
 ## How to Search
 
 **Prefer delegating to the `web-searcher` agent** via the Agent tool. The agent handles
-searching, deduplication, and summarization, and returns a clean result without polluting
-your context window with raw JSON. Only call the MCP search tools directly when:
+multi-language parallel search, source credibility verification, cross-validation,
+iterative deepening, and structured summarization — returning a clean result without
+polluting your context window with raw JSON. Only call the MCP search tools directly when:
 
 - The `web-searcher` agent is unavailable (e.g., no subagent support)
 - You need a single quick lookup where spawning an agent is overkill
@@ -33,25 +34,27 @@ When searching directly (without the agent), use these tools:
 Main search tool. Parameters:
 
 - `query` (required): Search terms
-- `categories`: Filter by type — general, images, videos, news, map, music, it, science, files, social media, packages, repos, q&a, etc.
-- `language`: Language code (e.g., zh, en, ja)
+- `categories`: Comma-separated category names (e.g., 'general,news,science'). Prefer this over `engines` — categories leverage multiple engines automatically
+- `language`: Language code (e.g., zh, en, ja). Filters results to the specified language
 - `time_range`: day, week, month, year
 - `safesearch`: 0 (off), 1 (moderate), 2 (strict)
 - `pageno`: Starting page number (default 1)
-- `pages`: Number of pages to fetch, 1-5 (default 1). Use for comprehensive results
+- `pages`: Number of pages to fetch in parallel, 1-5 (default 1). Use 2-3 for comprehensive research
 - `max_results`: Maximum results to return (default 10, max 100)
 - `format`: `compact` (default, title/url/content only) or `full` (includes engines, score, dates)
-- `engines`: Comma-separated engine names (e.g., google,bing,duckduckgo)
+- `engines`: Comma-separated engine names (e.g., google,arxiv,wikipedia). Only use when you need a specific source
 
 ### `autocomplete`
 
 Get search query suggestions. Use before searching to discover relevant terms.
+Makes an external API call to the configured backend (e.g., Bing, Google).
 
 - `query` (required): Partial query to autocomplete
 
 ### `engine_info`
 
-Discover available search engines and categories. No parameters. Returns engines grouped by category.
+Discover available search engines and categories. No parameters. Returns engines grouped
+by category. Response cached for 5 minutes.
 
 Use this when you need to target specific engines or categories (e.g., "search academic papers" → call engine_info to find science engines, then search with `categories=science`).
 
