@@ -78,15 +78,24 @@ uvx searxng-http-mcp
 - 🗂 引擎发现 —— 按分类查询可用引擎
 - 🎯 Token 高效 —— 结果精简至核心内容
 
+### 智能能力（Claude Code 插件）
+
+- 🛡 来源可信度分级 —— Tier 1（官方文档）> Tier 2（技术博客）> Tier 3（自媒体），可疑模式自动降级
+- 🕵️ AI 投毒防御 —— 检测 GEO 攻击：批量生成内容、虚假共识、关键词堆砌
+- ✅ 交叉验证 —— 关键事实需 2+ 个独立来源确认后才作为结论
+- 🔍 深度阅读 —— 通过 WebFetch 主动获取可信来源的完整页面，而非仅依赖搜索摘要
+- ⏱ 时效性评估 —— 标注过时内容，声明来源时间范围
+- 🤖 研究子代理 —— 委托 `web-searcher` agent 在隔离上下文中完成搜索、验证和摘要
+
 ### 基础设施
 
 - 📦 自包含 —— SearXNG 内置于 Docker 镜像
-- 🔄 双传输模式 —— HTTP（Streamable HTTP）和 stdio
+- 🔄 三种传输模式 —— HTTP 服务器、Docker stdio 和 uvx 独立运行
 - 🔐 认证 —— `x-api-key` + HTTP Basic Auth
 - 🌐 反向代理 —— SearXNG Web UI 共用同一端口
 - ⚡ 动态工具描述 —— 启动时注入实时分类列表
 - 📐 丰富的 JSON Schema —— 每个参数都有枚举约束、范围限制和描述
-- 🧩 Claude Code 插件 —— 自托管市场
+- 🧩 Claude Code 插件 —— 3 个变体（本地、远程、独立）含 skill + agent
 
 ## 🏛 架构
 
@@ -712,7 +721,10 @@ mcp_servers:
 /plugin marketplace add whw23/searxng_http_mcp
 ```
 
-所有插件都包含 🔍 `/web-search-via-searxng` 技能用于网络搜索。
+所有插件都包含：
+
+- 🔍 **`/web-search-via-searxng` 技能** —— 网络搜索，含分类选择指南和使用规则
+- 🤖 **`web-searcher` 子代理** —— 研究代理，具备来源可信度验证、AI 投毒防御、交叉验证、WebFetch 深度阅读和时效性评估能力
 
 <details>
 <summary>🐍 <b>独立模式</b> —— uvx 启动，无需 Docker，自备 SearXNG</summary>
