@@ -19,13 +19,13 @@ Tracking all platforms where searxng-http-mcp is published, submitted, or planne
 | Docker MCP Catalog | 2026-05-11 | PR pending | [#3389](https://github.com/docker/mcp-registry/pull/3389) |
 | awesome-mcp-servers (86k stars) | 2026-05-11 | Bot checks passed, awaiting maintainer review | [#6181](https://github.com/punkpeye/awesome-mcp-servers/pull/6181) |
 | mcpservers.org | 2026-05-11 | Pending review | [mcpservers.org](https://mcpservers.org) |
+| Awesome-MCP-ZH (7k stars) | 2026-05-15 | PR pending | [#226](https://github.com/yzfly/Awesome-MCP-ZH/pull/226) |
 
 ## Not Yet Submitted
 
 | Platform | Reason | URL |
 |----------|--------|-----|
 | Smithery.ai | Requires public HTTPS URL | [smithery.ai/new](https://smithery.ai/new) |
-| Awesome-MCP-ZH (7k stars) | Chinese awesome list, not submitted | [github.com/Yzfly/Awesome-MCP-ZH](https://github.com/Yzfly/Awesome-MCP-ZH) |
 | appcypher/awesome-mcp-servers (5.5k stars) | Not submitted | [github.com/appcypher/awesome-mcp-servers](https://github.com/appcypher/awesome-mcp-servers) |
 
 ## Social / Community (Planned)
