@@ -58,7 +58,7 @@ cd searxng_http_mcp
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Install dependencies
-uv sync --dev
+uv sync --extra dev
 
 # Run tests
 uv run pytest tests/ -v
