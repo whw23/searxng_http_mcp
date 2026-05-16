@@ -1,8 +1,8 @@
 ## Commands
 
 ```bash
-# Install dependencies
-uv sync
+# Install dependencies (with dev tools)
+uv sync --extra dev
 
 # Run tests
 pytest tests/ -v

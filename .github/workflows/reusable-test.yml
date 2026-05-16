@@ -15,17 +15,16 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v5
         with:
           python-version: "3.14"
-          cache: pip
 
       - name: Install dependencies
-        run: pip install "mcp[cli]" pytest pytest-anyio httpx pytest-cov pyyaml
+        run: uv sync --extra dev
 
       - name: Run tests
-        run: pytest tests/ -v --tb=short --junitxml=test-results.xml --cov=mcp_server --cov-report=term-missing --cov-report=xml:coverage.xml --cov-fail-under=80
+        run: uv run pytest tests/ -v --tb=short --junitxml=test-results.xml --cov=mcp_server --cov-report=term-missing --cov-report=xml:coverage.xml --cov-fail-under=80
 
       - name: Coverage summary
         if: always()
@@ -34,7 +33,7 @@ jobs:
             echo "## Coverage Report" >> "$GITHUB_STEP_SUMMARY"
             echo "" >> "$GITHUB_STEP_SUMMARY"
             echo '```' >> "$GITHUB_STEP_SUMMARY"
-            python -m coverage report 2>/dev/null || echo "Coverage data not available"
+            uv run python -m coverage report 2>/dev/null || echo "Coverage data not available"
             echo '```' >> "$GITHUB_STEP_SUMMARY"
           fi
 

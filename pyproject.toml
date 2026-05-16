@@ -24,6 +24,8 @@ searxng-http-mcp = "mcp_server.main:main"
 dev = [
     "pytest>=9.0",
     "pytest-anyio>=0.0",
+    "pytest-cov>=6.0",
+    "pyyaml>=6.0",
 ]
 
 [tool.pytest.ini_options]
