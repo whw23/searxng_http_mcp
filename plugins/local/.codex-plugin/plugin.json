@@ -1,0 +1,13 @@
+{
+  "name": "searxng-http-mcp",
+  "version": "1.1.2",
+  "description": "SearXNG MCP server (local Docker stdio) — zero-config, self-contained",
+  "author": {
+    "name": "whw23"
+  },
+  "repository": "https://github.com/whw23/searxng-http-mcp",
+  "license": "MIT",
+  "keywords": ["search", "searxng", "web-search", "mcp"],
+  "skills": "./skills/",
+  "mcpServers": ".mcp.json"
+}
