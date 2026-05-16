@@ -1,4 +1,4 @@
-FROM ghcr.io/searxng/searxng:latest@sha256:b5d4892daf19736acdefc34a67bb06dd702638beb282e993aeb612e0953c2d54
+FROM ghcr.io/searxng/searxng:latest@sha256:3eb2fcb2153e0b1f8e9f3457695ed3db1b1443d1dbc2b6d23121835d33fd50aa
 
 ENV PATH="/usr/local/searxng/.venv/bin:${PATH}"
 
