@@ -16,6 +16,7 @@
   <a href="https://pypi.org/project/searxng-http-mcp/"><img src="https://img.shields.io/pypi/v/searxng-http-mcp?logo=pypi&logoColor=white" alt="PyPI"></a>
   <a href="https://registry.modelcontextprotocol.io/?q=io.github.whw23/searxng-http-mcp"><img src="https://img.shields.io/badge/MCP_Registry-published-brightgreen" alt="MCP Registry"></a>
   <a href="https://scorecard.dev/viewer/?uri=github.com/whw23/searxng_http_mcp"><img src="https://api.scorecard.dev/projects/github.com/whw23/searxng_http_mcp/badge" alt="OpenSSF Scorecard"></a>
+  <a href="https://www.bestpractices.dev/projects/12854"><img src="https://www.bestpractices.dev/projects/12854/badge" alt="OpenSSF Best Practices"></a>
 </p>
 
 <a href="https://glama.ai/mcp/servers/whw23/searxng_http_mcp"><img width="380" height="200" src="https://glama.ai/mcp/servers/whw23/searxng_http_mcp/badge" alt="searxng-http-mcp MCP server"></a>
