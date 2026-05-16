@@ -16,7 +16,13 @@ eval $SED_INPLACE "\"s/\\\"version\\\": \\\"[^\\\"]*\\\"/\\\"version\\\": \\\"$V
   .claude-plugin/marketplace.json \
   plugins/local/.claude-plugin/plugin.json \
   plugins/remote/.claude-plugin/plugin.json \
-  plugins/standalone/.claude-plugin/plugin.json
+  plugins/standalone/.claude-plugin/plugin.json \
+  plugins/local/.plugin/plugin.json \
+  plugins/remote/.plugin/plugin.json \
+  plugins/standalone/.plugin/plugin.json \
+  plugins/local/.codex-plugin/plugin.json \
+  plugins/remote/.codex-plugin/plugin.json \
+  plugins/standalone/.codex-plugin/plugin.json
 
 eval $SED_INPLACE "\"/^name = \\\"searxng-http-mcp\\\"/{n;s/version = \\\"[^\\\"]*\\\"/version = \\\"$VERSION\\\"/;}\"" uv.lock
 
