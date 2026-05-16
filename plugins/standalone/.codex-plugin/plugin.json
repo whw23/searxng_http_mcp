@@ -1,0 +1,13 @@
+{
+  "name": "searxng-http-mcp-standalone",
+  "version": "1.1.2",
+  "description": "SearXNG MCP server (uvx standalone) — no Docker, connect to your own SearXNG",
+  "author": {
+    "name": "whw23"
+  },
+  "repository": "https://github.com/whw23/searxng-http-mcp",
+  "license": "MIT",
+  "keywords": ["search", "searxng", "web-search", "mcp", "uvx", "standalone"],
+  "skills": "./skills/",
+  "mcpServers": ".mcp.json"
+}
