@@ -30,7 +30,7 @@
   <a href="#-usage">Usage</a> ·
   <a href="#-mcp-tools-reference">MCP Tools</a> ·
   <a href="#-client-configuration">Client Config</a> ·
-  <a href="#-claude-code-plugin">Plugin</a> ·
+  <a href="#-ai-coding-agent-plugin">Plugin</a> ·
   <a href="#-contributing">Contributing</a>
 </p>
 
@@ -154,7 +154,7 @@ There are [20+ SearXNG MCP servers](https://glama.ai/mcp/servers?query=searxng) 
   <tr><td>HTTP + stdio transport</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td></tr>
   <tr><td>Authentication</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td><td align="center">&#9989;</td></tr>
   <tr><td>Web UI reverse proxy</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
-  <tr><td>Claude Code Plugin</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td></tr>
+  <tr><td>AI Coding Agent Plugin</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#10060;</td><td align="center">&#9989;</td></tr>
   <tr><td colspan="7"><strong>General</strong></td></tr>
   <tr><td>Free &amp; open source</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060; (paid API)</td><td align="center">&#10060; (paid API)</td></tr>
   <tr><td>Privacy (self-hosted)</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#9989;</td><td align="center">&#10060;</td><td align="center">&#10060;</td></tr>
@@ -172,7 +172,7 @@ MCP is designed for composition — clients connect multiple specialized servers
 - **Multi-query parallel search is client-side orchestration.** LLM clients can fire multiple `search` calls in parallel — a `search_many` tool only adds token overhead for tool selection with no real benefit.
 - **Research / synthesis belongs in the LLM layer.** The model is the best synthesizer. Pushing multi-step research logic into the MCP server couples application concerns to infrastructure.
 
-Instead we invest in what the alternatives above lack: **complete SearXNG API coverage** (categories, autocomplete, engine metadata — capabilities most wrappers leave on the table), **self-contained deployment, authentication, Web UI reverse proxy, and Claude Code plugin integration.**
+Instead we invest in what the alternatives above lack: **complete SearXNG API coverage** (categories, autocomplete, engine metadata — capabilities most wrappers leave on the table), **self-contained deployment, authentication, Web UI reverse proxy, and AI coding agent plugin integration (Claude Code / Copilot CLI / Codex CLI).**
 
 </details>
 
@@ -697,9 +697,9 @@ mcp_servers:
 
 ---
 
-## 🧩 Claude Code Plugin
+## 🧩 AI Coding Agent Plugin
 
-Add the marketplace, then install the plugin that fits your setup:
+Compatible with **Claude Code**, **GitHub Copilot CLI**, and **OpenAI Codex CLI**. Add the marketplace, then install the plugin that fits your setup:
 
 ```bash
 /plugin marketplace add whw23/searxng_http_mcp
