@@ -54,15 +54,14 @@ graph LR
 git clone https://github.com/whw23/searxng_http_mcp.git
 cd searxng_http_mcp
 
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate
+# Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Install dependencies
-pip install "mcp[cli]" pytest pytest-anyio httpx pytest-cov pyyaml
+uv sync --dev
 
 # Run tests
-pytest tests/ -v
+uv run pytest tests/ -v
 ```
 
 ## Reviewing External PRs Locally
