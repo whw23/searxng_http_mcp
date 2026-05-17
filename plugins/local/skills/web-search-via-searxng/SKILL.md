@@ -47,9 +47,11 @@ Main search tool. Parameters:
 ### `autocomplete`
 
 Get search query suggestions. Use before searching to discover relevant terms.
+Best results come from 1-2 meaningful keywords (e.g., "python async").
+Single characters return overly broad suggestions; full sentences return none.
 Makes an external API call to the configured backend (e.g., Bing, Google).
 
-- `query` (required): Partial query to autocomplete
+- `query` (required): 1-2 keyword query to autocomplete (e.g., "python async", not "p" or full sentences)
 
 ### `engine_info`
 

@@ -301,13 +301,16 @@ async def search(
 )
 async def autocomplete(
     query: Annotated[str, Field(
-        description="Partial query string to get suggestions for",
+        description="Partial query string to get suggestions for. Best results with 1-2 keywords (e.g., 'python async'). Single characters are too broad; full sentences return nothing.",
     )],
 ) -> str:
     """Get search query suggestions from SearXNG.
 
     Returns a list of autocomplete suggestions for the given partial query.
     Use this to discover relevant search terms before performing a full search.
+
+    Best results come from 1-2 meaningful keywords (e.g., "python async").
+    Single characters return overly broad suggestions; full sentences return none.
 
     Makes an external API call to the configured autocomplete backend (e.g., Bing, Google).
     Not suitable for full web search (use search tool) or engine discovery (use engine_info tool).
