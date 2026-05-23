@@ -19,12 +19,13 @@ jobs:
         uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          skip-commit-verification: true
 
       - name: Approve and auto-merge non-major updates
         if: steps.metadata.outputs.update-type != 'version-update:semver-major'
         run: |
           gh pr review "$PR_URL" --approve
-          gh pr update-branch "$PR_URL" --rebase || true
+          gh pr update-branch "$PR_URL" --rebase
           gh pr merge "$PR_URL" --auto --merge
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
