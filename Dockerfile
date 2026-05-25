@@ -11,7 +11,7 @@ RUN python -m ensurepip --upgrade && \
     python -m pip install --no-cache-dir --require-hashes --no-deps -r /tmp/requirements.pip.txt && \
     python -m pip install --no-cache-dir --no-compile --require-hashes -r /tmp/requirements.docker.txt && \
     rm /tmp/requirements.pip.txt /tmp/requirements.docker.txt && \
-    find /usr/local/searxng/.venv -type d -name __pycache__ -exec rm -rf {} + || true
+    { find /usr/local/searxng/.venv -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true; }
 
 # Copy MCP Server code
 COPY mcp_server/ /usr/local/searxng/mcp_server/
