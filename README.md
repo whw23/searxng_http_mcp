@@ -7,8 +7,8 @@
 </picture>
 
 <p>
-  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
-  <a href="https://github.com/whw23/searxng_http_mcp/pkgs/container/searxng-http-mcp"><img src="https://img.shields.io/badge/ghcr.io-searxng--http--mcp-blue?logo=docker&logoColor=white" alt="Docker Image"></a>
+  <a href="https://github.com/whw23/searxng_http_mcp/blob/main/LICENSE"><img src="https://img.shields.io/github/license/whw23/searxng_http_mcp?color=yellow" alt="License"></a>
+  <a href="https://github.com/whw23/searxng_http_mcp/pkgs/container/searxng-http-mcp"><img src="https://img.shields.io/github/v/release/whw23/searxng_http_mcp?label=ghcr.io&logo=docker&logoColor=white" alt="Docker Image"></a>
   <a href="https://github.com/whw23/searxng_http_mcp/actions/workflows/build.yml"><img src="https://github.com/whw23/searxng_http_mcp/actions/workflows/build.yml/badge.svg" alt="Build Status"></a>
   <img src="https://img.shields.io/badge/python-3.14+-blue?logo=python&logoColor=white" alt="Python 3.14+">
   <img src="https://img.shields.io/badge/transport-HTTP%20%7C%20stdio-orange" alt="Transport">
@@ -17,6 +17,8 @@
   <a href="https://registry.modelcontextprotocol.io/?q=io.github.whw23/searxng-http-mcp"><img src="https://img.shields.io/badge/MCP_Registry-published-brightgreen" alt="MCP Registry"></a>
   <a href="https://scorecard.dev/viewer/?uri=github.com/whw23/searxng_http_mcp"><img src="https://api.scorecard.dev/projects/github.com/whw23/searxng_http_mcp/badge" alt="OpenSSF Scorecard"></a>
   <a href="https://www.bestpractices.dev/projects/12854"><img src="https://www.bestpractices.dev/projects/12854/badge" alt="OpenSSF Best Practices"></a>
+  <a href="https://github.com/punkpeye/awesome-mcp-servers"><img src="https://awesome.re/mentioned-badge.svg" alt="Mentioned in Awesome MCP Servers"></a>
+  <a href="https://glama.ai/mcp/servers/whw23/searxng_http_mcp"><img src="https://glama.ai/mcp/servers/whw23/searxng_http_mcp/badges/score.svg" alt="Glama score"></a>
 </p>
 
 <a href="https://glama.ai/mcp/servers/whw23/searxng_http_mcp"><img width="380" height="200" src="https://glama.ai/mcp/servers/whw23/searxng_http_mcp/badge" alt="searxng-http-mcp MCP server"></a>
