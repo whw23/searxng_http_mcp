@@ -8,7 +8,7 @@
 
 <p>
   <a href="https://github.com/whw23/searxng_http_mcp/blob/main/LICENSE"><img src="https://img.shields.io/github/license/whw23/searxng_http_mcp?color=yellow" alt="License"></a>
-  <a href="https://github.com/whw23/searxng_http_mcp/pkgs/container/searxng-http-mcp"><img src="https://img.shields.io/github/v/release/whw23/searxng_http_mcp?label=ghcr.io&logo=docker&logoColor=white" alt="Docker Image"></a>
+  <a href="https://github.com/whw23/searxng_http_mcp/pkgs/container/searxng-http-mcp"><img src="https://img.shields.io/badge/ghcr.io-latest-blue?logo=docker&logoColor=white" alt="Docker Image"></a>
   <a href="https://github.com/whw23/searxng_http_mcp/actions/workflows/build.yml"><img src="https://github.com/whw23/searxng_http_mcp/actions/workflows/build.yml/badge.svg" alt="Build Status"></a>
   <img src="https://img.shields.io/badge/python-3.14+-blue?logo=python&logoColor=white" alt="Python 3.14+">
   <img src="https://img.shields.io/badge/transport-HTTP%20%7C%20stdio-orange" alt="Transport">
