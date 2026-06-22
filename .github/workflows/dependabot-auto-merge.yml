@@ -7,17 +7,44 @@ on:
 permissions: read-all
 
 jobs:
-  auto-merge:
+  sync-and-merge:
     if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
     steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v5
+        with:
+          python-version: "3.14"
+
+      - name: Sync requirements.docker.txt with uv.lock
+        run: |
+          if gh pr diff "$PR_NUMBER" --name-only --repo "$REPO" | grep -q 'uv.lock'; then
+            uv export --no-dev --no-editable --no-emit-project --format requirements-txt -o requirements.docker.txt
+            if ! git diff --quiet requirements.docker.txt; then
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git add requirements.docker.txt
+              git commit -m "chore: sync requirements.docker.txt with uv.lock"
+              git push
+            fi
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+
       - name: Approve and auto-merge Dependabot updates
         run: |
           gh pr review "$PR_URL" --approve
-          gh pr update-branch "$PR_URL" --rebase
           gh pr merge "$PR_URL" --auto --merge
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
