@@ -27,20 +27,14 @@ jobs:
 
       - name: Sync requirements.docker.txt with uv.lock
         run: |
-          if gh pr diff "$PR_NUMBER" --name-only --repo "$REPO" | grep -q 'uv.lock'; then
-            uv export --no-dev --no-editable --no-emit-project --format requirements-txt -o requirements.docker.txt
-            if ! git diff --quiet requirements.docker.txt; then
-              git config user.name "github-actions[bot]"
-              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-              git add requirements.docker.txt
-              git commit -m "chore: sync requirements.docker.txt with uv.lock"
-              git push
-            fi
+          uv export --no-dev --no-editable --no-emit-project --format requirements-txt -o requirements.docker.txt
+          if ! git diff --quiet requirements.docker.txt; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add requirements.docker.txt
+            git commit -m "chore: sync requirements.docker.txt with uv.lock"
+            git push
           fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          REPO: ${{ github.repository }}
 
       - name: Approve and auto-merge Dependabot updates
         run: |
