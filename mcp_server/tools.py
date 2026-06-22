@@ -143,6 +143,7 @@ def _build_diagnostics(query: str, params: dict, errors: list[str]) -> dict:
 
 @mcp.tool(
     annotations=ToolAnnotations(
+        title="Web Search",
         readOnlyHint=True,
         destructiveHint=False,
         idempotentHint=True,
@@ -293,6 +294,7 @@ async def search(
 
 @mcp.tool(
     annotations=ToolAnnotations(
+        title="Autocomplete Suggestions",
         readOnlyHint=True,
         destructiveHint=False,
         idempotentHint=True,
@@ -333,6 +335,7 @@ ENGINE_INFO_CACHE_TTL = 300
 
 @mcp.tool(
     annotations=ToolAnnotations(
+        title="Engine & Category Info",
         readOnlyHint=True,
         destructiveHint=False,
         idempotentHint=True,
