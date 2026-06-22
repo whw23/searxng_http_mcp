@@ -27,7 +27,7 @@ jobs:
 
       - name: Sync requirements.docker.txt with uv.lock
         run: |
-          if git diff --name-only "origin/$BASE_REF"...HEAD | grep -q 'uv.lock'; then
+          if gh pr diff "$PR_NUMBER" --name-only --repo "$REPO" | grep -q 'uv.lock'; then
             uv export --no-dev --no-editable --no-emit-project --format requirements-txt -o requirements.docker.txt
             if ! git diff --quiet requirements.docker.txt; then
               git config user.name "github-actions[bot]"
@@ -38,7 +38,9 @@ jobs:
             fi
           fi
         env:
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
 
       - name: Approve and auto-merge Dependabot updates
         run: |
