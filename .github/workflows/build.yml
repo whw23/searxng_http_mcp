@@ -46,7 +46,7 @@ jobs:
       - name: Restore cached upstream digest
         if: github.event_name == 'schedule'
         id: cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
         with:
           path: /tmp/upstream-digest
           key: upstream-digest-${{ steps.upstream.outputs.digest }}
@@ -131,7 +131,7 @@ jobs:
 
       - name: Upload Trivy results to GitHub Security
         if: steps.decide.outputs.should_build == 'true'
-        uses: github/codeql-action/upload-sarif@7fd177fa680c9881b53cdab4d346d32574c9f7f4 # v3
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v3
         with:
           sarif_file: trivy-results.sarif
 
