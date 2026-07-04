@@ -32,4 +32,5 @@ jobs:
             gh workflow run test.yml --ref "$head_ref"
           done < stale-prs.tsv
         env:
+          GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
