@@ -19,7 +19,7 @@ jobs:
         run: |
           gh pr list --state open --base dev --limit 100 \
             --json number,headRefName,author,mergeStateStatus \
-            --jq '.[] | select(.author.login == "app/dependabot" and .mergeStateStatus == "BEHIND") | [.number, .headRefName] | @tsv' > stale-prs.tsv
+            --jq '.[] | select(.author.login == "dependabot[bot]" and .mergeStateStatus == "BEHIND") | [.number, .headRefName] | @tsv' > stale-prs.tsv
 
           if [ ! -s stale-prs.tsv ]; then
             echo "No stale Dependabot branches found."
