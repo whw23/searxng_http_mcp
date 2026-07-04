@@ -11,6 +11,7 @@ jobs:
     if: github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
+      actions: write
       contents: write
       pull-requests: write
     steps:
@@ -26,7 +27,9 @@ jobs:
           python-version: "3.14"
 
       - name: Sync requirements.docker.txt with uv.lock
+        id: sync-requirements
         run: |
+          echo "changed=false" >> "$GITHUB_OUTPUT"
           uv export --no-dev --no-editable --no-emit-project --format requirements-txt -o requirements.docker.txt
           if ! git diff --quiet requirements.docker.txt; then
             git config user.name "github-actions[bot]"
@@ -34,7 +37,15 @@ jobs:
             git add requirements.docker.txt
             git commit -m "chore: sync requirements.docker.txt with uv.lock"
             git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Run tests for synced requirements
+        if: steps.sync-requirements.outputs.changed == 'true'
+        run: gh workflow run test.yml --ref "$HEAD_REF"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
 
       - name: Approve and auto-merge Dependabot updates
         run: |
