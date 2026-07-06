@@ -2,11 +2,18 @@ import contextlib
 import os
 
 from starlette.applications import Starlette
-from starlette.routing import Mount
+from starlette.requests import Request
+from starlette.responses import RedirectResponse
+from starlette.routing import Mount, Route
 
 from mcp_server.auth import AuthMiddleware
 from mcp_server.proxy import ReverseProxyApp
 from mcp_server.tools import mcp, fetch_engine_info, cleanup as tools_cleanup
+
+
+def _redirect_to_mcp_slash(request: Request) -> RedirectResponse:
+    """Redirect /mcp to /mcp/ because Starlette Mount requires a trailing slash."""
+    return RedirectResponse(url="/mcp/")
 
 
 def create_app() -> Starlette:
@@ -39,6 +46,7 @@ def create_app() -> Starlette:
     starlette_app = Starlette(
         routes=[
             Mount("/mcp", app=mcp.streamable_http_app()),
+            Route("/mcp", endpoint=_redirect_to_mcp_slash),
             Mount("/", app=proxy),
         ],
         lifespan=lifespan,
