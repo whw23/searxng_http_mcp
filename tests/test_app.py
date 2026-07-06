@@ -29,14 +29,29 @@ class TestAppNoAuth:
         assert resp.status_code != 404
 
     @patch.dict("os.environ", {}, clear=True)
-    def test_mcp_without_slash_redirects(self):
+    @patch("mcp_server.proxy.httpx.AsyncClient")
+    def test_mcp_without_slash_hits_mcp_app(self, mock_client_cls):
         from mcp_server.app import create_app
 
         app = create_app()
         client = TestClient(app, raise_server_exceptions=False)
-        resp = client.get("/mcp", follow_redirects=False)
-        assert resp.status_code == 307
-        assert resp.headers["location"] == "/mcp/"
+        resp = client.get("/mcp")
+        # The MCP app is reached directly; no redirect and no proxy fallback.
+        assert resp.status_code != 404
+        assert "location" not in resp.headers
+        mock_client_cls.assert_not_called()
+
+    @patch.dict("os.environ", {}, clear=True)
+    @patch("mcp_server.proxy.httpx.AsyncClient")
+    def test_mcp_post_without_slash_hits_mcp_app(self, mock_client_cls):
+        from mcp_server.app import create_app
+
+        app = create_app()
+        client = TestClient(app, raise_server_exceptions=False)
+        resp = client.post("/mcp", headers={"accept": "application/json"})
+        # The MCP app is reached directly; no proxy fallback.
+        assert resp.status_code != 404
+        mock_client_cls.assert_not_called()
 
     @patch.dict("os.environ", {}, clear=True)
     @patch("mcp_server.proxy.httpx.AsyncClient")
@@ -52,14 +67,17 @@ class TestAppNoAuth:
         mock_client_cls.assert_not_called()
 
     @patch.dict("os.environ", {}, clear=True)
-    def test_mcp_redirect_preserves_query_string(self):
+    @patch("mcp_server.proxy.httpx.AsyncClient")
+    def test_mcp_query_string_reaches_mcp_app(self, mock_client_cls):
         from mcp_server.app import create_app
 
         app = create_app()
         client = TestClient(app, raise_server_exceptions=False)
-        resp = client.get("/mcp?foo=1", follow_redirects=False)
-        assert resp.status_code == 307
-        assert resp.headers["location"] == "/mcp/?foo=1"
+        resp = client.get("/mcp?foo=1")
+        # Query string is preserved and the request reaches the MCP app.
+        assert resp.status_code != 404
+        assert "location" not in resp.headers
+        mock_client_cls.assert_not_called()
 
     @patch.dict("os.environ", {}, clear=True)
     @patch("mcp_server.proxy.httpx.AsyncClient")
