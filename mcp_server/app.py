@@ -1,35 +1,40 @@
 import contextlib
 import os
 
+from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
 from starlette.routing import Mount, Route
 from starlette.types import Receive, Scope, Send
 
 from mcp_server.auth import AuthMiddleware
 from mcp_server.proxy import ReverseProxyApp
-from mcp_server.tools import mcp, fetch_engine_info, cleanup as tools_cleanup
+from mcp_server.tools import mcp as tools_mcp, fetch_engine_info, cleanup as tools_cleanup
 
 
-def _make_mcp_app(inner_app):
-    """Return an ASGI app that serves the MCP app at /mcp and /mcp/.
+class _MCPApp:
+    """ASGI app wrapper that serves the MCP app at /mcp and /mcp/.
 
-    When mounted at /mcp, Starlette strips the prefix and passes an empty
-    path for /mcp. When routed via Route("/mcp"), the path is /mcp. The
-    inner MCP app route is /, so normalize both to /.
+    When mounted at /mcp, Starlette sets the remaining path to /mcp/ and
+    records the matched prefix in root_path. When routed via Route("/mcp"),
+    the path is /mcp. The inner MCP app route is /, so normalize the bare
+    /mcp case to / before dispatching.
     """
 
-    async def _mcp_app(scope: Scope, receive: Receive, send: Send) -> None:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] in ("http", "websocket") and scope.get("path") in ("", "/mcp"):
             scope = dict(scope)
             scope["path"] = "/"
             scope["raw_path"] = b"/"
-        await inner_app(scope, receive, send)
-
-    return _mcp_app
+        await self.app(scope, receive, send)
 
 
-def create_app() -> Starlette:
+def create_app(mcp_instance: FastMCP | None = None) -> Starlette:
     """Create the Starlette ASGI app with MCP, auth, and reverse proxy."""
+    mcp = mcp_instance or tools_mcp
+
     api_key = os.environ.get("API_KEY", "")
     searxng_url = os.environ.get("SEARXNG_URL", "http://127.0.0.1:8080")
 
@@ -55,7 +60,7 @@ def create_app() -> Starlette:
                 await tools_cleanup()
                 await proxy.aclose()
 
-    mcp_app = _make_mcp_app(mcp.streamable_http_app())
+    mcp_app = _MCPApp(mcp.streamable_http_app())
 
     starlette_app = Starlette(
         routes=[
