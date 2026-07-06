@@ -10,18 +10,22 @@ from mcp_server.proxy import ReverseProxyApp
 from mcp_server.tools import mcp, fetch_engine_info, cleanup as tools_cleanup
 
 
-async def _mcp_app(scope: Scope, receive: Receive, send: Send) -> None:
-    """Serve the MCP app at /mcp and /mcp/.
+def _make_mcp_app(inner_app):
+    """Return an ASGI app that serves the MCP app at /mcp and /mcp/.
 
     When mounted at /mcp, Starlette strips the prefix and passes an empty
     path for /mcp. When routed via Route("/mcp"), the path is /mcp. The
     inner MCP app route is /, so normalize both to /.
     """
-    if scope["type"] in ("http", "websocket") and scope.get("path") in ("", "/mcp"):
-        scope = dict(scope)
-        scope["path"] = "/"
-        scope["raw_path"] = b"/"
-    await mcp.streamable_http_app()(scope, receive, send)
+
+    async def _mcp_app(scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] in ("http", "websocket") and scope.get("path") in ("", "/mcp"):
+            scope = dict(scope)
+            scope["path"] = "/"
+            scope["raw_path"] = b"/"
+        await inner_app(scope, receive, send)
+
+    return _mcp_app
 
 
 def create_app() -> Starlette:
@@ -51,10 +55,12 @@ def create_app() -> Starlette:
                 await tools_cleanup()
                 await proxy.aclose()
 
+    mcp_app = _make_mcp_app(mcp.streamable_http_app())
+
     starlette_app = Starlette(
         routes=[
-            Mount("/mcp", app=_mcp_app),
-            Route("/mcp", endpoint=_mcp_app, methods=["GET", "POST", "HEAD"]),
+            Mount("/mcp", app=mcp_app),
+            Route("/mcp", endpoint=mcp_app, methods=["GET", "POST", "HEAD"]),
             Mount("/", app=proxy),
         ],
         lifespan=lifespan,
