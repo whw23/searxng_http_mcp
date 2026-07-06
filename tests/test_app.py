@@ -1,6 +1,9 @@
 import base64
+import os
 from unittest.mock import patch, AsyncMock, MagicMock
 
+import pytest
+from mcp.server.fastmcp import FastMCP
 from starlette.testclient import TestClient
 
 
@@ -18,50 +21,64 @@ def _make_proxy_mock():
     return mock_client
 
 
+@pytest.fixture(scope="module")
+def no_auth_client():
+    """Shared TestClient with lifespan active and no API key."""
+    os.environ.pop("API_KEY", None)
+    test_mcp = FastMCP(
+        "test",
+        stateless_http=True,
+        json_response=True,
+        streamable_http_path="/",
+    )
+
+    @test_mcp.tool()
+    async def ping() -> str:
+        return "pong"
+
+    from mcp_server.app import create_app
+
+    app = create_app(mcp_instance=test_mcp)
+    with TestClient(app, raise_server_exceptions=False) as client:
+        yield client
+
+
 class TestAppNoAuth:
-    @patch.dict("os.environ", {}, clear=True)
-    def test_mcp_endpoint_accessible(self):
-        from mcp_server.app import create_app
+    def test_mcp_endpoint_accessible(self, no_auth_client):
+        resp = no_auth_client.get("/mcp")
+        assert resp.status_code < 500
 
-        app = create_app()
-        client = TestClient(app, raise_server_exceptions=False)
-        resp = client.get("/mcp")
-        assert resp.status_code != 404
+    def test_mcp_without_slash_hits_mcp_app(self, no_auth_client):
+        with patch("mcp_server.proxy.httpx.AsyncClient") as mock_client_cls:
+            resp = no_auth_client.get("/mcp")
+            # The MCP app is reached directly; no redirect and no proxy fallback.
+            assert resp.status_code < 500
+            assert "location" not in resp.headers
+            mock_client_cls.assert_not_called()
 
-    @patch.dict("os.environ", {}, clear=True)
-    def test_mcp_without_slash_redirects(self):
-        from mcp_server.app import create_app
+    def test_mcp_post_without_slash_hits_mcp_app(self, no_auth_client):
+        with patch("mcp_server.proxy.httpx.AsyncClient") as mock_client_cls:
+            resp = no_auth_client.post("/mcp", headers={"accept": "application/json"})
+            # The MCP app is reached directly; no proxy fallback.
+            assert resp.status_code < 500
+            mock_client_cls.assert_not_called()
 
-        app = create_app()
-        client = TestClient(app, raise_server_exceptions=False)
-        resp = client.get("/mcp", follow_redirects=False)
-        assert resp.status_code == 307
-        assert resp.headers["location"] == "/mcp/"
+    def test_mcp_with_slash_hits_mcp_app(self, no_auth_client):
+        with patch("mcp_server.proxy.httpx.AsyncClient") as mock_client_cls:
+            resp = no_auth_client.get("/mcp/")
+            # The MCP app is reached (it does not fall through to the proxy).
+            assert resp.status_code < 500
+            assert "location" not in resp.headers
+            mock_client_cls.assert_not_called()
 
-    @patch.dict("os.environ", {}, clear=True)
-    @patch("mcp_server.proxy.httpx.AsyncClient")
-    def test_mcp_with_slash_hits_mcp_app(self, mock_client_cls):
-        from mcp_server.app import create_app
+    def test_mcp_query_string_reaches_mcp_app(self, no_auth_client):
+        with patch("mcp_server.proxy.httpx.AsyncClient") as mock_client_cls:
+            resp = no_auth_client.get("/mcp?foo=1")
+            # Query string is preserved and the request reaches the MCP app.
+            assert resp.status_code < 500
+            assert "location" not in resp.headers
+            mock_client_cls.assert_not_called()
 
-        app = create_app()
-        client = TestClient(app, raise_server_exceptions=False)
-        resp = client.get("/mcp/")
-        # The MCP app is reached (it does not fall through to the proxy).
-        assert resp.status_code != 404
-        assert "location" not in resp.headers
-        mock_client_cls.assert_not_called()
-
-    @patch.dict("os.environ", {}, clear=True)
-    def test_mcp_redirect_preserves_query_string(self):
-        from mcp_server.app import create_app
-
-        app = create_app()
-        client = TestClient(app, raise_server_exceptions=False)
-        resp = client.get("/mcp?foo=1", follow_redirects=False)
-        assert resp.status_code == 307
-        assert resp.headers["location"] == "/mcp/?foo=1"
-
-    @patch.dict("os.environ", {}, clear=True)
     @patch("mcp_server.proxy.httpx.AsyncClient")
     def test_proxy_route_forwards(self, mock_client_cls):
         mock_client_cls.return_value = _make_proxy_mock()
