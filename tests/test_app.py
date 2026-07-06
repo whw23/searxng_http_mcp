@@ -39,7 +39,8 @@ class TestAppNoAuth:
         assert resp.headers["location"] == "/mcp/"
 
     @patch.dict("os.environ", {}, clear=True)
-    def test_mcp_with_slash_hits_mcp_app(self):
+    @patch("mcp_server.proxy.httpx.AsyncClient")
+    def test_mcp_with_slash_hits_mcp_app(self, mock_client_cls):
         from mcp_server.app import create_app
 
         app = create_app()
@@ -48,6 +49,17 @@ class TestAppNoAuth:
         # The MCP app is reached (it does not fall through to the proxy).
         assert resp.status_code != 404
         assert "location" not in resp.headers
+        mock_client_cls.assert_not_called()
+
+    @patch.dict("os.environ", {}, clear=True)
+    def test_mcp_redirect_preserves_query_string(self):
+        from mcp_server.app import create_app
+
+        app = create_app()
+        client = TestClient(app, raise_server_exceptions=False)
+        resp = client.get("/mcp?foo=1", follow_redirects=False)
+        assert resp.status_code == 307
+        assert resp.headers["location"] == "/mcp/?foo=1"
 
     @patch.dict("os.environ", {}, clear=True)
     @patch("mcp_server.proxy.httpx.AsyncClient")

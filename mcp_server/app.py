@@ -13,7 +13,10 @@ from mcp_server.tools import mcp, fetch_engine_info, cleanup as tools_cleanup
 
 def _redirect_to_mcp_slash(request: Request) -> RedirectResponse:
     """Redirect /mcp to /mcp/ because Starlette Mount requires a trailing slash."""
-    return RedirectResponse(url="/mcp/")
+    target = "/mcp/"
+    if request.url.query:
+        target += "?" + request.url.query
+    return RedirectResponse(url=target)
 
 
 def create_app() -> Starlette:
