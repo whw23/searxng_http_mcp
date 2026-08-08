@@ -35,7 +35,7 @@ async def test_list_tools(session):
 @pytest.mark.anyio
 async def test_search(session):
     result = await session.call_tool("search", {"query": "test"})
-    assert not result.isError
+    assert not result.is_error
     data = json.loads(result.content[0].text)
     assert "results" in data
     assert len(data["results"]) > 0
@@ -47,7 +47,7 @@ async def test_search_full_format(session):
     result = await session.call_tool(
         "search", {"query": "test", "format": "full", "max_results": 1}
     )
-    assert not result.isError
+    assert not result.is_error
     data = json.loads(result.content[0].text)
     assert data["results"][0].get("engines") is not None
 
@@ -55,7 +55,7 @@ async def test_search_full_format(session):
 @pytest.mark.anyio
 async def test_autocomplete(session):
     result = await session.call_tool("autocomplete", {"query": "test"})
-    assert not result.isError
+    assert not result.is_error
     data = json.loads(result.content[0].text)
     assert isinstance(data, list)
     assert len(data) > 0
@@ -64,7 +64,7 @@ async def test_autocomplete(session):
 @pytest.mark.anyio
 async def test_engine_info(session):
     result = await session.call_tool("engine_info", {})
-    assert not result.isError
+    assert not result.is_error
     data = json.loads(result.content[0].text)
     assert "categories" in data
     assert "engines" in data
