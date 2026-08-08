@@ -114,10 +114,13 @@ def server_url():
 
 @pytest.fixture
 async def session(server_url):
-    """Connect to the HTTP MCP server and return a session."""
-    async with streamable_http_client(server_url) as (read_stream, write_stream, _):
+    """Connect to the HTTP MCP server and return a session.
+
+    MCP v2 (stateless core) drops the initialize handshake, so no
+    explicit initialize() call is needed for the HTTP transport.
+    """
+    async with streamable_http_client(server_url) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as s:
-            await s.initialize()
             yield s
 
 
@@ -131,7 +134,7 @@ async def test_list_tools(session):
 @pytest.mark.anyio
 async def test_search(session):
     result = await session.call_tool("search", {"query": "test"})
-    assert not result.isError
+    assert not result.is_error
     data = json.loads(result.content[0].text)
     assert "results" in data
     assert len(data["results"]) > 0
@@ -143,7 +146,7 @@ async def test_search_full_format(session):
     result = await session.call_tool(
         "search", {"query": "test", "format": "full", "max_results": 1}
     )
-    assert not result.isError
+    assert not result.is_error
     data = json.loads(result.content[0].text)
     assert data["results"][0].get("engines") is not None
 
@@ -151,7 +154,7 @@ async def test_search_full_format(session):
 @pytest.mark.anyio
 async def test_autocomplete(session):
     result = await session.call_tool("autocomplete", {"query": "http"})
-    assert not result.isError
+    assert not result.is_error
     data = json.loads(result.content[0].text)
     assert isinstance(data, list)
     assert len(data) > 0
@@ -160,7 +163,7 @@ async def test_autocomplete(session):
 @pytest.mark.anyio
 async def test_engine_info(session):
     result = await session.call_tool("engine_info", {})
-    assert not result.isError
+    assert not result.is_error
     data = json.loads(result.content[0].text)
     assert "categories" in data
     assert "engines" in data
