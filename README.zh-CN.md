@@ -325,7 +325,7 @@ SEARXNG_URL=http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT uvx searxng-http-mcp
 
 ## 🔌 客户端配置
 
-使用标准 `mcpServers` JSON 结构的客户端 —— **Claude Desktop**、**Claude Code**、**Cursor**、**Windsurf**、**Cline** —— 共享以下**服务器模式**（远程 HTTP）示例；区别仅在配置文件位置：
+以下是一个**基准**服务器模式（远程 HTTP）示例，使用标准的 `mcpServers` JSON 结构。多个客户端接受该结构，但字段名和必需的 `type` 值因客户端而异 —— 请根据下方 NOTE 针对你的客户端调整：
 
 ```json
 {

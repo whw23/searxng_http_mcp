@@ -325,7 +325,7 @@ Use this to discover what engines are available before calling `search` with spe
 
 ## 🔌 Client Configuration
 
-Clients that use the standard `mcpServers` JSON structure — **Claude Desktop**, **Claude Code**, **Cursor**, **Windsurf**, **Cline** — share this **server mode** (remote HTTP) example; only the config file location differs:
+The following is a **baseline** server-mode (remote HTTP) example using the standard `mcpServers` JSON structure. Many clients accept this structure, but field names and required `type` values differ — see the NOTE below and adjust for your client:
 
 ```json
 {
