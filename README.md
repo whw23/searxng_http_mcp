@@ -325,6 +325,25 @@ Use this to discover what engines are available before calling `search` with spe
 
 ## 🔌 Client Configuration
 
+The following is a **baseline** server-mode (remote HTTP) example using the standard `mcpServers` JSON structure. Many clients accept this structure, but field names and required `type` values differ — see the NOTE below and adjust for your client:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "type": "http",
+      "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
+      "headers": {
+        "x-api-key": "your-secret-key"
+      }
+    }
+  }
+}
+```
+
+> [!NOTE]
+> Field-name differences: **ZCode** uses `mcp.servers`; **Kilo Code** uses a top-level `mcp` key with `"type": "remote"`; **Windsurf** uses `serverUrl` instead of `url`; **VS Code Copilot** uses a top-level `servers` key; **OpenCode** nests under `mcp` with `"type": "remote"`; **Codex** and **Hermes** use `mcp_servers` (TOML/YAML). For **Claude Code**, `"type": "http"` is **required** — without it the entry is read as a stdio server and skipped. For **Cline**, set `"type": "streamableHttp"` on remote HTTP servers.
+
 <details>
 <summary><img src="assets/icons/claude.svg" height="16" alt="Claude"> <b>Claude Desktop</b></summary>
 
@@ -375,10 +394,27 @@ Use this to discover what engines are available before calling `search` with spe
 <details>
 <summary><img src="assets/icons/claude.svg" height="16" alt="Claude"> <b>Claude Code</b></summary>
 
-**Server mode**:
+**Server mode (CLI)**:
 
 ```bash
-claude mcp add --transport http --header "x-api-key: your-secret-key" searxng http://YOUR_HOST:YOUR_PORT/mcp/
+claude mcp add --transport http searxng http://YOUR_HOST:YOUR_PORT/mcp/ \
+  --header "x-api-key: your-secret-key"
+```
+
+**Server mode (JSON)** — the same `mcpServers` structure works in a **team-shared** project `.mcp.json` or a **user-wide** global `~/.claude.json`:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "type": "http",
+      "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
+      "headers": {
+        "x-api-key": "your-secret-key"
+      }
+    }
+  }
+}
 ```
 
 **Local mode**:
@@ -579,6 +615,7 @@ Configure via Cline's MCP settings panel in VS Code (`Cline > MCP Servers > Add`
 {
   "mcpServers": {
     "searxng": {
+      "type": "streamableHttp",
       "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
@@ -697,6 +734,168 @@ mcp_servers:
 
 </details>
 
+<details>
+<summary>🟦 <b>ZCode</b> (Zhipu AI · GLM)</summary>
+
+**Server mode** — edit `~/.zcode/cli/config.json` (user-wide) or `.zcode/config.json` (project):
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "searxng": {
+        "type": "http",
+        "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
+        "headers": {
+          "x-api-key": "your-secret-key"
+        }
+      }
+    }
+  }
+}
+```
+
+**Local mode**:
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "searxng": {
+        "command": "docker",
+        "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+      }
+    }
+  }
+}
+```
+
+**uvx mode**:
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "searxng": {
+        "command": "uvx",
+        "args": ["searxng-http-mcp"],
+        "env": { "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT" }
+      }
+    }
+  }
+}
+```
+
+ZCode also accepts the standard `mcpServers` structure (e.g. in `.agents/mcp.json`). Alternatively, add servers via `Settings → MCP Servers → New MCP Server`.
+
+</details>
+
+<details>
+<summary>⚡ <b>Kilo Code</b></summary>
+
+**Server mode** — edit `~/.config/kilo/kilo.jsonc` (global) or `.kilo/kilo.jsonc` (project):
+
+```json
+{
+  "mcp": {
+    "searxng": {
+      "type": "remote",
+      "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
+      "headers": {
+        "x-api-key": "your-secret-key"
+      },
+      "enabled": true
+    }
+  }
+}
+```
+
+**Local mode**:
+
+```json
+{
+  "mcp": {
+    "searxng": {
+      "type": "local",
+      "command": ["docker", "run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"],
+      "enabled": true
+    }
+  }
+}
+```
+
+**uvx mode**:
+
+```json
+{
+  "mcp": {
+    "searxng": {
+      "type": "local",
+      "command": ["uvx", "searxng-http-mcp"],
+      "environment": { "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT" },
+      "enabled": true
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>🥧 <b>Pi</b></summary>
+
+Install the MCP adapter once, then add a standard `mcpServers` block — e.g. in `~/.pi/agent/mcp.json` (all projects) or `.pi/mcp.json` (project):
+
+```bash
+pi install npm:pi-mcp-adapter
+```
+
+Restart Pi after installing.
+
+**Server mode**:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
+      "headers": {
+        "x-api-key": "your-secret-key"
+      }
+    }
+  }
+}
+```
+
+**Local mode**:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+    }
+  }
+}
+```
+
+**uvx mode**:
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "uvx",
+      "args": ["searxng-http-mcp"],
+      "env": { "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT" }
+    }
+  }
+}
+```
+
+</details>
+
 ---
 
 ## 🧩 AI Coding Agent Plugin
@@ -725,7 +924,7 @@ All plugins include:
 <br>
 
 ```bash
-/plugin install searxng-http-mcp@searxng-http-mcp-standalone
+/plugin install searxng-http-mcp-standalone@searxng-http-mcp
 ```
 
 Runs via `uvx`. Requires Python 3.14+ and an existing SearXNG instance. Set `SEARXNG_URL` in `~/.claude/settings.json`:
@@ -759,7 +958,7 @@ Runs SearXNG in a local Docker container via stdio. Requires Docker installed.
 <br>
 
 ```bash
-/plugin install searxng-http-mcp@searxng-http-mcp-remote
+/plugin install searxng-http-mcp-remote@searxng-http-mcp
 ```
 
 Connects to a deployed SearXNG MCP server. Requires env vars `SEARXNG_MCP_URL` and `SEARXNG_API_KEY`.
