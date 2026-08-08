@@ -3,7 +3,7 @@ import os
 from unittest.mock import patch, AsyncMock, MagicMock
 
 import pytest
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 from starlette.testclient import TestClient
 
 
@@ -25,12 +25,7 @@ def _make_proxy_mock():
 def no_auth_client():
     """Shared TestClient with lifespan active and no API key."""
     os.environ.pop("API_KEY", None)
-    test_mcp = FastMCP(
-        "test",
-        stateless_http=True,
-        json_response=True,
-        streamable_http_path="/",
-    )
+    test_mcp = MCPServer("test")
 
     @test_mcp.tool()
     async def ping() -> str:
@@ -45,12 +40,12 @@ def no_auth_client():
 
 class TestAppNoAuth:
     def test_mcp_endpoint_accessible(self, no_auth_client):
-        resp = no_auth_client.get("/mcp")
+        resp = no_auth_client.post("/mcp", headers={"accept": "application/json"})
         assert resp.status_code < 500
 
     def test_mcp_without_slash_hits_mcp_app(self, no_auth_client):
         with patch("mcp_server.proxy.httpx.AsyncClient") as mock_client_cls:
-            resp = no_auth_client.get("/mcp")
+            resp = no_auth_client.post("/mcp", headers={"accept": "application/json"})
             # The MCP app is reached directly; no redirect and no proxy fallback.
             assert resp.status_code < 500
             assert "location" not in resp.headers
@@ -65,7 +60,7 @@ class TestAppNoAuth:
 
     def test_mcp_with_slash_hits_mcp_app(self, no_auth_client):
         with patch("mcp_server.proxy.httpx.AsyncClient") as mock_client_cls:
-            resp = no_auth_client.get("/mcp/")
+            resp = no_auth_client.post("/mcp/", headers={"accept": "application/json"})
             # The MCP app is reached (it does not fall through to the proxy).
             assert resp.status_code < 500
             assert "location" not in resp.headers
@@ -73,7 +68,7 @@ class TestAppNoAuth:
 
     def test_mcp_query_string_reaches_mcp_app(self, no_auth_client):
         with patch("mcp_server.proxy.httpx.AsyncClient") as mock_client_cls:
-            resp = no_auth_client.get("/mcp?foo=1")
+            resp = no_auth_client.post("/mcp?foo=1", headers={"accept": "application/json"})
             # Query string is preserved and the request reaches the MCP app.
             assert resp.status_code < 500
             assert "location" not in resp.headers
@@ -107,7 +102,7 @@ class TestAppWithAuth:
 
         app = create_app()
         client = TestClient(app, raise_server_exceptions=False)
-        resp = client.get("/mcp", headers={"x-api-key": "testkey"})
+        resp = client.post("/mcp", headers={"accept": "application/json", "x-api-key": "testkey"})
         assert resp.status_code != 401
 
     @patch.dict("os.environ", {"API_KEY": "testkey"})
