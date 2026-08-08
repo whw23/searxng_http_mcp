@@ -1,7 +1,7 @@
 import contextlib
 import os
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 from starlette.applications import Starlette
 from starlette.routing import Mount, Route
 from starlette.types import Receive, Scope, Send
@@ -31,7 +31,7 @@ class _MCPApp:
         await self.app(scope, receive, send)
 
 
-def create_app(mcp_instance: FastMCP | None = None) -> Starlette:
+def create_app(mcp_instance: MCPServer | None = None) -> Starlette:
     """Create the Starlette ASGI app with MCP, auth, and reverse proxy."""
     mcp = mcp_instance or tools_mcp
 
@@ -46,7 +46,7 @@ def create_app(mcp_instance: FastMCP | None = None) -> Starlette:
             info = await fetch_engine_info()
             if info["categories"]:
                 categories_str = ", ".join(info["categories"])
-                search_tool = mcp._tool_manager._tools.get("search")
+                search_tool = mcp._tool_manager.get_tool("search")
                 if search_tool:
                     original_desc = search_tool.description or ""
                     search_tool.description = (
@@ -60,7 +60,14 @@ def create_app(mcp_instance: FastMCP | None = None) -> Starlette:
                 await tools_cleanup()
                 await proxy.aclose()
 
-    mcp_app = _MCPApp(mcp.streamable_http_app())
+    mcp_app = _MCPApp(
+        mcp.streamable_http_app(
+            stateless_http=True,
+            json_response=True,
+            streamable_http_path="/",
+            host="0.0.0.0",
+        )
+    )
 
     starlette_app = Starlette(
         routes=[
