@@ -5,7 +5,7 @@ import time
 from typing import Annotated, Literal
 
 import httpx
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 from mcp.types import ToolAnnotations
 from pydantic import Field
 
@@ -13,13 +13,7 @@ SEARXNG_BASE_URL = os.environ.get("SEARXNG_URL", "http://127.0.0.1:8080")
 CACHE_TTL = int(os.environ.get("CACHE_TTL", "60"))
 MAX_CACHE_SIZE = 256
 
-mcp = FastMCP(
-    "SearXNG",
-    stateless_http=True,
-    json_response=True,
-    streamable_http_path="/",
-    host="0.0.0.0",
-)
+mcp = MCPServer("SearXNG")
 
 _http_client: httpx.AsyncClient | None = None
 _cache: dict[str, tuple[float, dict]] = {}
