@@ -325,6 +325,25 @@ SEARXNG_URL=http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT uvx searxng-http-mcp
 
 ## 🔌 客户端配置
 
+使用标准 `mcpServers` JSON 结构的客户端 —— **Claude Desktop**、**Claude Code**、**Cursor**、**Windsurf**、**Cline** —— 共享以下**服务器模式**（远程 HTTP）示例；区别仅在配置文件位置：
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "type": "http",
+      "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
+      "headers": {
+        "x-api-key": "your-secret-key"
+      }
+    }
+  }
+}
+```
+
+> [!NOTE]
+> 字段名差异：**ZCode** 用 `mcp.servers` 键；**Kilo Code** 用顶层 `mcp` 键且 `"type": "remote"`；**Windsurf** 用 `serverUrl` 而非 `url`；**VS Code Copilot** 用顶层 `servers` 键；**OpenCode** 嵌套在 `mcp` 下且用 `"type": "remote"`；**Codex** 和 **Hermes** 使用 `mcp_servers`（TOML/YAML）。对 **Claude Code** 而言，`"type": "http"` 是**必需的** —— 缺少该字段会被当作 stdio 服务器并跳过。对 **Cline** 而言，远程 HTTP 服务器需设置 `"type": "streamableHttp"`。
+
 <details>
 <summary><img src="assets/icons/claude.svg" height="16" alt="Claude"> <b>Claude Desktop</b></summary>
 
@@ -377,10 +396,27 @@ SEARXNG_URL=http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT uvx searxng-http-mcp
 <details>
 <summary><img src="assets/icons/claude.svg" height="16" alt="Claude"> <b>Claude Code</b></summary>
 
-**服务器模式**：
+**服务器模式（命令行）**：
 
 ```bash
-claude mcp add --transport http --header "x-api-key: your-secret-key" searxng http://YOUR_HOST:YOUR_PORT/mcp/
+claude mcp add --transport http searxng http://YOUR_HOST:YOUR_PORT/mcp/ \
+  --header "x-api-key: your-secret-key"
+```
+
+**服务器模式（JSON）** —— 同样的 `mcpServers` 结构既可用于**团队共享**的项目级 `.mcp.json`，也可用于**全局生效**的用户级 `~/.claude.json`：
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "type": "http",
+      "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
+      "headers": {
+        "x-api-key": "your-secret-key"
+      }
+    }
+  }
+}
 ```
 
 **本地模式**：
@@ -584,6 +620,7 @@ args = ["searxng-http-mcp"]
 {
   "mcpServers": {
     "searxng": {
+      "type": "streamableHttp",
       "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
       "headers": {
         "x-api-key": "your-secret-key"
@@ -704,6 +741,174 @@ mcp_servers:
 
 </details>
 
+<details>
+<summary>🟦 <b>ZCode</b>（智谱 AI · GLM）</summary>
+
+**服务器模式** —— 编辑 `~/.zcode/cli/config.json`（全局）或 `.zcode/config.json`（项目）：
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "searxng": {
+        "type": "http",
+        "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
+        "headers": {
+          "x-api-key": "your-secret-key"
+        }
+      }
+    }
+  }
+}
+```
+
+**本地模式**：
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "searxng": {
+        "command": "docker",
+        "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+      }
+    }
+  }
+}
+```
+
+**uvx 模式**：
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "searxng": {
+        "command": "uvx",
+        "args": ["searxng-http-mcp"],
+        "env": {
+          "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT"
+        }
+      }
+    }
+  }
+}
+```
+
+ZCode 也接受标准 `mcpServers` 结构（如放在 `.agents/mcp.json`）。也可以通过 `设置 → MCP 服务器 → 新建 MCP 服务器` 添加。
+
+</details>
+
+<details>
+<summary>⚡ <b>Kilo Code</b></summary>
+
+**服务器模式** —— 编辑 `~/.config/kilo/kilo.jsonc`（全局）或 `.kilo/kilo.jsonc`（项目）：
+
+```json
+{
+  "mcp": {
+    "searxng": {
+      "type": "remote",
+      "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
+      "headers": {
+        "x-api-key": "your-secret-key"
+      },
+      "enabled": true
+    }
+  }
+}
+```
+
+**本地模式**：
+
+```json
+{
+  "mcp": {
+    "searxng": {
+      "type": "local",
+      "command": ["docker", "run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"],
+      "enabled": true
+    }
+  }
+}
+```
+
+**uvx 模式**：
+
+```json
+{
+  "mcp": {
+    "searxng": {
+      "type": "local",
+      "command": ["uvx", "searxng-http-mcp"],
+      "environment": {
+        "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT"
+      },
+      "enabled": true
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>🥧 <b>Pi</b></summary>
+
+安装 MCP 适配器一次，然后添加标准 `mcpServers` 配置块 —— 例如 `~/.pi/agent/mcp.json`（所有项目）或 `.pi/mcp.json`（项目）：
+
+```bash
+pi install npm:pi-mcp-adapter
+```
+
+安装后重启 Pi。
+
+**服务器模式**：
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "url": "http://YOUR_HOST:YOUR_PORT/mcp/",
+      "headers": {
+        "x-api-key": "your-secret-key"
+      }
+    }
+  }
+}
+```
+
+**本地模式**：
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "--memory=512m", "--cpus=1", "ghcr.io/whw23/searxng-http-mcp:latest", "--stdio"]
+    }
+  }
+}
+```
+
+**uvx 模式**：
+
+```json
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "uvx",
+      "args": ["searxng-http-mcp"],
+      "env": {
+        "SEARXNG_URL": "http://YOUR_SEARXNG_HOST:YOUR_SEARXNG_PORT"
+      }
+    }
+  }
+}
+```
+
+</details>
+
 ---
 
 ## 🧩 AI 编程代理插件
@@ -732,7 +937,7 @@ mcp_servers:
 <br>
 
 ```bash
-/plugin install searxng-http-mcp@searxng-http-mcp-standalone
+/plugin install searxng-http-mcp-standalone@searxng-http-mcp
 ```
 
 通过 `uvx` 运行。需要 Python 3.14+ 和已有的 SearXNG 实例。在 `~/.claude/settings.json` 中设置 `SEARXNG_URL`：
@@ -766,7 +971,7 @@ mcp_servers:
 <br>
 
 ```bash
-/plugin install searxng-http-mcp@searxng-http-mcp-remote
+/plugin install searxng-http-mcp-remote@searxng-http-mcp
 ```
 
 连接到已部署的 SearXNG MCP 服务器。需要设置环境变量 `SEARXNG_MCP_URL` 和 `SEARXNG_API_KEY`。
