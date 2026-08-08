@@ -49,11 +49,13 @@ def create_app(mcp_instance: MCPServer | None = None) -> Starlette:
                 search_tool = mcp._tool_manager.get_tool("search")
                 if search_tool:
                     original_desc = search_tool.description or ""
-                    search_tool.description = (
-                        f"{original_desc}\n\n"
-                        f"Available categories: {categories_str}\n"
-                        f"Use the engine_info tool to discover available engines and their categories."
-                    )
+                    marker = "Available categories:"
+                    if marker not in original_desc:
+                        search_tool.description = (
+                            f"{original_desc}\n\n"
+                            f"Available categories: {categories_str}\n"
+                            f"Use the engine_info tool to discover available engines and their categories."
+                        )
             try:
                 yield
             finally:

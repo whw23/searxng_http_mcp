@@ -114,10 +114,13 @@ def server_url():
 
 @pytest.fixture
 async def session(server_url):
-    """Connect to the HTTP MCP server and return a session."""
+    """Connect to the HTTP MCP server and return a session.
+
+    MCP v2 (stateless core) drops the initialize handshake, so no
+    explicit initialize() call is needed for the HTTP transport.
+    """
     async with streamable_http_client(server_url) as (read_stream, write_stream):
         async with ClientSession(read_stream, write_stream) as s:
-            await s.initialize()
             yield s
 
 
