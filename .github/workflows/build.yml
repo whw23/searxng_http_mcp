@@ -85,7 +85,7 @@ jobs:
 
       - name: Set up Docker Buildx
         if: steps.decide.outputs.should_build == 'true'
-        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4
 
       - name: Login to GHCR
         if: steps.decide.outputs.should_build == 'true'
@@ -131,7 +131,7 @@ jobs:
 
       - name: Upload Trivy results to GitHub Security
         if: steps.decide.outputs.should_build == 'true'
-        uses: github/codeql-action/upload-sarif@5595ccaf912efad79be6eef63a5619ff05969be3 # v3
+        uses: github/codeql-action/upload-sarif@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v3
         with:
           sarif_file: trivy-results.sarif
 
@@ -180,7 +180,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v5
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v5
 
       - name: Build package
         run: uv build
